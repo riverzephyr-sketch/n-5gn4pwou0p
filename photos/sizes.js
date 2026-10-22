@@ -98,5 +98,9 @@ window.PHOTO_SIZES = {
 "photos/m5.webp": [
 1050,
 1400
+],
+"photos/m6.webp": [
+1050,
+1400
 ]
 };
