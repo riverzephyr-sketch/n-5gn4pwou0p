@@ -43,7 +43,7 @@ window.CONTENT = {
     quietSong: "Aimer · Ref:rain", // 那条朋友圈分享的歌
     from: "北京", to: "重庆",
     // 游戏里的情侣时装：photos/wardrobe/m01–m27.webp（4:5），由原图裁好
-    wardrobe: { dir: "photos/wardrobe", count: 27 },
+    // wardrobe: { dir: "photos/wardrobe", count: 27 },   // 时装定格动画：已撤下（文件留在 photos/wardrobe/，页面不再加载）
   },
 
   // 背景音乐（我写给你的歌）

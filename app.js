@@ -46,8 +46,7 @@ const hairIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersec
 
 /* ---------- HERO ---------- */
 const H = C.hero;
-// the one line is split across the two sides of the stack (text unchanged): "…favorite place" | "since 2022."
-{ const m = (H.subtitle || "").match(/^(.*\S)\s+(since\s.*)$/i); $("#heroSub").textContent = m ? m[1] : H.subtitle; $("#heroSub2").textContent = m ? m[2] : ""; }
+$("#heroSub").textContent = H.subtitle;
 const placeById = Object.fromEntries(C.places.map(p => [p.id, p]));
 const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.photo] : []);
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
@@ -173,6 +172,8 @@ const stamp = el("span", "stamp", esc(HT.stamp || "扣分")); wrongC.append(stam
 const okr = el("span", "mark okring", MARK.circle); rightC.append(okr);
 const qParts = (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
 $("#then").innerHTML = `<span class="qm o">“</span>${qParts.map((t, i) => `<span class="l l${i + 1}">${esc(t)}</span>`).join("")}<span class="qm c">”</span><span class="pen">${(HT.quoteEn || []).map(esc).join("<br>")}</span>`;
+// the quote shows as it comes into view (not hidden behind a tap)
+{ const th = $("#then"); if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { th.classList.add("show"); io.disconnect(); } }), { threshold: .2 }); io.observe(th); } else th.classList.add("show"); }
 let score = HT.startScore; const hist = [];
 const scoreWrap = $("#score").parentElement;
 function setScore(v) {
@@ -560,35 +561,59 @@ function buildSpine() { try {
     d += ` L ${g} ${y2}`;
     d += nearB ? ` L ${B[0]} ${B[1]}` : ` C ${g} ${y2 + k}, ${cx(B[0] - db[0] * k)} ${B[1] - db[1] * k}, ${B[0]} ${B[1]}`;
     return d; };
-  const D = [0, 1], segs = [];
-  const tag = R($("#tag")), route = ends($("#jhA"));
-  const dr = R($("#hero .drape")), P0 = [dr.l + dr.w * .5, dr.b - 12];   // the thread leaves from the foot of the hanging stack
-  segs.push(join(P0, [-.15, 1], route.s, route.sd));          // hero → past the sound wave (it branches off here) → 北京
-  const hl = R($("#hLabel"));
-  segs.push(join(route.e, route.ed, [gx, hl.t - 4], D));      // 重庆 → down into 「重庆 · 初见」
-  const cl = R($("#chapterList")), tx = cl.l - 11.5, t0 = cl.t + 60, t1 = cl.b - 40;
-  segs.push(join([gx, hl.t - 4], D, [tx, t0], D));          // quietly down the margin past the two key cards segs.push(`M${tx} ${t0} L ${tx} ${t1}`);
-  const str = $("#mapSvg .string"); let mapEnd = [tx, t1], mapD = D;
-  if (str && str.getTotalLength && str.getTotalLength() > 0) { const m = ends(str); segs.push(join([tx, t1], D, m.s, [0, 1])); mapEnd = m.e; mapD = [0, 1]; }
-  const fin = R($("#finale")), env = R($("#envelope")), Y = env.b + 18, fw = fin.w;
-  const f0 = [gOut, fin.t + 40];
-  segs.push(join(mapEnd, mapD, f0, D, gOut));
-  segs.push(`M${f0[0]} ${f0[1]} C ${gOut} ${fin.t + (Y - fin.t) * .45}, ${fw * .02} ${fin.t + (Y - fin.t) * .55}, ${fw * .3} ${fin.t + (Y - fin.t) * .72} S ${fw * .8} ${Y + 30}, ${fw + 40} ${Y - 10}`);
-  // sample the joins
-  let ms = SP.m; if (!ms) { ms = SP.m = document.createElementNS(NSs, "svg"); ms.setAttribute("aria-hidden", "true"); ms.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;visibility:hidden"; ms.append(document.createElementNS(NSs, "path")); document.body.append(ms); }
-  const mp = ms.firstChild, pts = [];
-  segs.forEach(d => { mp.setAttribute("d", d); const L = mp.getTotalLength(), n = Math.max(2, Math.ceil(L / 4)); const run = [];
-    for (let i = 0; i <= n; i++) { const q = mp.getPointAtLength(L * i / n); run.push([q.x, q.y]); } pts.push(run); });
-  // obstacles: every line of text, every photo and card
+  // obstacles first: every line of text, every photo and card (the line never sits over them)
   const secs = [$("#hero"), ...$$(".sec")], obs = [], pad = 9, add = (r, p = pad) => { if (r.width > 0 && r.height > 0) obs.push([r.left - p, r.top + sy - p, r.right + p, r.bottom + sy + p]); };
   const rg = document.createRange();
   secs.forEach(sec => { const tw = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT); let n;
     while ((n = tw.nextNode())) { if (!n.nodeValue.trim()) continue; const pe = n.parentElement; if (!pe || pe.closest(".sr-only,svg.spine")) continue;
       if (pe.closest("svg")) { add((pe.closest("text") || pe).getBoundingClientRect(), 6); continue; }
       rg.selectNodeContents(n); for (const r of rg.getClientRects()) add(r); }
-    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature,.wardrobe,.drape").forEach(e => add(e.getBoundingClientRect(), 6)); });
+    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature,.then").forEach(e => add(e.getBoundingClientRect(), 6)); });
+  // the open bands: heights of the page where nothing sits across the whole width
+  const ivs = obs.map(o => [o[1], o[3]]).sort((p, q) => p[0] - q[0]), free = []; { let y = 0; ivs.forEach(([t, b]) => { if (t > y) free.push([y, t]); y = Math.max(y, b); }); }
+  // the line is a thread stitched through the paper: it shows only where it sweeps across an open band, edge to edge,
+  // and runs "under the paper" (off the page edge) past the long columns of text and photos. No ruler lines down a margin.
+  const E = 26, edge = s => s < 0 ? -E : W + E;
+  const swash = (y0, y1, s) => { const x0 = edge(s), x1 = edge(-s), c = W * .5;   // s = -1: enters on the left
+    return `M${x0} ${y0} C ${x0 - s * c} ${y0}, ${x1 + s * c} ${y1}, ${x1} ${y1}`; };
+  const pick = (ya, yb, must = []) => { const out = [], sp = Math.max(640, innerHeight * .85), ok = g => g[1] - g[0] >= 36;
+    const near = y => out.some(g => Math.abs((g[0] + g[1]) / 2 - y) < sp);
+    must.forEach(m => { const g = free.find(f => f[0] <= m && f[1] >= m); if (g && ok(g)) out.push(g); });
+    free.filter(g => ok(g) && g[0] > ya + 160 && g[1] < yb - 160).forEach(g => { if (!near((g[0] + g[1]) / 2) && !out.includes(g)) out.push(g); });
+    return out.sort((p, q) => p[0] - q[0]); };
+  const band = (g, s) => { const h = g[1] - g[0], m = Math.max(10, h * .22), dy = Math.min(h - 2 * m, 150), mid = (g[0] + g[1]) / 2; return swash(mid - dy / 2, mid + dy / 2, s); };
+  // from A (leaving in da) off to the nearer side; the sweeps between; then in from the side to B (arriving in db)
+  const weave = (A, da, B, db, must = [], s0 = 0) => { const out = [], gs = pick(A[1], B[1], must);
+    let s = s0 || (A[0] < W / 2 ? -1 : 1); const sB = B[0] < W / 2 ? -1 : 1;
+    if ((gs.length % 2 === 0) !== (s === sB)) { // the thread must come back in on B's side: drop the band that is least needed
+      const mi = must.length ? gs.findIndex(g => !must.some(m => g[0] <= m && g[1] >= m)) : gs.length - 1; if (mi >= 0) gs.splice(gs.length > 1 && mi === 0 && !must.length ? gs.length - 1 : mi, 1); else s = -s; }
+    const ky = Math.min(140, Math.max(60, (gs.length ? gs[0][0] : B[1]) - A[1]) * .5);
+    out.push(`M${A[0]} ${A[1]} C ${A[0] + da[0] * 40} ${A[1] + da[1] * 40}, ${edge(s) * .3 + A[0] * .7} ${A[1] + ky}, ${edge(s)} ${A[1] + ky * 1.2}`);
+    gs.forEach(g => { out.push(band(g, s)); s = -s; });
+    const ey = B[1] - Math.min(140, Math.max(50, B[1] - (gs.length ? gs[gs.length - 1][1] : A[1])) * .6);
+    out.push(`M${edge(s)} ${ey} C ${edge(s) * .3 + B[0] * .7} ${ey}, ${B[0] - db[0] * 50} ${B[1] - db[1] * 50}, ${B[0]} ${B[1]}`);
+    return out; };
+  const D = [0, 1], segs = [];
+  const tag = R($("#tag")), route = ends($("#jhA"));
+  const P0 = [tag.l + tag.w * .5, tag.t + tag.h * .55];
+  segs.push(...weave(P0, [-.6, .8], route.s, route.sd));                     // hero → (the open bands of 江湖) → 北京
+  const sc = R($(".hotel .score")), hc = R($("#hotels"));
+  const cl = R($("#chapterList")), t1 = cl.b - 40;
+  const str = $("#mapSvg .string"); let mapEnd = null;
+  if (str && str.getTotalLength && str.getTotalLength() > 0) { const m = ends(str);
+    segs.push(...weave(route.e, route.ed, m.s, [0, 1], [(sc.b + hc.t) / 2], 1));   // 重庆 → one sweep between 100 and the key cards → the rolls → the map's string
+    mapEnd = m.e; }
+  const fin = R($("#finale")), env = R($("#envelope")), Y = env.b + 18, fw = fin.w;
+  const f0 = [gOut, fin.t + 40];
+  if (mapEnd) segs.push(...weave(mapEnd, D, f0, D));
+  segs.push(`M${f0[0]} ${f0[1]} C ${gOut} ${fin.t + (Y - fin.t) * .45}, ${fw * .02} ${fin.t + (Y - fin.t) * .55}, ${fw * .3} ${fin.t + (Y - fin.t) * .72} S ${fw * .8} ${Y + 30}, ${fw + 40} ${Y - 10}`);
+  // sample the joins
+  let ms = SP.m; if (!ms) { ms = SP.m = document.createElementNS(NSs, "svg"); ms.setAttribute("aria-hidden", "true"); ms.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;visibility:hidden"; ms.append(document.createElementNS(NSs, "path")); document.body.append(ms); }
+  const mp = ms.firstChild, pts = [];
+  segs.forEach(d => { mp.setAttribute("d", d); const L = mp.getTotalLength(), n = Math.max(2, Math.ceil(L / 4)); const run = [];
+    for (let i = 0; i <= n; i++) { const q = mp.getPointAtLength(L * i / n); run.push([q.x, q.y]); } pts.push(run); });
   const B = 200, bucket = {}; obs.forEach((o, i) => { for (let k = Math.floor(o[1] / B); k <= Math.floor(o[3] / B); k++) (bucket[k] = bucket[k] || []).push(o); });
-  const hit = (x, y) => (bucket[Math.floor(y / B)] || []).some(o => x >= o[0] && x <= o[2] && y >= o[1] && y <= o[3]);
+  const hit = (x, y) => x < 0 || x > W || (bucket[Math.floor(y / B)] || []).some(o => x >= o[0] && x <= o[2] && y >= o[1] && y <= o[3]);
   // one svg per section, holding the part of the line inside it
   SP.svgs.forEach(s => s.remove()); SP.svgs = [];
   secs.forEach(sec => { const r = R(sec); let d = "";
