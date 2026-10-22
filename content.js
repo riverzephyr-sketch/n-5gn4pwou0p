@@ -140,6 +140,7 @@ window.CONTENT = {
       { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp" },   // 水母灯
       { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true },
       { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp" },
+      { title: "重庆", date: "2024.07", text: "我马上就要去杭州上班了", photo: "photos/m5.webp" },   // 2024.07.14
       { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp" },
     ]},
     { year: "2025–26", layout: "peak", title: "待填写", items: [
