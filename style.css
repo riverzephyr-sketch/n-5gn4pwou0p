@@ -851,3 +851,6 @@ img{display:block;max-width:100%}
   .vroll{grid-template-columns:360px 1fr;gap:0 10%}.yr:nth-child(even) .vroll{grid-template-columns:1fr 360px}
   .story{max-width:1100px}
 }
+
+/* letterboxed frame: the whole picture shows inside the film frame, film-black bars at the sides */
+.vfr .ph.fit{background:#0e0b0b}.vfr .ph.fit img{object-fit:contain !important;transform:none !important}

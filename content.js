@@ -144,6 +144,7 @@ window.CONTENT = {
       { title: "重庆", date: "2024.07", text: "我马上就要去杭州上班了", photo: "photos/m5.webp" },   // 2024.07.14
       { title: "杭州", date: "2024.08", text: "", photo: "photos/m6.webp" },   // 镜子自拍
       { title: "杭州", date: "2024.09", text: "", photo: "photos/m7.webp" },   // 车后座自拍
+      { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
     ]},
     { year: "2025–26", layout: "peak", title: "待填写", items: [
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
