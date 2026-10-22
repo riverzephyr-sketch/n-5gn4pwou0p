@@ -634,3 +634,227 @@ img{display:block;max-width:100%}
 }
 .lk.lk-en .cn-row{display:block;margin-top:14px}
 .lk.lk-en .cn-row .c{display:inline !important;margin:0 !important}
+
+/* =====================================================================
+   REFINE · ROUND 1 (external review, approved): spacing, type system, density.
+   Overrides only — no new objects or decoration.
+   ===================================================================== */
+
+/* ---------- private page: the letter is the centre ---------- */
+.secret-in{padding-left:30px;padding-right:30px}
+.silhouette{margin-top:56px}
+.pair{margin-top:56px}
+.pair-cap{margin-top:24px}
+.pola.small{margin-top:48px}
+/* Polaris: a quieter prelude to the letter — title, the two names, the lyric, and the undeveloped print, as one group */
+.sx-polaris{margin-top:104px;text-align:center}
+.lk-polaris{margin-top:0}
+.rings{margin-top:30px;gap:22px}
+.rings b{font-size:22px}
+.lyrics{margin-top:40px;text-align:left}
+.lyrics h4{font-size:11px;margin-bottom:18px}
+.lyrics .ln{margin-bottom:12px}
+.lyrics .jp{font-size:12.5px;line-height:1.6;color:var(--ink2)}
+.lyrics .cn{font-size:11px;line-height:1.5}
+.pola.undeveloped{width:46%;margin:36px auto 0}
+.pola.undeveloped figcaption{text-align:left}
+/* the letter on a clean, flat sheet */
+.secret-in{padding-bottom:0}
+.letter-end{margin:96px -30px 0;padding:56px 30px calc(30vh + env(safe-area-inset-bottom));background:#f7f3ec;box-shadow:0 -1px 0 rgba(27,23,20,.06)}
+.letter-title{font-size:15px;margin-bottom:44px}
+.letter p{font-size:16px;line-height:1.9;letter-spacing:.04em;margin-bottom:26px}
+.letter p.salute{margin-bottom:26px}
+.letter p.close-line{margin-top:44px;font-size:18px;line-height:1.5}
+.sig{margin-top:14px}
+@media (min-width:900px){
+  .secret-in{max-width:1200px;padding:140px 64px 160px !important;display:grid;grid-template-columns:45fr 10fr 45fr;align-items:start}
+  .secret-in>.lk-secret,.secret-in>.meta{grid-column:1/-1}
+  .sx-archive,.sx-polaris{grid-column:1}
+  .sx-archive{grid-row:2}.sx-polaris{grid-row:3}
+  .letter-end{grid-column:3;grid-row:2/4;align-self:start;max-width:520px;margin:120px 0 0;padding:64px 48px 72px}
+  .pair{max-width:440px}.pola.small{width:56%}
+}
+
+/* ---------- rolls: each year a vertical strip of film (the original rolls), refined for tone B ----------
+   strip and words side by side, alternating sides year by year; every caption level with its frame */
+.yr{padding-top:110px}
+.yr-num{white-space:nowrap}
+.yr-num.long{font-size:44px}
+.vroll{display:grid;grid-template-columns:calc(190 * var(--u)) 1fr;gap:0 18px;align-items:start}
+.yr:nth-child(even) .vroll{grid-template-columns:1fr calc(190 * var(--u))}
+.yr:nth-child(even) .vstrip{order:2;transform:rotate(.8deg)}
+.yr:nth-child(even) .caps{text-align:right}
+.yr:nth-child(even) .cp{align-items:flex-end}
+.vstrip{position:relative;display:block;gap:0;background:#17110f;padding:8px 23px;transform:rotate(-.8deg);box-shadow:0 18px 32px -12px rgba(0,0,0,.8)}
+.vstrip .sprk{top:0;bottom:0;left:7px;right:auto;width:7px;height:auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='13'%3E%3Crect x='0' y='3' width='7' height='7' rx='1.4' fill='%23ece6dc' fill-opacity='.2'/%3E%3C/svg%3E") repeat-y}
+.vstrip .sprk.b{left:auto;right:7px}
+.vstrip .edge{writing-mode:vertical-rl;right:15.5px;top:16px;font-size:6px}
+.vfr{position:relative;display:block;margin:6px 0}
+.vfr .ph{aspect-ratio:4/5;border:0;box-shadow:none;transform:none !important;order:0}
+.vfr.land .ph{aspect-ratio:3/2}
+.vfr .fno{position:absolute;left:-17px;bottom:3px;font-family:var(--lat);font-size:6px;letter-spacing:.1em;color:rgba(214,170,120,.6);writing-mode:vertical-rl;transform:rotate(180deg)}
+.vfr.hi .ph{box-shadow:0 0 0 1px rgba(201,84,90,.75)}
+.vfr .ph.scans2{aspect-ratio:auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;background:#17110f}
+.vfr .ph.scans2 .sc img{width:100%;height:auto;display:block}
+/* the milestone: a wine card in its own frame */
+.vfr.ms .ph.milestone{aspect-ratio:4/5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;text-align:center;
+  background:var(--wine) url(assets/wine-field.webp) center/300%;color:var(--chalk)}
+.ph.milestone .ms-k{font-family:var(--lat);font-style:italic;font-size:11px;color:var(--chalk2)}
+.ph.milestone b{font-family:var(--zh);font-weight:400;font-size:15px;line-height:1.5;letter-spacing:.14em}
+.ph.milestone .ms-d{font-family:var(--lat);font-size:10px;letter-spacing:.2em;color:var(--chalk2)}
+.caps{display:flex;flex-direction:column}
+.cp{display:flex;flex-direction:column;justify-content:flex-start;gap:0;padding:10px 0 0;text-align:left}
+.cp .d{font-family:var(--lat);font-size:11px;line-height:1.5;letter-spacing:.2em;color:rgba(214,170,120,.85)}
+.cp .t{margin-top:7px;font-size:16px;line-height:1.45;letter-spacing:.08em;color:var(--chalk);font-weight:300}
+.cp .tx{margin-top:12px;font-size:13px;line-height:1.8;letter-spacing:.04em;color:rgba(236,230,220,.72)}
+@media (min-width:900px){
+  .vroll{grid-template-columns:300px 1fr;gap:0 48px}
+  .yr:nth-child(even) .vroll{grid-template-columns:1fr 300px}
+  .vfr{grid-template-columns:none;gap:0}.vfr:nth-child(even){grid-template-columns:none}
+  .vstrip{padding:10px 30px}
+  .cp .t{font-size:20px}.cp .tx{font-size:15px;max-width:26em}.yr:nth-child(even) .cp .tx{margin-left:auto}
+  .yr-num.long{font-size:64px}
+}
+
+/* ---------- map: the stats, then every stop in three tiers ---------- */
+.stats{margin-top:40px;justify-content:space-between;gap:0}
+.stats b{font-size:34px}
+.stats span{font-size:10.5px;line-height:1.4}
+.stats small{font-size:10.5px}
+.story{gap:0;margin-top:112px}
+.st+.st{margin-top:88px}
+.st.t-detail+.st.t-detail{margin-top:30px}
+.st.t-hero{margin-top:112px}
+.st-ph{display:flex;gap:14px;align-items:flex-start}
+.st-ph .st-f{transform:rotate(-.8deg)}
+.st:nth-child(even) .st-ph{justify-content:flex-end}.st:nth-child(even) .st-ph .st-f{transform:rotate(.9deg)}
+.t-std .st-f{width:72%}.t-std.tall .st-f{width:52%}
+.t-hero .st-f{width:100%}
+.t-detail .st-f{width:52%}
+.st-tx{max-width:none}
+.st-tx h3{margin-top:10px}
+.st-tx p{margin-top:14px;font-size:15px;line-height:1.8;max-width:22em}
+.st-geo,.st-d{font-size:12px;line-height:1.5}
+.st-song{font-size:12px}
+/* hero stops (the proposal in 大理, then 亚庇): the city set large, a hairline above */
+.t-hero .st-tx{padding-top:22px;border-top:1px solid rgba(90,15,23,.4)}
+.t-hero .st-no{font-size:44px}
+.t-hero .st-tx h3 i{font-size:40px;line-height:1.1;letter-spacing:.08em}
+.t-hero .st-tx h3 span{font-size:13px}
+/* standard stops in type: city 26px */
+.t-std .st-no{font-size:30px}
+.t-std .st-tx h3 i{font-size:26px;line-height:1.2}
+/* detail stops: one compact line each — number, city, Chinese, coordinates */
+.t-detail .st-tx{display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:baseline;padding-top:12px;border-top:1px solid var(--hair)}
+.t-detail .st-no{font-size:15px;color:var(--mute)}
+.t-detail .st-tx h3{margin:0;flex-direction:row;align-items:baseline;gap:10px}
+.t-detail .st-tx h3 i{font-size:17px}
+.t-detail .st-geo{grid-column:2;margin-top:4px;font-size:11px}
+.type-only.t-std .st-tx{max-width:none}
+
+@media (min-width:900px){
+  .story{max-width:980px}
+  .st{display:block}
+  .st-tx{margin-top:24px}
+  .t-std .st-f{width:62%}.t-std.tall .st-f{width:40%}.t-detail .st-f{width:44%}.t-hero .st-f{width:92%}
+  .st:nth-child(even) .st-tx{margin-left:auto;max-width:62%}
+  .t-hero .st-tx h3 i{font-size:56px}
+  .t-detail .st-tx{max-width:620px}
+  .st:nth-child(even).t-detail .st-tx{margin-left:0;max-width:620px}
+}
+
+.yr-num{white-space:nowrap}.yr-num.long{font-size:62px}
+
+/* ---------- hero micro-tweaks: 1461 dominant, counter secondary, print a little larger ---------- */
+.tag{left:calc(30 * var(--u));top:calc(-112 * var(--u));width:calc(256 * var(--u))}
+.hero-num{font-size:calc(104 * var(--u))}
+.hero-dates .script{font-size:calc(28 * var(--u));margin-top:calc(12 * var(--u))}
+.hero-dates span{font-size:11px;letter-spacing:.2em}
+.tag-count{margin-top:calc(12 * var(--u))}
+.tag-count .t-days{font-size:12px}.tag-count .t-unit{font-size:11px}.tag-count .t-time{font-size:11px;letter-spacing:.14em}
+.hero-print{left:calc(116 * var(--u));top:calc(372 * var(--u));width:calc(258 * var(--u))}
+.hang{height:calc(712 * var(--u))}
+.hero-sub{font-size:16px;line-height:1.5}
+.play-hint{margin-top:18px}
+@media (min-width:900px){
+  .tag{left:calc(50% - 250px);top:-196px;width:380px}
+  .hero-num{font-size:150px}
+  .hero-dates .script{font-size:44px}
+  .hero-dates span{font-size:12px}
+  .tag-count .t-days{font-size:16px}.tag-count .t-unit,.tag-count .t-time{font-size:12px}
+  .hero-print{left:calc(50% - 10px);top:330px;width:380px}
+  .hero-sub{font-size:22px}
+}
+
+/* ---------- the music: a small vinyl record (black grooves, wine label) that turns while the song plays,
+   the title in tiny serif on a cream tab beside it. bottom-right in the safe area, on every screen;
+   over words it folds to the record alone ---------- */
+.mini{height:auto;min-width:0;padding:0;gap:8px;border-radius:0;background:none;box-shadow:none;align-items:center}
+.mini-dot{position:relative;order:2;width:38px;height:38px;border-radius:50%;flex:none;opacity:1;
+  background:radial-gradient(circle,#efe6d8 0 1.6px,transparent 2px),radial-gradient(circle,var(--wine) 0 10px,transparent 10.5px),
+    repeating-radial-gradient(circle,#121010 0 1.1px,#1e1b1a 1.3px 1.9px,#0d0b0b 2.1px 2.6px),#111;
+  box-shadow:0 1px 1px rgba(0,0,0,.35),0 5px 12px rgba(20,10,8,.32),inset 0 0 0 .6px rgba(255,255,255,.08);
+  animation:spin 3.2s linear infinite;animation-play-state:paused}
+.mini-dot i{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,transparent 0 12%,rgba(255,255,255,.13) 16%,transparent 22% 60%,rgba(255,255,255,.09) 64%,transparent 70%);pointer-events:none}
+.mini.on .mini-dot{animation-play-state:running}
+.mini-txt{order:1;max-width:140px;padding:4px 9px 4px 10px;border-radius:2px;background:#f3eee5 url(assets/paper-cream.webp) center/400%;box-shadow:0 1px 1px rgba(45,25,15,.2),0 3px 8px rgba(45,25,15,.12);
+  font-family:var(--lat);font-style:italic;font-size:11px;line-height:1.2;letter-spacing:.02em;color:var(--wine)}
+.mini:not(.on) .mini-txt::before{content:"▸ ";font-style:normal;font-size:8px;vertical-align:1px}
+.mini.show.tuck:not(.open){transform:none}
+.mini.tuck:not(.open){padding:0}
+.mini.tuck:not(.open) .mini-txt{max-width:0;padding:0;opacity:0;box-shadow:none}
+.mini.tuck:not(.open) .mini-dot{opacity:1;width:30px;height:30px}
+@media (prefers-reduced-motion:reduce){.mini-dot{animation:none}}
+
+/* ---------- the ending (the original): film black with a wine glow, the years pass, NEXT chapter, the envelope, the keypad ---------- */
+.finale{background:radial-gradient(ellipse at 50% 0,#2e0d11,#120d0c 62%,#0d0a09);text-align:center;padding-top:110px;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+.finale .paren-c{top:28px;font-size:10.5px;letter-spacing:0;text-transform:none;color:rgba(236,230,220,.72)}
+.finale .paren-c .paren{display:flex;align-items:center;gap:6px;font-family:var(--lat);font-style:italic;line-height:1.35;text-align:center}
+.finale .paren-c .paren b{display:block;font-weight:400;font-style:normal;font-size:34px;line-height:1;transform:scaleX(.55);opacity:.7}
+.finale .paren-c .paren i{display:inline;font-size:10.5px;color:inherit;letter-spacing:0}
+.finale .paren-c.tl{left:16px}.finale .paren-c.tr{right:16px}
+.fin-title{min-height:0;height:150px;display:flex;align-items:center;justify-content:center;margin-top:20px}
+.years span{font-size:46px;letter-spacing:.02em}
+.lk-finale.lk-old{display:grid;grid-template-columns:1fr;justify-items:center;line-height:1;color:var(--chalk)}
+.lk-finale.lk-old .en{display:contents}
+.lk-finale.lk-old .c{order:-1;display:block;font-family:var(--zh);font-weight:300;font-size:15px;letter-spacing:.9em;margin:0 -.9em 12px 0;color:var(--chalk)}
+.lk-finale.lk-old .e{display:block;margin:0;font-family:var(--lat);font-style:normal;text-transform:uppercase;font-size:50px;letter-spacing:.04em;line-height:.95;color:var(--chalk)}
+.lk-finale.lk-old .e2{font-style:italic;text-transform:none;font-size:46px;letter-spacing:0;margin-top:-4px}
+.desk{margin-top:24px}
+.finale .closing{text-align:left}
+.env-to,.env-label{position:absolute;z-index:5;bottom:13%;line-height:1}
+.env-to{left:10%;font-family:var(--zh);font-size:11px;letter-spacing:.5em;color:rgba(27,23,20,.78)}
+.env-label{right:9%;font-family:var(--lat);font-style:italic;font-size:12px;color:var(--wine)}
+.envelope.open .env-to,.envelope.open .env-label{opacity:0;transition:opacity .3s}
+.lock{margin-top:40px}
+.pad{margin-top:30px}
+@media (min-width:900px){
+  .desk{margin-top:40px}
+  .finale .paren-c.tl{left:64px}.finale .paren-c.tr{right:64px}.finale .paren-c{top:56px}
+  .years span{font-size:64px}
+  .lk-finale.lk-old .e{font-size:72px}.lk-finale.lk-old .e2{font-size:64px}
+}
+
+/* ---------- the stamp sheet (envelope screen) reused: 北京 on the map, the private archive ----------
+   each stamp: cream border, perforated edge punched with a mask, the photo in black and white */
+.stampsheet{position:relative;display:inline-block;margin:0;filter:drop-shadow(0 1px 1px rgba(45,25,15,.28)) drop-shadow(4px 10px 14px rgba(45,25,15,.18))}
+.ss-grid{display:grid;grid-template-columns:repeat(var(--cols),1fr)}
+.pstamp{padding:4px;background:#f4f0e8;-webkit-mask:linear-gradient(#000 0 0) content-box,radial-gradient(circle at 4px 4px,transparent 2.2px,#000 2.7px) 0 0/8px 8px;mask:linear-gradient(#000 0 0) content-box,radial-gradient(circle at 4px 4px,transparent 2.2px,#000 2.7px) 0 0/8px 8px}
+.pstamp-in{position:relative;padding:6px;background:#f4f0e8;overflow:hidden}
+.pstamp-in img{display:block;width:100%;aspect-ratio:4/5;height:auto;object-fit:cover;filter:grayscale(1) contrast(1.06) brightness(1.03) sepia(.08)}
+.pstamp.note .pstamp-in{height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:12px;font-family:var(--lat);font-size:10px;letter-spacing:.18em;line-height:1.4;color:var(--mute);text-align:left}
+.ss-clip{position:absolute;left:50%;top:-34px;width:34px;height:auto;margin-left:-17px;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.ss-map{width:78%;transform:rotate(-2deg)}
+.ss-map .pstamp-in img{aspect-ratio:788/700}
+.st-stamps{padding-top:30px}
+.st:nth-child(even) .st-stamps{justify-content:flex-end}
+.ss-private{display:block;width:88%;margin:40px auto 0;transform:rotate(1.4deg)}
+.pair{display:block;margin-top:64px}
+@media (min-width:900px){.ss-map{width:52%}.ss-private{width:100%;max-width:440px;margin:56px 0 0}.ss-clip{width:44px;margin-left:-22px;top:-44px}}
+/* desktop: a wider measure (≈1200) for the rolls and the map stops; the hero stays centred */
+@media (min-width:900px){
+  .chapters>*{max-width:1000px}
+  .roll-intro,.chapters .lk{max-width:1000px}
+  .vroll{grid-template-columns:360px 1fr;gap:0 10%}.yr:nth-child(even) .vroll{grid-template-columns:1fr 360px}
+  .story{max-width:1100px}
+}

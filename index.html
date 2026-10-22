@@ -10,7 +10,7 @@
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/tag.webp" as="image">
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -124,7 +124,7 @@
       <img class="env-shut" src="assets/envelope.webp" width="840" height="583" alt="" loading="lazy" decoding="async">
       <i class="light" aria-hidden="true"></i>
       <div class="seal" id="seal" aria-hidden="true"></div>
-      <span class="sr-only"><span id="envTo"></span> · <span id="lcTitle"></span></span>
+      <span class="env-to" id="envTo"></span><span class="env-label" id="lcTitle"></span>
     </div>
     <p class="closing" id="closing"></p>
   </div>
@@ -137,7 +137,7 @@
 </section>
 
 <!-- the music, folded small (bottom-right, inside the safe area) -->
-<button class="mini" id="mini" aria-label="播放 / 暂停音乐"><span class="mini-dot"></span><span class="mini-txt" id="miniTxt" translate="no"></span></button>
+<button class="mini" id="mini" aria-label="播放 / 暂停音乐"><span class="mini-txt" id="miniTxt" translate="no"></span><span class="mini-dot" aria-hidden="true"><i></i></span></button>
 <audio id="song" preload="none" loop playsinline></audio>
 
 <!-- City card -->
@@ -162,13 +162,17 @@
     <button class="x" id="secretClose" aria-label="关闭"><i></i></button>
     <span class="meta tl">2026.10.31</span>
     <div class="lk lk-secret" data-lk="secret"></div>
-    <figure class="silhouette" id="silhouette"></figure>
-    <div class="pair" id="pair"></div>
-    <figure class="pola small" id="secPola"></figure>
-    <div class="rings" id="rings"></div>
-    <div class="lyrics" id="lyrics"></div>
-    <div class="lk lk-polaris" data-lk="polaris"></div>
-    <figure class="pola undeveloped" id="weddingPola"></figure>
+    <div class="sx-archive">
+      <figure class="silhouette" id="silhouette"></figure>
+      <div class="pair" id="pair"></div>
+      <figure class="pola small" id="secPola"></figure>
+    </div>
+    <div class="sx-polaris">
+      <div class="lk lk-polaris" data-lk="polaris"></div>
+      <div class="rings" id="rings"></div>
+      <div class="lyrics" id="lyrics"></div>
+      <figure class="pola undeveloped" id="weddingPola"></figure>
+    </div>
     <article class="letter-card letter-end">
       <h3 class="letter-title" id="letterTitle"></h3>
       <div class="letter" id="letter"></div>
@@ -177,9 +181,9 @@
   </div>
 </div>
 
-<script src="content.js?v=13"></script>
-<script src="map-data.js?v=13"></script>
-<script src="photos/sizes.js?v=13"></script>
-<script src="app.js?v=13"></script>
+<script src="content.js?v=16"></script>
+<script src="map-data.js?v=16"></script>
+<script src="photos/sizes.js?v=16"></script>
+<script src="app.js?v=16"></script>
 </body>
 </html>

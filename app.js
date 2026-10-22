@@ -9,6 +9,8 @@ const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", 
 const SHOW = !!C.showTodo;
 const MO = {}; // hooks shared with the motion block below
 const GROUPS = {};
+// photos already placed on the main page (hero + the four rolls). anything else reuses none of them.
+const USED = new Set([C.hero && C.hero.print, ...C.chapters.flatMap(c => c.items.flatMap(m => [m.photo, ...(m.scans || [])]))].filter(Boolean));
 const SCN = C.scenes || {}; // photo viewer groups: { id: [{ src, date, place, scene }] }
 const isTodo = s => !s || /待填写/.test(s);
 // placeholder text: hidden unless showTodo
@@ -28,6 +30,11 @@ const SIZES = window.PHOTO_SIZES || {};
 // <img> with intrinsic size (no layout shift), lazy unless told otherwise, alt from context
 const img = (src, alt = "", eager = false) => { const [w, h] = SIZES[src] || [1200, 1600];
   return `<img src="${src}" width="${w}" height="${h}" alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`; };
+// a sheet of perforated postage stamps held by a binder clip (the envelope screen's stamp sheet, reused in two more places).
+// cells: [{ src, pos, zoom } | { note: [lines] }]; cols: stamps per row
+const stampSheet = (cells, cols, cls = "") => `<figure class="stampsheet ${cls}" style="--cols:${cols}"><div class="ss-grid">${cells.map(c => c.src
+    ? `<div class="pstamp"><div class="pstamp-in">${img(c.src, c.alt || "")}</div></div>`.replace("<img ", `<img style="object-position:${c.pos || "50% 50%"};${c.zoom ? `transform:scale(${c.zoom})` : ""}" `)
+    : `<div class="pstamp note"><div class="pstamp-in">${c.note.map(t => `<span>${esc(t)}</span>`).join("")}</div></div>`).join("")}</div><img class="ss-clip" src="assets/clip.webp" width="120" height="225" alt="" loading="lazy"></figure>`;
 const photoBox = (src, hint, dark, alt = "", eager = false) => {
   const d = el("div", "ph" + (src ? "" : " empty") + (dark ? " dark" : ""));
   d.innerHTML = src ? img(src, alt, eager) : (SHOW && hint ? `<code>${hint}</code>` : "");
@@ -40,9 +47,12 @@ const lines = (arr, cls) => (arr || []).map((t, i) => `<span class="${cls} ${cls
 $$("[data-lk]").forEach(e => { const t = C.titles[e.dataset.lk]; if (!t) return;
   e.insertAdjacentHTML("beforeend", `${lines(t.cn, "c")}<span class="en">${lines(t.en, "e")}</span>`); });
 // English + numerals are the display layer; the Chinese title sits under it, smaller and lighter
-const CHAPTER = { jianghu: 1, hotel: 2, chapters: 3, map: 4, finale: 5 };
+// the ending keeps its original lockup ("下一章 / NEXT / chapter")
+const OLD_LK = { finale: 1 };
+const CHAPTER = { jianghu: 1, hotel: 2, chapters: 3, map: 4 };
 $$("[data-lk]").forEach(e => { const k = e.dataset.lk, n = CHAPTER[k];
   if (n) e.insertAdjacentHTML("afterbegin", `<span class="kick">Chapter ${pad2(n)}</span>`);
+  if (OLD_LK[k]) { e.classList.add("lk-old"); return; }
   if (k !== "jianghu") { e.classList.add("lk-en"); const cs = [...e.querySelectorAll(":scope > .c")];
     if (cs.length) { const row = el("span", "cn-row"); cs[0].before(row); row.append(...cs); } } });
 $$(".lk-jianghu .c").forEach(c => { c.innerHTML = [...c.textContent].map(ch => `<span class="ch">${esc(ch)}</span>`).join(""); });
@@ -112,7 +122,8 @@ requestAnimationFrame(() => mini.classList.add("show"));
   const under = () => { if (!mini.classList.contains("show")) return false;
     // on the first screen it always stays out in full (the hero is laid out to keep that corner clear)
     if (hero && hero.getBoundingClientRect().bottom > innerHeight * .5) return false;
-    const L = mini.offsetLeft - 6, T = mini.offsetTop - 6, R = L + mini.offsetWidth + 12, B = T + mini.offsetHeight + 12;
+    // test the full (unfolded) footprint, so folding to the record alone never flips it back
+    const R = mini.offsetLeft + mini.offsetWidth + 6, L = R - 175, B = mini.offsetTop + mini.offsetHeight + 6, T = B - 50;
     const hit = q => q.width && q.left < R && q.right > L && q.top < B && q.bottom > T;
     const seen = new Set();
     const pts = []; for (const fx of [.05, .28, .5, .72, .95]) for (const fy of [.05, .28, .5, .72, .95]) pts.push([L + (R - L) * fx, T + (B - T) * fy]);
@@ -317,20 +328,26 @@ S.forEach((s, i) => { const p = placeById[s.city], srcs = s.scans && s.scans.len
     ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: notes[k] || s.scansDate || s.note || "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "", scene: srcs.length === 1 || k === 0 ? s.scene : null }); }); });
 function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on", j === i));
   if (firstOf[i] != null) openViewer("route", firstOf[i], from); else openStop(i); }
-// the story itself: photography first, each stop with a different treatment
+// the story itself: every stop of the route, in order, in three tiers.
+// each photo appears once on the site: a photo already told in the rolls (or the hero) is not repeated here,
+// that stop is set in type instead (city in caps, coordinates, date, its own words).
 (() => { const st = $("#story"); if (!st) return;
-  const T = ["pair", "tall", "side-r", "bleed", "scans", "wide-l", "side-l", "bleed", "duo"]; let n = 0;
-  S.forEach((s, i) => { if (firstOf[i] == null) return; const p = placeById[s.city], srcs = s.scans && s.scans.length ? s.scans : stopPhotos(s);
-    const kind = s.scans ? "scans" : s.tall ? "tall" : srcs.length > 1 ? (n === 0 ? "pair" : "duo") : (/^(pair|duo|scans|tall)$/.test(T[n % T.length]) ? "side-r" : T[n % T.length]);
-    n++;
-    const e = el("article", "st st-" + kind + (s.highlight ? " hi" : ""));
-    const ph = el("div", "st-ph");
-    srcs.forEach((src, k) => { const f = el("div", "st-f st-f" + (k + 1) + (s.scans ? " raw" : ""), img(src, `${p.name}${s.note ? " · " + s.note : ""}`));
-      f.dataset.vg = "route"; f.dataset.vi = firstOf[i] + k; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`);
-      if (k === 0 && s.scene && SCN[s.scene]) f.insertAdjacentHTML("beforeend", '<span class="cue-mark" aria-hidden="true"></span>');
-      ph.append(f); });
+  const last = S.length - 1;
+  S.forEach((s, i) => { const p = placeById[s.city], all = s.scans && s.scans.length ? s.scans : stopPhotos(s);
+    const own = all.map((src, k) => ({ src, k })).filter(o => !USED.has(o.src));
     const mem = isTodo(s.memory) ? "" : s.memory;
-    e.append(ph, el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
+    const tier = (s.highlight || i === last) ? "hero" : (own.length || mem || s.note) ? "std" : "detail";
+    const e = el("article", `st t-${tier}${own.length ? " has-ph" : " type-only"}${s.tall ? " tall" : ""}${s.highlight ? " hi" : ""}`);
+    // 北京's photo-booth strip: its two frames become a small sheet of stamps
+    if (own.length === 1 && s.tall) { const ph = el("div", "st-ph st-stamps"); ph.innerHTML = stampSheet([{ src: own[0].src, alt: p.name, pos: "50% 0%" }, { src: own[0].src, alt: p.name, pos: "50% 100%" }], 2, "ss-map");
+      if (firstOf[i] != null) { const f = ph.firstElementChild; f.dataset.vg = "route"; f.dataset.vi = firstOf[i]; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
+      e.append(ph); }
+    else if (own.length) { const ph = el("div", "st-ph");
+      own.forEach(({ src, k }) => { const f = el("div", "st-f st-f" + (k + 1) + (s.scans ? " raw" : ""), img(src, `${p.name}${s.note ? " · " + s.note : ""}`));
+        if (firstOf[i] != null) { f.dataset.vg = "route"; f.dataset.vi = firstOf[i] + k; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
+        ph.append(f); });
+      e.append(ph); }
+    e.append(el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
       (s.note ? `<span class="st-d">${esc(s.note)}</span>` : "") + (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
     st.append(e); });
 })();
@@ -397,7 +414,7 @@ const cue = '<span class="cue-mark" aria-hidden="true"></span>';
 // items that are only placeholders (no photo, no words yet) stay out of the page unless showTodo
 const realItem = m => SHOW || m.milestone || m.photo || m.scans || !isTodo(m.title) || !isTodo(m.text);
 C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realItem) };
-  const y = el("article", "yr lay-" + (c.layout || "strip")); y.id = "yr" + ci;
+  const y = el("article", "yr lay-strip"); y.id = "yr" + ci;
   y.innerHTML = `<div class="yr-head"><div class="yr-num${c.year.length > 4 ? " long" : ""}">${esc(c.year).replace(/[–-]/, '<span class="dash">–</span>')}</div>
     <div class="yr-t"><small>Roll ${pad2(ci + 1)}</small>${txt(c.title)}</div></div>`;
   const gid = "roll" + ci, G = GROUPS[gid] = [];
@@ -407,7 +424,8 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
   const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = txt(m.text);
     return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
-  const L = c.layout || "strip";
+  // every roll is a vertical strip of film (the original rolls); layout values in content.js are kept but no longer change the form
+  const L = "strip";
   if (L === "peak") {
     // the emotional peak as a sequence of events, one module each: date → place → line → photo.
     // photo sizes come from a small system, not per photo: L = full width 3:2 · P = full width 4:5 (highlight) · S = 64% 4:5 · pair = real prints.
@@ -440,18 +458,28 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     if (fm) { const S0 = SC[fm.scene] || {}; const f = el("figure", "feature");
       const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = S0.origin || "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
       f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span><span class="t">${esc(fm.title)}</span>${isTodo(fm.text) || !fm.text ? "" : `<p class="tx">${esc(fm.text)}</p>`}`)); y.append(f); f._m = fm; y._feature = ph; } }
-  const vr = el("div", "vroll"), vs = el("div", "vstrip"), caps = el("div", "caps");
-  c.items.forEach((m, mi) => {
+  // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
+  // the words sit in their own column beside it, each one level with its frame
+  const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
+  c.items.forEach(m => {
     const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${esc(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
-    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); fr.append(filmFrame(ph, ci, c.year));
-      if (y._feature && m.feature) y._feature.dataset.vi = ph.dataset.vi; }
-    frameNo++;
-    fr.append(el("div", "cp", capHTML(m)));
+    else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
+    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
+      const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land");
+      const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
+      fr.append(ph); }
+    fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
     vs.append(fr);
+    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), m.milestone ? `<span class="d">${esc(m.date)}</span><span class="t">${esc(m.title)}</span>${m.text ? `<span class="tx">${esc(m.text)}</span>` : ""}` : capHTML(m)));
   });
-  vr.append(vs); y.append(vr); list.append(y);
+  vr.append(vs, caps); y.append(vr); list.append(y);
 });
+// keep each caption level with its frame
+const alignCaps = () => $$(".vroll").forEach(v => { const frs = v.querySelectorAll(".vfr"), cps = v.querySelectorAll(".cp"), top0 = v.getBoundingClientRect().top;
+  frs.forEach((f, i) => { const r = f.getBoundingClientRect(); if (!cps[i]) return; cps[i].style.minHeight = r.height + 8 + "px"; if (i === 0) v.querySelector(".caps").style.paddingTop = (r.top - top0) + "px"; }); });
+alignCaps(); addEventListener("resize", alignCaps); addEventListener("load", alignCaps); setTimeout(alignCaps, 1200);
+if (document.fonts) document.fonts.ready.then(alignCaps);
 // time track: the red line runs down the margin between the years
 
 
@@ -465,7 +493,7 @@ const CRACK_R = "polygon(52% 0, 100% 0, 100% 100%, 53% 100%, 48% 84%, 55% 68%, 4
 function sealHTML(text) { const face = `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
   return `<span class="half h1" style="clip-path:${CRACK_L};-webkit-clip-path:${CRACK_L}">${face}</span><span class="half h2" style="clip-path:${CRACK_R};-webkit-clip-path:${CRACK_R}">${face}</span>`; }
 $("#seal").innerHTML = sealHTML(F.seal || "4");
-$("#closing").innerHTML = `<span>${esc(F.closing).replace(" in every", "<br>in every")}</span><b class="script">${esc(F.signature)}</b>`;
+if ($("#closing")) $("#closing").innerHTML = `<span>${esc(F.closing).replace(" in every", "<br>in every")}</span><b class="script">${esc(F.signature)}</b>`;
 const dotsEl = $("#dots");
 const LEN = String(F.code).length; // number of digits = length of finale.code
 for (let i = 0; i < LEN; i++) dotsEl.append(el("span"));
@@ -493,12 +521,15 @@ $("#letter").innerHTML = F.letter.map((p, i) => {
   const t = txt(p); return t ? `<p class="${i === 0 && /[:：]$/.test(p) ? "salute" : ""}">${t}</p>` : "";
 }).join("");
 $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="script">${esc(F.signature)}</span>`;
-const sp = $("#secPola"); sp.append(photoBox(F.photo, "photos/us.jpg", false, F.photoCaption)); const pcap = txt(F.photoCaption); if (pcap) sp.append(el("figcaption", "", pcap));
+const sp = $("#secPola"); if (sp) sp.append(photoBox(F.photo, "photos/us.jpg", false, F.photoCaption)); const pcap = txt(F.photoCaption); if (pcap) sp.append(el("figcaption", "", pcap));
 const STAR = '<svg viewBox="0 0 40 40"><path d="M20 2 L22.2 17.8 L38 20 L22.2 22.2 L20 38 L17.8 22.2 L2 20 L17.8 17.8 Z"/></svg>';
 const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 4V9M20 31V36M4 20H9M31 20H36M8.7 8.7L12.2 12.2M27.8 27.8L31.3 31.3M31.3 8.7L27.8 12.2M12.2 27.8L8.7 31.3"/></svg>';
 if (F.rings) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
-if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
+// the private archive: the two 520 polaroids and the proposal, as one sheet of stamps; the captions sit in the fourth stamp
+if (F.pair && F.pair.scans) { $("#pair").innerHTML = stampSheet([...F.pair.scans.map(src => ({ src, alt: F.pair.caption || "", zoom: 1.16 })), { src: F.photo, alt: F.photoCaption || "", pos: "50% 40%" },
+    { note: [F.pair.caption, F.photoCaption].filter(Boolean) }], 2, "ss-private");
+  $("#secPola").remove(); }
 const W8 = F.wedding, wp = $("#weddingPola");
 if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
   wp.append(el("figcaption", "", `${esc(W8.label)} · ${esc(W8.date)} · <em>${esc(W8.status)}</em>`)); }
