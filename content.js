@@ -149,6 +149,7 @@ window.CONTENT = {
     ]},
     { year: "2025–26", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2025–26 thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp" },   // 贴脸自拍
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
       { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"] },
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
