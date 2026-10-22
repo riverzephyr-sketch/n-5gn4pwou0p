@@ -122,14 +122,22 @@ setMini();
 // the player is visible from the first screen on
 requestAnimationFrame(() => mini.classList.add("show"));
 // keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
-{ const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/;
+{ const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/, CTRL = "button:not(#mini),a[href],input,[role=button],#envelope";
   const hero = $("#hero");
   const under = () => { if (!mini.classList.contains("show")) return false;
     // on the first screen it always stays out in full (the hero is laid out to keep that corner clear)
-    if (hero && hero.getBoundingClientRect().bottom > innerHeight * .5) return false;
+    if (hero && hero.getBoundingClientRect().bottom >= innerHeight - 4) return false;
     // test the full (unfolded) footprint, so folding to the record alone never flips it back
     const R = mini.offsetLeft + mini.offsetWidth + 6, L = R - 175, B = mini.offsetTop + mini.offsetHeight + 6, T = B - 50;
     const hit = q => q.width && q.left < R && q.right > L && q.top < B && q.bottom > T;
+    // anything tappable under it (map stops, keypad, key cards, the cover…): checked by its box, not by sample points
+    let u = 0;
+    for (const e of document.querySelectorAll(CTRL)) { const q = e.getBoundingClientRect(); if (!hit(q) || e.closest(".secret,.viewer,.sheet")) continue;
+      const cs = getComputedStyle(e); if (cs.visibility === "hidden") continue;
+      // right under the record itself: the record steps aside for a moment so the control stays tappable
+      if (q.left < R && q.right > R - 52 && q.top < B && q.bottom > B - 50) return 2;
+      u = 1; }
+    if (u) return 1;
     const seen = new Set();
     const pts = []; for (const fx of [.05, .28, .5, .72, .95]) for (const fy of [.05, .28, .5, .72, .95]) pts.push([L + (R - L) * fx, T + (B - T) * fy]);
     for (const [x, y] of pts) {
@@ -140,7 +148,7 @@ requestAnimationFrame(() => mini.classList.add("show"));
         for (const n of e.childNodes) if (n.nodeType === 3 && n.textContent.trim()) { const rg = document.createRange(); rg.selectNodeContents(n);
           for (const q of rg.getClientRects()) if (hit(q)) return true; } } }
     return false; };
-  let raf = 0; const check = () => { raf = 0; mini.classList.toggle("tuck", under()); };
+  let raf = 0; const check = () => { raf = 0; const u = under(); mini.classList.toggle("tuck", !!u); mini.classList.toggle("yield", u === 2); };
   const queue = () => { if (!raf) raf = requestAnimationFrame(check); };
   addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
   // things also slide in after the scroll stops (GSAP reveals), so look again every so often while it is visible
@@ -267,6 +275,8 @@ for (let lat = 0; lat <= 50; lat += 5) { const [, y] = proj(0, lat); gr += `M0 $
 svg.append(sv("path", { d: gr, class: "grat" }), sv("path", { d: M.land, class: "land" }));
 const LBL = { hangzhou: [-9, 4, "end"], jiaxing: [9, 9, "start"], shanghai: [9, -2, "start"], shenzhen: [9, 8, "start"], dongguan: [-9, -2, "end"],
   chongqing: [9, 10, "start"], chengdu: [-9, -3, "end"], wuning: [9, 3, "start"], dali: [-10, 14, "end"], tokyo: [-9, -6, "end"], fukuoka: [-9, 10, "end"], seoul: [-9, -4, "end"], beijing: [9, 3, "start"], kk: [9, 3, "start"], krabi: [9, 3, "start"] };
+const LBL_FAR = { hangzhou: [-13, -13, "end"], shanghai: [7, -17, "start"], jiaxing: [21, 17, "start"], wuning: [0, 21, "middle"] };
+const leadEls = {};
 const seen = {};
 const pos = S.map(s => { const p = placeById[s.city]; const [x, y] = proj(p.lon, p.lat); const n = seen[s.city] = (seen[s.city] || 0) + 1; return { x, y, rep: n - 1 }; });
 const stringPath = sv("path", { class: "string draw" });
@@ -282,6 +292,7 @@ S.forEach((s, i) => {
   g.addEventListener("click", () => openPlace(i, g));
   g.addEventListener("keydown", e => { if (e.key === "Enter") openStop(i); });
   pinEls.push({ g, hit, sh, ring, hd, hl, num });
+  if (!leadEls[s.city] && LBL_FAR[s.city]) { const ld = sv("path", { class: "lead", "aria-hidden": "true" }); svg.insertBefore(ld, svg.querySelector(".pin")); leadEls[s.city] = ld; }
   if (!lblEls[s.city]) { const t = sv("text", { class: "plbl" }); t.textContent = placeById[s.city].name; svg.append(t); lblEls[s.city] = t; }
 });
 function layoutMap(z) {
@@ -300,8 +311,16 @@ function layoutMap(z) {
     e.hd.setAttribute("cx", x); e.hd.setAttribute("cy", y); e.hd.setAttribute("r", r);
     e.ring.setAttribute("cx", x); e.ring.setAttribute("cy", y); e.ring.setAttribute("r", r * 1.6);
     e.num.setAttribute("x", x); e.num.setAttribute("y", y + .4 * z); e.num.setAttribute("font-size", 7.4 * z); });
-  Object.entries(lblEls).forEach(([id, t]) => { const p = placeById[id], [x, y] = proj(p.lon, p.lat), [dx, dy, an] = LBL[id] || [9, 3, "start"];
-    t.setAttribute("x", x + dx * z); t.setAttribute("y", y + dy * z); t.setAttribute("text-anchor", an); t.setAttribute("font-size", 11.5 * z); t.style.strokeWidth = 3.2 * z; });
+  // in the full view the east-China cluster (杭州 · 嘉兴 · 上海, with 武宁西海 just west) is too tight for labels beside the pins:
+  // those four sit a little way off, each tied to its pin by a fine leader line. zoomed in, they go back beside their pins.
+  const far = z > .7;
+  Object.entries(lblEls).forEach(([id, t]) => { const p = placeById[id], [x, y] = proj(p.lon, p.lat), [dx, dy, an] = (far && LBL_FAR[id]) || LBL[id] || [9, 3, "start"];
+    const lx = x + dx * z, ly = y + dy * z;
+    t.setAttribute("x", lx); t.setAttribute("y", ly); t.setAttribute("text-anchor", an); t.setAttribute("font-size", 11.5 * z); t.style.strokeWidth = 3.2 * z;
+    const ld = leadEls[id]; if (!ld) return;
+    if (far && LBL_FAR[id]) { const tx = lx + (an === "end" ? 1.5 : an === "start" ? -1.5 : 0) * z, ty = ly - (dy < 0 ? -1.5 : 9.5) * z, L = Math.hypot(tx - x, ty - y) || 1, r = 6.6 * z * 1.15;
+      ld.setAttribute("d", `M${x + (tx - x) / L * r} ${y + (ty - y) / L * r}L${tx} ${ty}`); ld.style.strokeWidth = .75 * z; ld.style.display = ""; }
+    else ld.style.display = "none"; });
 }
 // on a phone the map gets a tighter, taller frame around the route (it runs near full width)
 const fullVB = innerWidth < 900 ? [4, 30, 416, 430] : [5, 0, M.w - 10, M.h];

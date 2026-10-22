@@ -631,7 +631,7 @@ img{display:block;max-width:100%}
 
 /* ---------- private page: the letter is the centre ---------- */
 .secret-in{padding-left:30px;padding-right:30px}
-.silhouette{margin-top:56px}
+.silhouette{margin-top:8px}
 .pair{margin-top:56px}
 .pair-cap{margin-top:24px}
 .pola.small{margin-top:48px}
@@ -862,3 +862,46 @@ img{display:block;max-width:100%}
 @media (prefers-reduced-motion:reduce){.mini.fresh .mini-dot::after{animation:none;opacity:.45;transform:none}}
 /* the date: with the countdown card gone, the strip and its line sit centred in the screen (no empty tail) */
 .cal{display:flex;flex-direction:column;justify-content:center}
+
+/* =====================================================================
+   REFINE · ROUND 3 (small refinements on the live version; no new direction)
+   ===================================================================== */
+/* map: leader lines for the labels set off the east-China cluster */
+#mapSvg .lead{fill:none;stroke:var(--ink);stroke-opacity:.6;stroke-linecap:round;pointer-events:none}
+/* secondary text: a little more ink on the light-grey lines (words unchanged); English stays the larger, darker layer */
+:root{--mute:rgba(27,23,20,.64)}
+.prov{color:rgba(27,23,20,.8)}
+.prov small{color:rgba(27,23,20,.66)}
+.at{color:rgba(27,23,20,.6)}
+.at.hi{color:var(--wine)}
+.lk-hotel.lk-en .c{font-size:15px !important;letter-spacing:.3em !important}
+/* the rolls: captions readable (body 14/1.7, meta 12), the strip a touch narrower so each year reads in fewer screens;
+   every photo and every line kept; frames a steady 10px apart; the year title closer to its first frame */
+.yr{padding-top:64px}
+.yr:first-child{padding-top:40px}
+.yr-head{margin-bottom:40px}
+.vroll{grid-template-columns:calc(160 * var(--u)) 1fr}
+.yr:nth-child(even) .vroll{grid-template-columns:1fr calc(160 * var(--u))}
+.vstrip{padding:10px 20px}
+.vfr{margin:0}
+.vfr+.vfr{margin-top:10px}
+.cp{padding-top:4px}
+.cp .d{font-size:12px}
+.cp .t{margin-top:5px}
+.cp .tx{margin-top:8px;font-size:14px;line-height:1.7;letter-spacing:.03em}
+.yr-t small{font-size:12px}
+.ph.milestone .ms-k{font-size:12px}.ph.milestone .ms-d{font-size:12px}
+@media (min-width:900px){
+  .yr{padding-top:110px}
+  .vroll{grid-template-columns:300px 1fr}.yr:nth-child(even) .vroll{grid-template-columns:1fr 300px}
+  .cp .tx{font-size:15px}
+}
+/* Marriott key cards: a faint paper grain, a lit top edge and a soft contact shadow (no icons) */
+.hcard{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 .5px rgba(45,25,15,.12),0 1px 1.5px rgba(45,25,15,.22),0 6px 16px rgba(45,25,15,.14)}
+.hcard.right{box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 .5px rgba(0,0,0,.25),0 1px 1.5px rgba(45,25,15,.3),0 8px 16px rgba(45,25,15,.18)}
+.hcard::after{content:"";position:absolute;inset:0;pointer-events:none;background:url(assets/grain.png) 0 0/180px auto;opacity:.08;mix-blend-mode:multiply;border-radius:inherit}
+.hcard.right::after{opacity:.1;mix-blend-mode:soft-light}
+/* the player never sits on a control: over one it folds to the record; right on top of one, the record steps aside until it has passed */
+.mini.show.yield:not(.open){opacity:0;transform:translateX(14px);pointer-events:none}
+.mini.yield{transition:opacity .25s,transform .3s cubic-bezier(.3,.7,.2,1)}
+.vfr .fno{white-space:nowrap}
