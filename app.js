@@ -145,20 +145,14 @@ requestAnimationFrame(() => mini.classList.add("show"));
   new MutationObserver(queue).observe(mini, { attributes: true, attributeFilter: ["class"] }); }
 
 
-/* ---------- THE DATE: 29 · 30 · 31, the 30th circled; the days left on a taped wine card ---------- */
+/* ---------- THE DATE: 29 · 30 · 31, the 30th circled ---------- */
 { const K = C.calendar || {}, day = new Date(K.date || "2026-10-30T00:00:00+08:00");
   $("#calScript").textContent = K.script || "";
   $("#calSince").textContent = K.since || "";
   $("#calLine").textContent = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Shanghai" });
   if (K.print) { const f = $("#calPrint"); f.innerHTML = img(K.print, "") + `<figcaption>${(K.printCaption || []).map((t, i) => `<span class="${i ? "c" : "d"}">${esc(t)}</span>`).join("")}</figcaption>`; }
   else $("#calPrint").remove();
-  // calendar days in Beijing time: 8 days to go … 1 day to go … today (1461) … then the running count
-  const bjDay = t => Math.floor((t + 8 * 36e5) / 864e5);
-  const setCount = () => { const left = bjDay(day.getTime()) - bjDay(Date.now());
-    const n = left > 0 ? left : Math.floor((Date.now() - start) / 864e5);
-    $("#ccN").textContent = left === 0 ? TARGET : n;
-    $("#ccL").textContent = left > 1 ? "days to go" : left === 1 ? "day to go" : left === 0 ? "days · today" : "days with you"; };
-  setCount(); setInterval(setCount, 6e4);
+  // (the taped "days to go" card is gone: she shows him the site on 10.30 itself)
   hairIO.observe($(".cal-ring")); }
 
 /* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
@@ -330,24 +324,85 @@ S.forEach((s, i) => { const p = placeById[s.city], srcs = s.scans && s.scans.len
     ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: notes[k] || s.scansDate || s.note || "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "", scene: srcs.length === 1 || k === 0 ? s.scene : null }); }); });
 function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on", j === i));
   if (firstOf[i] != null) openViewer("route", firstOf[i], from); else openStop(i); }
-// the story itself: every stop of the route, in order, in three tiers.
-// each photo appears once on the site: a photo already told in the rolls (or the hero) is not repeated here,
-// that stop is set in type instead (city in caps, coordinates, date, its own words).
-(() => { const st = $("#story"); if (!st) return;
-  const last = S.length - 1;
-  S.forEach((s, i) => { const p = placeById[s.city], all = s.scans && s.scans.length ? s.scans : stopPhotos(s);
-    const own = all.map((src, k) => ({ src, k })).filter(o => !USED.has(o.src));
-    const mem = isTodo(s.memory) ? "" : s.memory;
-    const tier = (s.highlight || i === last) ? "hero" : (own.length || mem || s.note) ? "std" : "detail";
-    const e = el("article", `st t-${tier}${own.length ? " has-ph" : " type-only"}${s.tall ? " tall" : ""}${s.highlight ? " hi" : ""}`);
-    if (own.length) { const ph = el("div", "st-ph");
-      own.forEach(({ src, k }) => { const f = el("div", "st-f st-f" + (k + 1) + (s.scans ? " raw" : ""), img(src, `${p.name}${s.note ? " · " + s.note : ""}`));
-        if (firstOf[i] != null) { f.dataset.vg = "route"; f.dataset.vi = firstOf[i] + k; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
-        ph.append(f); });
-      e.append(ph); }
-    e.append(el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
-      (s.note ? `<span class="st-d">${esc(s.note)}</span>` : "") + (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
-    st.append(e); });
+/* ---------- PLACE BOARDS: the photos of one place gathered on one scrapbook board ---------- */
+// each board: the place in English + numerals, the Chinese name smaller, then the prints (numbered) on lined sheets
+// held by one real object (binder clip / gold pin / tape / wax seal), then the real lines, numbered to match.
+// every line is the site's own text: a print's date / title / words come from its entry in the rolls (or its map stop).
+const LINE = {};
+C.chapters.forEach(c => { let prev = null;
+  c.items.forEach(m => { const own = !(isTodo(m.title) && isTodo(m.date) && isTodo(m.text));
+    const ln = own ? { date: isTodo(m.date) ? "" : m.date, title: isTodo(m.title) ? "" : m.title, text: isTodo(m.text) ? "" : m.text, milestone: !!m.milestone } : prev;
+    [m.photo, ...(m.scans || [])].filter(Boolean).forEach((src, k) => { LINE[src] = { ...(ln || { date: c.year, title: "", text: "" }), scene: m.scene, same: !own || k > 0, key: ln }; });
+    if (m.milestone) LINE["milestone"] = { ...ln };
+    if (own && !m.milestone) prev = ln; }); });
+S.forEach(s => stopPhotos(s).forEach((src, k) => { if (!LINE[src]) LINE[src] = { date: (s.photoNotes || [])[k] || s.note || "", title: placeById[s.city].name, text: "" }; }));
+// layouts (units = % of the board width): prints [x, y, w, rotate, border], lined sheets [x, y, w, h, rotate], the board height
+const LAY = {
+  chongqing: { h: 130, sheets: [[30, 2, 66, 70, 1.6], [0, 72, 72, 56, -1.2]],
+    p: [[4, 8, 50, -2.5, "r"], [56, 13, 40, 2.5, "w"], [5, 76, 34, 2, "w"], [37, 73, 30, -2, "w"], [66, 71, 32, 3, "r"]] },
+  beijing: { h: 92, sheets: [[8, 2, 70, 84, -1.4]], p: [[3, 10, 52, -2.5, "r"], [58, 3, 38, 3, "w"]] },
+  hangzhou: { h: 176, sheets: [[0, 0, 100, 52, 0], [20, 98, 78, 74, 1.2]],
+    p: [[2, 5, 31, -1, "w"], [34.5, 5, 31, .8, "w"], [3, 58, 27, -3, "w"], [67, 5, 31, -.6, "w"], [32, 54, 36, 2, "r"], [67, 59, 31, -2, "w"], [5, 116, 33, -1.5, "w"], [40, 110, 33, 2, "r"], [74, 110, 24, -3, "s"], [72, 140, 24, 3, "s"]] },
+  dali: { h: 112, sheets: [[2, 4, 62, 74, -1.6]], p: [[5, 9, 52, -3, "w"], [26, 66, 70, 1.8, "r"]] },
+  kk: { h: 88, sheets: [[30, 0, 64, 84, 1.4]], p: [[4, 7, 49, -2, "r"], [48, 14, 47, 2.5, "w"]] },
+};
+const bLines = (list) => `<ol class="bd-lines">${list.map(l => `<li><span class="n">${l.n}</span><span class="ln">${l.d ? `<span class="d">${esc(l.d)}</span>` : ""}${l.k ? `<span class="k">${esc(l.k)}</span>` : ""}${l.t ? `<span class="t">${l.t.split(" · ").map(w => `<span class="nw">${esc(w)}</span>`).join(" · ")}</span>` : ""}${l.x ? `<span class="bx">${nobr(l.x)}</span>` : ""}</span></li>`).join("")}</ol>`;
+(() => { const host = $("#story"); if (!host || !C.boards) return; host.id = "boards"; host.className = "boards";
+  const stopsOf = city => S.map((s, i) => ({ s, i })).filter(o => o.s.city === city);
+  const mems = cities => { const out = [];
+    cities.forEach(city => stopsOf(city).forEach(({ s }) => { if (!isTodo(s.memory) && s.memory !== (C.hotel && C.hotel.quote)) out.push({ m: s.memory, city }); if (s.song) out.push({ song: s.song }); }));
+    return out; };   // 重庆's memory is the Marriott line, told in full in chapter 02
+  const printEl = (src, n, slot, gid, vi, alt) => { const [x, y, w, r, b] = slot, [iw, ih] = SIZES[src] || [3, 4];
+    const f = el("figure", `bp bp-${b}`); f.style.cssText = `--x:${x};--y:${y};--w:${w};--r:${r}deg;z-index:${2 + (b === "r" ? 1 : 0)}`;
+    f.innerHTML = `<div class="bp-ph" style="aspect-ratio:${iw}/${ih}">${img(src, alt)}</div><span class="bp-n">${pad2(n)}</span>`;
+    f.dataset.vg = gid; f.dataset.vi = vi; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", alt + " · 放大"); return f; };
+  C.boards.forEach((b, bi) => {
+    const cities = b.strip ? b.cities : [b.city], gid = "board" + bi, G = GROUPS[gid] = [];
+    const bd = el("article", "bd" + (b.strip ? " bd-strip" : " bd-" + b.city));
+    // the real lines, in print order; prints that continue the same entry share its line
+    const lines = []; let lastKey = null;
+    const memText = mems(cities).filter(m => m.m).map(m => m.m);
+    b.photos.forEach((src, k) => { const L = LINE[src] || {}, n = pad2(k + 1);
+      const covered = L.text && memText.some(m => m.includes(L.text));   // said in full in the place's own words below
+      G.push({ src, place: L.title || (placeById[cities[0]] || {}).name || "", date: L.date || "", caption: covered ? "" : L.text || "", scene: L.scene });
+      if (L.key && L.key === lastKey && lines.length) { lines[lines.length - 1].n += " · " + n; return; }
+      lastKey = L.key || null; lines.push({ n, key: L.key, d: L.date, t: L.title, x: covered ? "" : L.text }); });
+    (b.lines || []).forEach(src => { const L = src === "milestone" ? LINE.milestone : LINE[src]; if (!L || (L.key && lines.some(l => l.key === L.key))) return;
+      const covered = L.text && memText.some(m => m.includes(L.text));
+      const at = lines.findIndex(l => l.d && L.date && l.d > L.date), row = { n: "—", d: L.date, k: L.milestone ? "Milestone" : "", t: L.title, x: covered ? "" : L.text };
+      at < 0 ? lines.push(row) : lines.splice(at, 0, row); });
+    if (b.strip) {
+      const row = el("div", "bs-row");
+      b.photos.forEach((src, k) => { const city = cities[k], p = placeById[city], L = LINE[src] || {};
+        const col = el("div", "bs-col"); col.append(printEl(src, k + 1, [0, 0, 100, 0, "w"], gid, k, p.name));
+        col.insertAdjacentHTML("beforeend", `<p class="bs-en">${esc(p.en)}</p><p class="bs-cn">${esc(p.name)}</p>`); row.append(col); });
+      row.insertAdjacentHTML("afterbegin", '<img class="tape-img bs-tape" src="assets/tape.webp" width="360" height="90" alt="" loading="lazy">');
+      bd.append(row);
+    } else {
+      const p = placeById[b.city], st = stopsOf(b.city), L = LAY[b.city];
+      const tag = (p.home || st.map(o => o.s.note).find(nt => nt && !/\d/.test(nt) && !b.photos.some(src => (LINE[src] || {}).date === nt)) || "");
+      bd.append(el("header", "bd-h", `<span class="bd-no">${st.map(o => pad2(o.i + 1)).join(" · ")}</span><h3 class="bd-en"><span class="nw">${esc(p.en)}</span> <b>${esc(b.years || "")}</b></h3><p class="bd-cn">${esc(p.name)}${tag ? ` · ${esc(tag)}` : ""}</p><span class="bd-geo">${geo(p)}</span>`));
+      const box = el("div", "bd-c"), stage = el("div", "bd-stage"); stage.style.setProperty("--h", L.h); box.append(stage);
+      L.sheets.forEach(([x, y, w, h, r]) => { const s = el("i", "bd-sheet"); s.style.cssText = `--x:${x};--y:${y};--w:${w};--hh:${h};--r:${r}deg`; stage.append(s); });
+      const prints = b.photos.map((src, k) => { const f = printEl(src, k + 1, L.p[k], gid, k, ((LINE[src] || {}).title || p.name)); stage.append(f); return f; });
+      // one real object per board
+      const lead = prints[b.deco === "seal" ? 1 : b.deco === "pin" ? 4 : 1] || prints[0], [x, y, w] = L.p[prints.indexOf(lead)];
+      if (b.deco === "clip") { const c = el("img", "bd-clip"); Object.assign(c, { src: "assets/clip.webp", width: 120, height: 225, alt: "", loading: "lazy" }); c.style.cssText = `--x:${x + 6};--y:${y - 13}`; stage.append(c); }
+      if (b.deco === "pin") { const c = el("i", "bd-pin"); c.style.cssText = `--x:${x + w / 2 - 2.2};--y:${y - 1}`; stage.append(c); }
+      if (b.deco === "tape") { const c = el("img", "tape-img bd-tape"); Object.assign(c, { src: "assets/tape.webp", width: 360, height: 90, alt: "", loading: "lazy" }); c.style.cssText = `--x:${x + w - 14};--y:${y - 3}`; stage.append(c); }
+      if (b.deco === "seal") { const sv = st.map(o => o.s.seal).find(Boolean); const c = el("span", "bd-seal", `<img src="assets/seal.webp" width="200" height="198" alt="" loading="lazy"><span class="seal-t">${esc(sv || "")}</span>`); const [iw, ih] = SIZES[b.photos[prints.indexOf(lead)]] || [3, 4]; c.style.cssText = `--x:${x + w - 12};--y:${y + (w - 4.8) * ih / iw - 4}`; stage.append(c); }
+      bd.append(box);
+    }
+    if (b.strip) b.photos.forEach((src, k) => { const p = placeById[cities[k]]; if (!lines[k]) return; if (!lines[k].t) lines[k].t = p.name; });
+    bd.insertAdjacentHTML("beforeend", bLines(lines));
+    const ms = mems(cities); if (ms.length) bd.append(el("div", "bd-words", ms.map(m => m.m ? `<p>${b.strip ? `<small>${esc(placeById[m.city].en)}</small>` : ""}${nobr(m.m)}</p>` : `<span class="bd-song">${esc(m.song)}</span>`).join("")));
+    host.append(bd);
+  });
+  // the stops with no photo of their own yet: named once, in route order
+  const boarded = new Set(C.boards.flatMap(b => b.strip ? b.cities : [b.city]));
+  const rest = S.map((s, i) => ({ s, i })).filter(o => !boarded.has(o.s.city));
+  if (rest.length) host.append(el("p", "bd-rest", rest.map(({ s, i }) => { const p = placeById[s.city];
+    return `<span class="nw"><small>${pad2(i + 1)}</small> ${esc(p.en)} <i>${esc(p.name)}</i>${s.note ? ` <em>${esc(s.note)}</em>` : ""}</span>`; }).join(" ")));
 })();
 function openStop(i) {
   cur = (i + S.length) % S.length; const s = S[cur], p = placeById[s.city];
@@ -392,93 +447,46 @@ $("#can1").textContent = H.canister[0]; $("#can2").textContent = H.canister[1];
 const strip = $("#stripH");
 // the leader: sprocket holes along both edges and the edge print, like the end of a real roll pulled from its canister
 strip.innerHTML = '<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 &nbsp;▸ 1 &nbsp;1A &nbsp;▸ 2 &nbsp;2A &nbsp;▸ 3 &nbsp;3A &nbsp;▸ 4 &nbsp;4A</span>';
+// two more lengths of film lie under this one, slightly askew (the stack of four years)
+strip.parentNode.insertAdjacentHTML("afterbegin", '<i class="film-ghost g1" aria-hidden="true"><i class="sprk a"></i><i class="sprk b"></i></i><i class="film-ghost g2" aria-hidden="true"><i class="sprk a"></i><i class="sprk b"></i></i>');
 // the strip slides out of the canister once it comes into view
 if ("IntersectionObserver" in window && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
   strip.classList.add("pull"); const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { strip.classList.add("in"); io.disconnect(); } }), { threshold: .35 }); io.observe(strip.parentNode); }
 
 C.chapters.forEach((c, ci) => {
   const ph = c.items.find(m => m.photo);
-  const f = el("button", "fr", `<i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
-  f.onclick = () => $("#yr" + ci).scrollIntoView({ behavior: "smooth" }); strip.append(f);
+  const f = el("button", "fr", `<i class="fr-code" aria-hidden="true">▸ ${ci * 2 + 1}&nbsp;&nbsp;${ci * 2 + 1}A</i><i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
+  f.onclick = () => openPop(ci); strip.append(f);
 });
-const list = $("#chapterList");
-// a negative frame: the print sits in a strip of film with sprocket holes down both sides and the edge print
-const filmFrame = (ph, ci, year) => { const f = el("div", "neg"); f.append(ph);
-  f.insertAdjacentHTML("beforeend", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(year)} &nbsp;▸ ${frameNo}</span>`); return f; };
-let frameNo = 1;
-const SC = C.scenes || {};
-const cue = '<span class="cue-mark" aria-hidden="true"></span>';
-// one group per roll for the photo viewer
-// items that are only placeholders (no photo, no words yet) stay out of the page unless showTodo
-const realItem = m => SHOW || m.milestone || m.photo || m.scans || !isTodo(m.title) || !isTodo(m.text);
-C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realItem) };
-  const y = el("article", "yr lay-strip"); y.id = "yr" + ci;
-  y.innerHTML = `<div class="yr-head"><div class="yr-num${c.year.length > 4 ? " long" : ""}">${esc(c.year).replace(/[–-]/, '<span class="dash">–</span>')}</div>
-    <div class="yr-t"><small>Roll ${pad2(ci + 1)}</small>${txt(c.title)}</div></div>`;
-  const gid = "roll" + ci, G = GROUPS[gid] = [];
-  const add = (src, m) => { G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title, scene: m.scene }); return G.length - 1; };
-  const tapPhoto = (box, src, m) => { if (!src) return box; const k = add(src, m); box.dataset.vg = gid; box.dataset.vi = k;
-    box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
-    if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
-  const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = isTodo(m.text) ? txt(m.text) : nobr(m.text);
-    return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t.split(" · ").map(w => `<span class="nw">${w}</span>`).join(" · ")}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
-  // every roll is a vertical strip of film (the original rolls); layout values in content.js are kept but no longer change the form
-  const L = "strip";
-  if (L === "peak") {
-    // the emotional peak as a sequence of events, one module each: date → place → line → photo.
-    // photo sizes come from a small system, not per photo: L = full width 3:2 · P = full width 4:5 (highlight) · S = 64% 4:5 · pair = real prints.
-    // an item without any caption of its own is the same event continuing (e.g. a second photo of the same trip).
-    const pk = el("div", "peak events"); let last = null;
-    c.items.forEach(m => {
-      const cap = m.milestone ? "" : capHTML(m), cont = !m.milestone && !cap && last;
-      const ev = cont ? last : el("article", "ev" + (m.highlight ? " hi" : "") + (m.milestone ? " ms" : ""));
-      if (!cont) { if (m.milestone) ev.innerHTML = `<header class="ev-h"><span class="d">${esc(m.date)}</span><span class="ms-k">Milestone</span><span class="t">${nobr(m.title)}</span>${m.text ? `<span class="tx">${nobr(m.text)}</span>` : ""}</header>`;
-        else if (cap) ev.append(el("header", "ev-h", cap)); }
-      if (m.scans) { const w = el("div", "ev-ph ev-pair"); m.scans.forEach(src => { const f = el("div", "scan-ph", img(src, m.title)); tapPhoto(f, src, m); w.append(f); }); ev.append(w); }
-      else if (m.photo) { const r = (m.crop && m.crop.ratio) || "4/5", size = /^3\/2$/.test(r) ? "L" : (m.highlight ? "P" : "S");
-        const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); ph.style.aspectRatio = size === "L" ? "3/2" : "4/5";
-        const im = ph.querySelector("img"); if (im && m.crop) { im.style.objectPosition = m.crop.pos || "50% 50%"; im.style.transformOrigin = m.crop.pos || "50% 50%"; if (m.crop.zoom && m.crop.zoom !== 1) im.style.transform = `scale(${m.crop.zoom})`; }
-        const f = el("div", `ev-ph ev-${size}${cont ? " ev-more" : ""}`); f.append(ph); ev.append(f); }
-      if (!cont) { pk.append(ev); last = m.milestone ? null : ev; }
-      frameNo++;
-    });
-    y.append(pk); list.append(y); return;
-  }
-  if (L === "contact") {
-    // a horizontal contact sheet: frames stagger like a printed proof
-    const cs = el("div", "contact", `<i class="sprk t"></i><i class="sprk b"></i><span class="edge">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), row = el("div", "cs-row"), caps = el("div", "cs-caps");
-    c.items.forEach(m => { const fr = el("div", "cfr"); const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); fr.append(ph);
-      fr.insertAdjacentHTML("beforeend", `<span class="fno">▸ ${frameNo}</span>`); frameNo++; row.append(fr);
-      const cp = capHTML(m); caps.append(el("div", "cp", cp)); });
-    cs.append(row); y.append(cs); if (caps.textContent.trim()) y.append(caps); list.append(y); return;
-  }
-  if (L === "feature") { const fm = c.items.find(m => m.feature && m.photo);
-    if (fm) { const S0 = SC[fm.scene] || {}; const f = el("figure", "feature");
-      const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = S0.origin || "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
-      f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span><span class="t">${esc(fm.title)}</span>${isTodo(fm.text) || !fm.text ? "" : `<p class="tx">${esc(fm.text)}</p>`}`)); y.append(f); f._m = fm; y._feature = ph; } }
-  // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
-  // the words sit in their own column beside it, each one level with its frame
-  const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
-  c.items.forEach(m => {
-    const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
-    if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
-    else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
-    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
-      const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
-      const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
-      if (im && m.crop && m.crop.fit === "contain") { ph.classList.add("fit"); im.style.objectFit = "contain"; }   // letterbox (e.g. a phone screenshot) instead of cropping
-      fr.append(ph); }
-    fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
-    vs.append(fr);
-    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), m.milestone ? `<span class="d">${esc(m.date)}</span><span class="t">${nobr(m.title)}</span>${m.text ? `<span class="tx">${nobr(m.text)}</span>` : ""}` : capHTML(m)));
-  });
-  vr.append(vs, caps); y.append(vr); list.append(y);
-});
-// keep each caption level with its frame
-const alignCaps = () => $$(".vroll").forEach(v => { const frs = v.querySelectorAll(".vfr"), cps = v.querySelectorAll(".cp"), top0 = v.getBoundingClientRect().top;
-  frs.forEach((f, i) => { const r = f.getBoundingClientRect(); if (!cps[i]) return; cps[i].style.minHeight = r.height + 8 + "px"; if (i === 0) v.querySelector(".caps").style.paddingTop = (r.top - top0) + "px"; }); });
-alignCaps(); addEventListener("resize", alignCaps); addEventListener("load", alignCaps); setTimeout(alignCaps, 1200);
-if (document.fonts) document.fonts.ready.then(alignCaps);
+// tap a roll: that year comes up as one print with one line (swipe sideways for the next year, down or tap to close)
+const YR = C.chapters.map(c => ({ year: c.year, ...(c.pop || {}) })).filter(y => y.photo);
+$("#chapterList")?.remove();
+let ypEl = null, ypI = 0;
+function ypDOM() { if (ypEl) return ypEl;
+  const v = el("div", "ypop"); v.setAttribute("role", "dialog"); v.setAttribute("aria-modal", "true"); v.setAttribute("aria-label", "Rolls");
+  v.innerHTML = `<div class="yp-bg"></div><div class="yp-card"><nav class="yp-tabs">${YR.map((y, i) => `<button type="button" data-yi="${i}">${esc(y.year).replace(/[–-]/, "–")}</button>`).join("")}</nav>
+    <figure class="yp-print"><div class="yp-ph"></div><i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true"></span></figure>
+    <div class="yp-cap"><b class="yp-d"></b><span class="yp-en"></span><span class="yp-cn"></span></div></div>
+    <button class="x yp-x" type="button" aria-label="关闭"><i></i></button>`;
+  document.body.append(v); ypEl = v;
+  v.addEventListener("click", e => { const t = e.target.closest("[data-yi]"); if (t) { showYear(+t.dataset.yi); return; } closePop(); });
+  let sx = 0, sy = 0;
+  v.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  v.addEventListener("touchend", e => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); showYear((ypI + (dx < 0 ? 1 : -1) + YR.length) % YR.length); }
+    else if (dy > 70) { e.preventDefault(); closePop(); } });
+  return v; }
+function showYear(i) { const v = ypDOM(), y = YR[i]; ypI = i;
+  v.querySelectorAll("[data-yi]").forEach(b => b.classList.toggle("on", +b.dataset.yi === i));
+  const ph = v.querySelector(".yp-ph"); ph.innerHTML = img(y.photo, `${y.year} · ${y.cn || ""}`, true); const [w0, h0] = SIZES[y.photo] || [4, 5]; ph.style.aspectRatio = w0 > h0 ? `${w0}/${h0}` : "4/5";   // portrait frames are all 4:5 (cover)
+  v.querySelector(".edge").innerHTML = `1461 · ROLL ${pad2(C.chapters.findIndex(c => c.year === y.year) + 1)} · ${esc(y.year)}`;
+  v.querySelector(".yp-d").textContent = y.date || y.year; v.querySelector(".yp-en").textContent = y.en || ""; v.querySelector(".yp-cn").innerHTML = y.cn ? nobr(y.cn) : "";
+  v.classList.remove("swap"); void v.offsetWidth; v.classList.add("swap");
+  $$("#stripH .fr").forEach((f, k) => f.classList.toggle("on", k === i)); }
+function openPop(ci) { const i = Math.max(0, YR.findIndex(y => y.year === C.chapters[ci].year)); const v = ypDOM(); showYear(i);
+  v.classList.add("open"); document.body.style.overflow = "hidden"; requestAnimationFrame(() => v.classList.add("in")); }
+function closePop() { if (!ypEl) return; ypEl.classList.remove("in", "open"); document.body.style.overflow = ""; $$("#stripH .fr").forEach(f => f.classList.remove("on")); }
+addEventListener("keydown", e => { if (e.key === "Escape" && ypEl && ypEl.classList.contains("open")) closePop(); });
 // time track: the red line runs down the margin between the years
 
 
@@ -531,6 +539,38 @@ if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
   wp.append(el("figcaption", "", `${esc(W8.label)} · ${esc(W8.date)} · <em>${esc(W8.status)}</em>`)); }
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
+/* ---------- THE RECORD: after the passcode, one vinyl (Polaris · Aimer) with the four years round its rim ---------- */
+// a View-Master ring of 14 frames on a slowly turning record; the viewer window above shows one frame large.
+// it moves on every few seconds; tap the window or the record for the next, tap a small frame to go to it.
+// (there is no Polaris audio on the site, so the record turns on its own; the music player stays Oxygen Boy.)
+(() => { const host = $("#reel"), R = C.reel; if (!host || !R) return;
+  const list = (R[R.set] || R.recap || []).filter(f => f.photo), N = list.length; if (!N) return;
+  const span = `${(C.startDate || "").slice(0, 10).replace(/-/g, ".")} – ${((C.calendar || {}).date || "").slice(0, 10).replace(/-/g, ".")}`;
+  const G = GROUPS.reel = list.map(f => ({ src: f.photo, date: f.date, place: f.en }));
+  host.innerHTML = `<figure class="vm-win" role="button" tabindex="0" aria-label="next"><div class="vm-ph"></div><figcaption class="vm-cap"><span class="vm-n"></span><span class="vm-d"></span><span class="vm-p"></span></figcaption></figure>
+    <div class="vm-disc-wrap"><div class="vm-disc" role="group" aria-label="${esc(H.title || "")}">
+      <i class="vm-grooves"></i><i class="vm-sheen"></i>
+      ${list.map((f, k) => { const a = k * 360 / N;
+        return `<button class="vm-slot" type="button" data-k="${k}" style="--a:${a}deg" aria-label="${pad2(k + 1)} ${esc(f.date)} ${esc(f.en)}"><span class="vm-f">${img(f.photo, `${f.date} ${f.en}`)}</span></button>
+          <span class="vm-lb" style="--a:${a}deg"><b>${k + 1}</b><span>${esc(f.date)}</span><span>${esc(f.en)}</span></span>`; }).join("")}
+      <div class="vm-label"><span class="vm-song"><i>Polaris</i> · Aimer</span><b class="vm-title">${esc(H.title || "").replace(/\s+(WITH\b)/i, "</b><b class=\"vm-title t2\">$1")}</b><span class="vm-span">${esc(span)}</span><i class="vm-hole"></i></div>
+    </div></div>`;
+  const disc = host.querySelector(".vm-disc"), ph = host.querySelector(".vm-ph");
+  let k = 0, turn = 0, timer = 0, idle = 0;
+  const show = (j, dir = 1) => { const prev = k; k = (j + N) % N;
+    let d = k - prev; if (dir > 0 && d <= 0) d += N; if (dir < 0 && d >= 0) d -= N; if (j === prev) d = 0; turn += d;
+    const f = list[k]; ph.innerHTML = img(f.photo, `${f.date} ${f.en}`, true);
+    host.querySelector(".vm-n").textContent = k + 1; host.querySelector(".vm-d").textContent = f.date; host.querySelector(".vm-p").textContent = f.en;
+    host.querySelectorAll(".vm-slot").forEach(s => s.classList.toggle("on", +s.dataset.k === k));
+    ph.classList.remove("in"); void ph.offsetWidth; ph.classList.add("in"); };
+  const auto = () => { clearInterval(timer); if (reduced) return; timer = setInterval(() => { if ($("#secret").classList.contains("open") && Date.now() > idle) show(k + 1); }, 3800); };
+  const user = j => { idle = Date.now() + 7000; show(j, j === k + 1 || j === 0 && k === N - 1 ? 1 : (j - k + N) % N <= N / 2 ? 1 : -1); };
+  host.addEventListener("click", e => { const s = e.target.closest(".vm-slot"); if (s) { user(+s.dataset.k); return; } if (e.target.closest(".vm-win, .vm-disc")) user(k + 1); });
+  host.querySelector(".vm-win").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); user(k + 1); } });
+  let sx = 0; host.addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+  host.addEventListener("touchend", e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) { e.preventDefault(); user(k + (dx < 0 ? 1 : -1)); } });
+  show(0); auto();
+})();
 function unlock() {
   const openPage = () => { const s = $("#secret"); s.classList.add("open"); s.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
     s.scrollTop = 0; s.focus({ preventScroll: true }); s.classList.add("dev"); };

@@ -134,5 +134,61 @@ window.PHOTO_SIZES = {
 "photos/m14.webp": [
 1050,
 1400
+],
+"photos/wardrobe/m01.webp": [
+600,
+750
+],
+"photos/wardrobe/m08.webp": [
+600,
+750
+],
+"photos/wardrobe/m02.webp": [
+600,
+750
+],
+"photos/wardrobe/m03.webp": [
+600,
+750
+],
+"photos/wardrobe/m05.webp": [
+600,
+750
+],
+"photos/wardrobe/m09.webp": [
+600,
+750
+],
+"photos/wardrobe/m10.webp": [
+600,
+750
+],
+"photos/wardrobe/m13.webp": [
+600,
+750
+],
+"photos/wardrobe/m15.webp": [
+600,
+750
+],
+"photos/wardrobe/m17.webp": [
+600,
+750
+],
+"photos/wardrobe/m20.webp": [
+600,
+750
+],
+"photos/wardrobe/m23.webp": [
+600,
+750
+],
+"photos/wardrobe/m24.webp": [
+600,
+750
+],
+"photos/wardrobe/m26.webp": [
+600,
+750
 ]
 };

@@ -98,7 +98,7 @@ window.CONTENT = {
   // 竖长的大头贴：加 tall: true
   // 一站想放多张照片：把 photo 换成 photos: ["photos/a.webp", "photos/b.webp"]（点照片切换）
   stops: [
-    { city: "chongqing", photos: ["photos/n1.webp", "photos/chongqing-2nd.webp", "photos/chongqing-fridge-flowers.webp"], photoNotes: ["2022 · 重庆", "第二次来重庆 · 2023", "2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
+    { city: "chongqing", photos: ["photos/n1.webp", "photos/chongqing-2nd.webp", "photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023 · 重庆", "第二次来重庆 · 2023", "2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
     { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
@@ -124,10 +124,15 @@ window.CONTENT = {
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
-    { year: "2022", layout: "strip", title: "待填写", items: [
-      { title: "重庆", date: "2022", text: "", photo: "photos/n1.webp" },   // 第一张合照 · 奔现
+    // 2022：还没见面，只在江湖里 —— 这一卷用游戏截图（天涯明月刀情侣时装）
+    { year: "2022", layout: "strip", title: "待填写", thumb: "photos/wardrobe/m01.webp",
+      pop: { photo: "photos/wardrobe/m08.webp", date: "2022", en: "to the world", cn: "天涯明月刀手游 · 晚来天欲雪" },
+      items: [
     ]},
-    { year: "2023", layout: "feature", title: "待填写", items: [
+    { year: "2023", layout: "feature", title: "待填写", thumb: "photos/chongqing-2nd.webp",
+      pop: { photo: "photos/chongqing-fridge-flowers.webp", date: "2023.08", en: "Chongqing", cn: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。" },
+      items: [
+      { title: "重庆", date: "2023", text: "", photo: "photos/n1.webp" },   // 第一张合照 · 奔现（2023 年第一次见面；之前误标为 2022）
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
       { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp" },   // 胡同
       { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali" },
@@ -136,7 +141,9 @@ window.CONTENT = {
       { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
+    { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp",
+      pop: { photo: "photos/m5.webp", date: "2024.07", en: "Chongqing", cn: "我马上就要去杭州上班了" },
+      items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp" },   // 水母灯
       { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true },
       { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp" },
@@ -147,7 +154,9 @@ window.CONTENT = {
       { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
       { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp" },   // 夜里自拍
     ]},
-    { year: "2025–26", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2025–26 thumbnail
+    { year: "2025–26", layout: "peak", title: "待填写", thumb: "photos/krabi.webp",
+      pop: { photo: "photos/dali-proposal.webp", date: "2026.06.22", en: "Dali", cn: "第二次来大理，你向我求婚了。" },
+      items: [   // thumb: the FOUR ROLLS intro keeps its approved 2025–26 thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp" },   // 贴脸自拍
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
       { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" } },   // 烛光、粉玫瑰，镜子自拍
@@ -163,6 +172,45 @@ window.CONTENT = {
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
     ]},
   ],
+
+  // 地点拼贴板（「我们走过的地方」下面）：同一个地方的照片收在一张板上
+  // photos：板上的照片（按顺序编号），每张的日期 / 标题 / 文字自动取自上面四卷里同一张照片的那一条
+  //         （地图站点里的照片取那一站的 note）；也会显示这个城市各站的 memory
+  // deco：clip 长尾夹 · pin 金色图钉 · tape 胶带 · seal 火漆印（seal 上的字取自地图站点的 seal）
+  // strip: true = 三张并排的一条（每张一个地点）
+  // lines：照片不在板上（在四卷缩略图 / 四卷弹出 / 日历上）但文字属于这个地方的那几条，只列文字（编号显示为 —）
+  // 不在板上的照片：四卷缩略图四张、四卷弹出四张（缩略图、弹出、拼贴板三处各不相同）、日历上的 n2、首页吊牌后的那张
+  boards: [
+    { city: "chongqing", years: "2023–2024", deco: "clip", photos: ["photos/n1.webp", "photos/n3.webp", "photos/m3.webp", "photos/m4.webp", "photos/n4.webp"], lines: ["photos/chongqing-2nd.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m5.webp"] },
+    { city: "beijing",   years: "2023", deco: "tape", photos: ["photos/m0.webp", "photos/beijing.webp"] },
+    { city: "hangzhou",  years: "2024–2025", deco: "pin", photos: ["photos/m6.webp", "photos/m7.webp", "photos/m8.webp", "photos/m9.webp", "photos/m10.webp", "photos/m11.webp", "photos/m12.webp", "photos/m14.webp", "photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], lines: ["milestone"] },
+    { strip: true, deco: "tape", cities: ["dongguan", "fukuoka", "tokyo"], photos: ["photos/dongguan.webp", "photos/m13.webp", "photos/tokyo.webp"] },
+    { city: "dali",      years: "2023 · 2026", deco: "seal", photos: ["photos/dali-first-shadows.webp", "photos/m2.webp"], lines: ["photos/dali-proposal.webp"] },
+    { city: "kk",        years: "2026", deco: "clip", photos: ["photos/kota-kinabalu.webp", "photos/sunset-kiss.webp"] },
+  ],
+
+  // 密码解锁后的第一屏：View-Master 胶片转盘（一张盘，14 格，慢慢转；点一下转到下一格，点盘上的小图跳到那一格）
+  // set: "recap" = 四年回顾（照片会和前面重复，这里是唯一允许重复的地方）· "unique" = 只用页面别处没有的图（游戏时装截图）
+  reel: {
+    set: "recap",
+    recap: [
+      { photo: "photos/wardrobe/m01.webp", date: "2022", en: "To the world" },
+      { photo: "photos/n1.webp", date: "2023", en: "Chongqing" },
+      { photo: "photos/m0.webp", date: "2023.05.01", en: "Beijing" },
+      { photo: "photos/dali-first-shadows.webp", date: "2023.05", en: "Dali" },
+      { photo: "photos/chongqing-fridge-flowers.webp", date: "2023.08", en: "Chongqing" },
+      { photo: "photos/n2.webp", date: "2023.10.30", en: "Chongqing" },
+      { photo: "photos/n0-hardware.webp", date: "2024.03", en: "Chongqing" },
+      { photo: "photos/m9.webp", date: "2024.11", en: "Hangzhou" },
+      { photo: "photos/m12.webp", date: "2025.02.14", en: "Hangzhou" },
+      { photo: "photos/m13.webp", date: "2025.04", en: "Fukuoka" },
+      { photo: "photos/krabi.webp", date: "2025.10", en: "Krabi" },
+      { photo: "photos/tokyo.webp", date: "2026.05", en: "Tokyo" },
+      { photo: "photos/dali-proposal.webp", date: "2026.06.22", en: "Dali" },
+      { photo: "photos/sunset-kiss.webp", date: "2026.10", en: "Kota Kinabalu" },
+    ],
+    unique: ["m02", "m03", "m05", "m09", "m10", "m13", "m15", "m17", "m20", "m23", "m24", "m26"].map(n => ({ photo: `photos/wardrobe/${n}.webp`, date: "2022", en: "To the world" })),
+  },
 
   // 日历页：29 / 30 / 31，圈出 30 号；下面是倒数卡片（10.30 当天显示 1461）
   calendar: {
