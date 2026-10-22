@@ -78,19 +78,26 @@ img{display:block;max-width:100%}
 .play-hint::before{content:"";display:block;width:22px;height:1px;background:currentColor;opacity:.6;transition:width .6s}
 .playing .play-hint::before{width:40px}
 
-/* the folded player: a small paper chip, bottom-right inside the safe area */
-.mini{position:fixed;z-index:120;right:max(14px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));height:30px;min-width:30px;display:flex;align-items:center;justify-content:center;gap:0;padding:0 10px;border-radius:15px;
-  background:#f3eee5 url(assets/paper-cream.webp) center/400%;box-shadow:0 1px 1px rgba(45,25,15,.22),0 5px 14px rgba(45,25,15,.15);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .4s,transform .45s cubic-bezier(.3,.7,.2,1)}
-/* over text, photos or buttons it slides into the right edge: only a thin paper tab stays, still tappable */
-.mini.show.tuck:not(.open){transform:translateX(calc(100% + max(14px,env(safe-area-inset-right)) - 9px))}
-.mini.tuck:not(.open) .mini-dot{opacity:0}
+/* the player: a small paper chip with a wine record and the song title, bottom-right inside the safe area.
+   it is always there (the hero included), so the music can always be found */
+.mini{position:fixed;z-index:120;right:max(14px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));height:36px;display:flex;align-items:center;gap:9px;padding:0 14px 0 6px;border-radius:18px;
+  background:#f3eee5 url(assets/paper-cream.webp) center/400%;box-shadow:0 1px 1px rgba(45,25,15,.22),0 5px 14px rgba(45,25,15,.15);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .5s,transform .45s cubic-bezier(.3,.7,.2,1)}
 .mini::before{content:"";position:absolute;inset:-6px}
 .mini.show{opacity:1;transform:none;pointer-events:auto}
-.mini-dot{width:6px;height:6px;border-radius:50%;background:var(--wine);opacity:.75;flex:none;transition:opacity .3s}
-.mini.on .mini-dot{animation:breathe 2.4s ease-in-out infinite}
+/* a tiny record: wine grooves, cream label; it turns while the song plays */
+.mini-dot{position:relative;width:24px;height:24px;border-radius:50%;flex:none;transition:opacity .3s;
+  background:radial-gradient(circle,#f3eee5 0 2px,#5a1219 2.5px 3.5px,#e9dccb 4px 6.5px,transparent 7px),repeating-radial-gradient(circle,#6b1420 0 1px,#561019 1.3px 2.3px);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25);animation:spin 4.2s linear infinite;animation-play-state:paused}
+.mini.on .mini-dot{animation-play-state:running}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes breathe{50%{opacity:.25}}
-.mini-txt{max-width:0;overflow:hidden;white-space:nowrap;font-family:var(--lat);font-style:italic;font-size:12px;color:var(--wine);transition:max-width .4s,margin .4s}
-.mini.open .mini-txt{max-width:120px;margin-left:9px}
+.mini-txt{white-space:nowrap;font-family:var(--lat);font-style:italic;font-size:12.5px;line-height:1;color:var(--wine);max-width:140px;overflow:hidden;transition:max-width .4s,opacity .3s}
+.mini:not(.on) .mini-txt::before{content:"▸ ";font-style:normal;font-size:9px;vertical-align:1px}
+/* over text, photos or buttons (not on the first screen) it slides into the right edge:
+   the title folds away and a slice of the record stays in view, still tappable — never gone */
+.mini.show.tuck:not(.open){transform:translateX(calc(100% + max(14px,env(safe-area-inset-right)) - 22px))}
+.mini.tuck:not(.open){padding-right:6px}
+.mini.tuck:not(.open) .mini-txt{max-width:0;opacity:0}
+@media (prefers-reduced-motion:reduce){.mini-dot{animation:none}}
 
 /* ============ 2 · 江湖 ============ */
 .jianghu{min-height:100vh;min-height:100svh;padding-top:calc(32px + env(safe-area-inset-top))}
@@ -169,14 +176,27 @@ img{display:block;max-width:100%}
 .chapters{padding-top:110px}
 .chapters .lk .c{display:inline;font-size:26px;color:var(--chalk)}
 .chapters .lk .en{margin-top:8px}.chapters .lk .e{color:var(--chalk2);display:inline;margin-right:.3em}
-.can{display:flex;align-items:baseline;gap:14px;margin-top:40px;font-family:var(--lat);color:var(--chalk2)}
-.can span{font-size:9px;letter-spacing:.32em}
-.can b{font-weight:400;font-size:13px;letter-spacing:.2em;color:var(--chalk)}
-.strip-h{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
-.fr{display:flex;flex-direction:column;gap:8px;text-align:left}
-.fr-ph{display:block;aspect-ratio:4/5;background:rgba(236,230,220,.06);padding:3px;box-shadow:inset 0 0 0 .5px rgba(236,230,220,.18)}
-.fr-ph img{width:100%;height:100%;object-fit:cover;opacity:.88}
-.fr span{font-family:var(--lat);font-size:10px;letter-spacing:.16em;color:var(--chalk2)}
+/* the canister and its leader: the roll pulled out, sprocket holes and edge print, holding the four years */
+.roll-intro{position:relative;display:flex;align-items:center;margin-top:44px}
+.canister{position:relative;flex:none;width:66px;height:118px;z-index:3;filter:drop-shadow(0 10px 12px rgba(0,0,0,.55))}
+.ccap{position:absolute;left:3px;right:3px;height:10px;border-radius:2.5px;background:linear-gradient(90deg,#2a2624,#8a837c 32%,#cfc8bf 44%,#5d5751 70%,#1e1b19)}
+.ccap.top{top:0}.ccap.top::before{content:"";position:absolute;left:50%;top:-7px;width:16px;height:8px;margin-left:-8px;border-radius:2px 2px 0 0;background:linear-gradient(90deg,#2a2624,#9a938b 45%,#2a2624)}
+.ccap.bot{bottom:0}
+.can-body{position:absolute;left:0;right:0;top:9px;bottom:9px;border-radius:2px;overflow:hidden;background:linear-gradient(90deg,#2c070c,var(--wine) 22%,#7d2a31 40%,var(--wine) 62%,#33080e)}
+.can-body::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.28),transparent 30%,rgba(255,240,230,.14) 42%,transparent 55%,rgba(0,0,0,.32));opacity:.9}
+.can-small{position:absolute;left:6px;top:8px;z-index:1;font-family:var(--lat);font-size:6.5px;letter-spacing:.2em;color:rgba(243,226,214,.8);writing-mode:vertical-rl;white-space:nowrap}
+.can-big{position:absolute;right:5px;top:0;bottom:0;z-index:1;display:flex;align-items:center;font-family:var(--lat);font-weight:400;font-size:21px;line-height:1;color:var(--chalk);writing-mode:vertical-rl;letter-spacing:.04em}
+.strip-win{position:relative;flex:1;min-width:0;margin-left:-14px;overflow:hidden;padding:6px 0 12px}
+.strip-h{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:15px 8px 30px 20px;background:#17110f;box-shadow:0 12px 22px -12px rgba(0,0,0,.8);transition:transform 1.8s cubic-bezier(.2,.8,.2,1)}
+.strip-h.pull{transform:translateX(-96%)}.strip-h.pull.in{transform:none}
+.sprk{position:absolute;left:0;right:0;height:6px;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='6'%3E%3Crect x='2.5' y='0' width='6' height='6' rx='1.3' fill='%23ece6dc' fill-opacity='.2'/%3E%3C/svg%3E") repeat-x}
+.strip-h .sprk.a{top:5px}.strip-h .sprk.b{bottom:5px}
+.edge{position:absolute;font-family:var(--lat);font-size:6px;letter-spacing:.22em;color:rgba(214,170,120,.62);white-space:nowrap;pointer-events:none}
+.strip-h .edge{left:22px;bottom:-1px;display:none}
+.fr{position:relative;display:block;text-align:left}
+.fr-ph{display:block;aspect-ratio:4/5;background:#241c19;overflow:hidden}
+.fr-ph img{width:100%;height:100%;object-fit:cover;opacity:.9}
+.fr span{position:absolute;left:0;right:0;bottom:-13px;text-align:center;font-family:var(--lat);font-size:7.5px;letter-spacing:.14em;color:rgba(214,170,120,.75)}
 #chapterList{margin-top:30px}
 .yr{padding-top:110px}
 .yr-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(236,230,220,.14);margin-bottom:34px}
@@ -192,7 +212,12 @@ img{display:block;max-width:100%}
 .cue-mark{position:absolute;right:8px;bottom:6px;font-family:var(--lat);font-size:12px;letter-spacing:.2em;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5);pointer-events:none}
 .cue-mark::after{content:"…"}
 /* a dark print: thin cream border, real shadow */
-.dprint,.chapters .vfr .ph,.chapters .feature .ph,.chapters .ev-ph .ph{border:5px solid #e9e2d6;box-shadow:var(--bs-print-d)}
+.dprint,.chapters .ev-ph .ph{border:5px solid #e9e2d6;box-shadow:var(--bs-print-d)}
+/* the roll photos sit in their negative strip: thin film base, sprocket holes down both sides, edge print */
+.neg{position:relative;padding:7px 15px 16px;background:#17110f;box-shadow:0 18px 30px -14px rgba(0,0,0,.85)}
+.neg .sprk{top:0;bottom:0;left:4.5px;right:auto;width:6px;height:auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='11'%3E%3Crect x='0' y='2.5' width='6' height='6' rx='1.3' fill='%23ece6dc' fill-opacity='.2'/%3E%3C/svg%3E") repeat-y}
+.neg .sprk.b{left:auto;right:4.5px}
+.neg .edge{left:16px;bottom:4px}
 .feature{margin:0 0 48px}
 .feature .ph{aspect-ratio:4/5}
 .feature figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 12px;margin-top:18px;font-size:12px;letter-spacing:.14em;color:var(--chalk2)}
@@ -201,9 +226,9 @@ img{display:block;max-width:100%}
 .vstrip{display:flex;flex-direction:column;gap:56px}
 .vfr{display:grid;grid-template-columns:58% 1fr;gap:22px;align-items:end}
 .vfr .ph{aspect-ratio:4/5}
-.vfr:nth-child(odd) .ph{transform:rotate(-.6deg)}
+.vfr:nth-child(odd) .neg{transform:rotate(-.6deg)}
 .vfr:nth-child(even){grid-template-columns:1fr 58%}
-.vfr:nth-child(even) .ph{order:2;transform:rotate(.7deg)}
+.vfr:nth-child(even) .neg{order:2;transform:rotate(.7deg)}
 .vfr:nth-child(even) .cp{text-align:right;align-items:flex-end}
 .cp{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding-bottom:4px;font-size:12px;line-height:1.75;color:var(--chalk2)}
 .cp .d,.ev-h .d{font-family:var(--lat);font-size:10px;letter-spacing:.2em;color:var(--chalk3)}
@@ -452,7 +477,7 @@ img{display:block;max-width:100%}
   .tag-count{margin-top:18px;gap:8px}.tag-count .t-days{font-size:16px}.tag-count .t-unit{font-size:10px}.tag-count .t-time{font-size:9.5px;margin-left:10px}
   .hero-print{left:calc(50% - 30px);top:350px;width:350px;padding:12px 12px 44px}
   .hero-sub{position:absolute;left:64px;bottom:60px;font-size:22px}
-  .play-hint{position:absolute;right:64px;bottom:58px;margin:0;font-size:12px}
+  .play-hint{position:absolute;right:64px;bottom:84px;margin:0;font-size:12px}
   .mini{right:28px;bottom:28px}
   .jianghu{padding-top:0;display:grid;grid-template-columns:1fr 450px 1fr;grid-template-rows:auto 1fr;min-height:100vh}
   .jianghu>*{max-width:none;margin:0}
@@ -466,7 +491,7 @@ img{display:block;max-width:100%}
   .hotels{gap:28px}.hcard{max-width:240px;padding:20px}.key-n{font-size:20px}
   .then{margin-left:auto;margin-right:60px}
   .chapters>*{max-width:760px}
-  .strip-h{gap:18px}
+  .strip-win{flex:0 1 560px}.canister{width:80px;height:140px}.can-big{font-size:25px}
   .yr-num{font-size:80px}.yr-num.long{font-size:64px}
   .feature{width:70%}
   .vfr{grid-template-columns:46% 1fr;gap:40px}.vfr:nth-child(even){grid-template-columns:1fr 46%}

@@ -104,11 +104,14 @@ $("#playHint").addEventListener("click", () => { playing ? pause() : play(); });
 // 江湖: the cover of the song he shared is a quiet play / pause for the music on this page
 $("#jhCover").addEventListener("click", () => { playing ? pause() : play(); peek(); });
 setMini();
-// in the hero the hint is the player; the record appears once the hint has scrolled away
-if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => mini.classList.toggle("show", !e.isIntersecting))).observe($("#playHint"));
+// the player is visible from the first screen on (the hint in the hero plays too)
+requestAnimationFrame(() => mini.classList.add("show"));
 // keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
 { const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/;
+  const hero = $("#hero");
   const under = () => { if (!mini.classList.contains("show")) return false;
+    // on the first screen it always stays out in full (the hero is laid out to keep that corner clear)
+    if (hero && hero.getBoundingClientRect().bottom > innerHeight * .5) return false;
     const L = mini.offsetLeft - 6, T = mini.offsetTop - 6, R = L + mini.offsetWidth + 12, B = T + mini.offsetHeight + 12;
     const hit = q => q.width && q.left < R && q.right > L && q.top < B && q.bottom > T;
     const seen = new Set();
@@ -372,6 +375,11 @@ pc.addEventListener("touchend", e => { if (!tx) return; const dx = e.changedTouc
 /* ---------- CHAPTERS ---------- */
 $("#can1").textContent = H.canister[0]; $("#can2").textContent = H.canister[1];
 const strip = $("#stripH");
+// the leader: sprocket holes along both edges and the edge print, like the end of a real roll pulled from its canister
+strip.innerHTML = '<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 &nbsp;▸ 1 &nbsp;1A &nbsp;▸ 2 &nbsp;2A &nbsp;▸ 3 &nbsp;3A &nbsp;▸ 4 &nbsp;4A</span>';
+// the strip slides out of the canister once it comes into view
+if ("IntersectionObserver" in window && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+  strip.classList.add("pull"); const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { strip.classList.add("in"); io.disconnect(); } }), { threshold: .35 }); io.observe(strip.parentNode); }
 
 C.chapters.forEach((c, ci) => {
   const ph = c.items.find(m => m.photo);
@@ -379,6 +387,9 @@ C.chapters.forEach((c, ci) => {
   f.onclick = () => $("#yr" + ci).scrollIntoView({ behavior: "smooth" }); strip.append(f);
 });
 const list = $("#chapterList");
+// a negative frame: the print sits in a strip of film with sprocket holes down both sides and the edge print
+const filmFrame = (ph, ci, year) => { const f = el("div", "neg"); f.append(ph);
+  f.insertAdjacentHTML("beforeend", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(year)} &nbsp;▸ ${frameNo}</span>`); return f; };
 let frameNo = 1;
 const SC = C.scenes || {};
 const cue = '<span class="cue-mark" aria-hidden="true"></span>';
@@ -428,12 +439,12 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   if (L === "feature") { const fm = c.items.find(m => m.feature && m.photo);
     if (fm) { const S0 = SC[fm.scene] || {}; const f = el("figure", "feature");
       const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = S0.origin || "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
-      f.append(ph, el("figcaption", "", `<span class="d">${esc(fm.date)}</span><span class="t">${esc(fm.title)}</span>${isTodo(fm.text) || !fm.text ? "" : `<p class="tx">${esc(fm.text)}</p>`}`)); y.append(f); f._m = fm; y._feature = ph; } }
+      f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span><span class="t">${esc(fm.title)}</span>${isTodo(fm.text) || !fm.text ? "" : `<p class="tx">${esc(fm.text)}</p>`}`)); y.append(f); f._m = fm; y._feature = ph; } }
   const vr = el("div", "vroll"), vs = el("div", "vstrip"), caps = el("div", "caps");
   c.items.forEach((m, mi) => {
     const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${esc(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
-    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); fr.append(ph);
+    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); fr.append(filmFrame(ph, ci, c.year));
       if (y._feature && m.feature) y._feature.dataset.vi = ph.dataset.vi; }
     frameNo++;
     fr.append(el("div", "cp", capHTML(m)));
