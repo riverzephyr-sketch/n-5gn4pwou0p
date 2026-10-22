@@ -419,7 +419,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
     if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
   const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = txt(m.text);
-    return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
+    return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t.split(" · ").map(w => `<span class="nw">${w}</span>`).join(" · ")}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
   // every roll is a vertical strip of film (the original rolls); layout values in content.js are kept but no longer change the form
   const L = "strip";
   if (L === "peak") {
