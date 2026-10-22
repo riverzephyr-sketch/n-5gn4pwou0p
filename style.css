@@ -59,8 +59,8 @@ img{display:block;max-width:100%}
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 70% at 22% 8%,rgba(255,252,245,.5),transparent 60%),radial-gradient(140% 90% at 50% 110%,rgba(90,60,40,.14),transparent 60%)}
 .hang{position:relative;height:calc(668 * var(--u));margin:0 -28px}
 .tag{position:absolute;z-index:5;left:calc(44 * var(--u));top:calc(-96 * var(--u));width:calc(200 * var(--u));transform:rotate(-1.4deg);transform-origin:50% 0;filter:var(--sh-paper)}
-.tag .light{-webkit-mask:url(assets/tag.webp) center/100% 100%;mask:url(assets/tag.webp) center/100% 100%}
-.tag-face{position:absolute;left:0;right:0;top:33%;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:4%;mix-blend-mode:multiply;color:var(--wine);text-align:center}
+.tag .light{-webkit-mask:url(assets/tag-short.webp) center/100% 100%;mask:url(assets/tag-short.webp) center/100% 100%}
+.tag-face{position:absolute;left:0;right:0;top:55.25%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;mix-blend-mode:multiply;color:var(--wine);text-align:center}
 .hero-num{font-family:var(--lat);font-weight:400;font-size:calc(66 * var(--u));line-height:.86;letter-spacing:-.02em;display:flex;overflow:hidden;padding:0 .04em .04em}
 .hero-num .d{display:inline-block}
 .hero-dates{display:flex;flex-direction:column;align-items:center}
@@ -74,9 +74,6 @@ img{display:block;max-width:100%}
 .hero-print{position:absolute;z-index:3;left:calc(122 * var(--u));top:calc(318 * var(--u));width:calc(236 * var(--u));padding:calc(9 * var(--u)) calc(9 * var(--u)) calc(30 * var(--u));transform:rotate(3.2deg)}
 .hero-print img{height:auto;aspect-ratio:4/5;object-position:50% 72%}
 .hero-sub{position:relative;z-index:6;font-family:var(--lat);font-style:italic;font-weight:400;font-size:17px;line-height:1.38;max-width:15em;color:var(--ink)}
-.play-hint{position:relative;z-index:6;display:flex;align-items:center;gap:12px;margin-top:30px;font-family:var(--zh);font-size:10.5px;letter-spacing:.28em;color:var(--wine);padding:10px 0;min-height:44px}
-.play-hint::before{content:"";display:block;width:22px;height:1px;background:currentColor;opacity:.6;transition:width .6s}
-.playing .play-hint::before{width:40px}
 
 /* the player: a small paper chip with a wine record and the song title, bottom-right inside the safe area.
    it is always there (the hero included), so the music can always be found */
@@ -477,7 +474,6 @@ img{display:block;max-width:100%}
   .tag-count{margin-top:18px;gap:8px}.tag-count .t-days{font-size:16px}.tag-count .t-unit{font-size:10px}.tag-count .t-time{font-size:9.5px;margin-left:10px}
   .hero-print{left:calc(50% - 30px);top:350px;width:350px;padding:12px 12px 44px}
   .hero-sub{position:absolute;left:64px;bottom:60px;font-size:22px}
-  .play-hint{position:absolute;right:64px;bottom:84px;margin:0;font-size:12px}
   .mini{right:28px;bottom:28px}
   .jianghu{padding-top:0;display:grid;grid-template-columns:1fr 450px 1fr;grid-template-rows:auto 1fr;min-height:100vh}
   .jianghu>*{max-width:none;margin:0}
@@ -596,11 +592,6 @@ img{display:block;max-width:100%}
 .cal-print figcaption{position:absolute;left:8px;right:8px;bottom:6px;display:flex;flex-direction:column;gap:3px;font-size:8px;line-height:1.2;color:var(--mute)}
 .cal-print figcaption .d{font-family:var(--lat);letter-spacing:.14em}.cal-print figcaption .c{letter-spacing:.16em}
 .cal-line{margin-top:calc(118 * var(--u));text-align:center;font-family:var(--lat);font-style:italic;font-size:14px;letter-spacing:.02em;color:var(--ink2)}
-.count-card{position:relative;width:calc(222 * var(--u));margin:calc(150 * var(--u)) auto 0;padding:calc(70 * var(--u)) 0 calc(58 * var(--u));text-align:center;color:var(--chalk);
-  background:var(--wine) url(assets/wine-field.webp) center/300%;box-shadow:0 1px 2px rgba(45,25,15,.3),4px 12px 18px rgba(45,25,15,.18),10px 28px 40px rgba(45,25,15,.14);transform:rotate(-2deg)}
-.count-card .tape-img{left:33%;top:-12px;width:34%;height:auto;transform:rotate(-3deg)}
-.cc-n{display:block;font-family:var(--lat);font-weight:400;font-size:calc(112 * var(--u));line-height:.9;letter-spacing:-.02em;font-variant-numeric:lining-nums}
-.cc-l{display:block;margin-top:calc(16 * var(--u));font-family:var(--lat);font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--chalk2)}
 
 @media (min-width:900px){
   .slip-wrap{grid-column:2;width:450px;margin:64px 0 80px}
@@ -629,8 +620,6 @@ img{display:block;max-width:100%}
   .cal-print{left:calc(50% - 600px);top:210px;width:210px;padding:10px 10px 34px}
   .cal-print figcaption{left:12px;right:12px;bottom:10px;font-size:10px;flex-direction:row;justify-content:space-between}
   .cal-line{font-size:17px;margin-top:150px}
-  .count-card{width:320px;margin-top:180px;padding:96px 0 80px}
-  .cc-n{font-size:160px}.cc-l{font-size:12px;margin-top:22px}
 }
 .lk.lk-en .cn-row{display:block;margin-top:14px}
 .lk.lk-en .cn-row .c{display:inline !important;margin:0 !important}
@@ -772,17 +761,17 @@ img{display:block;max-width:100%}
 .hero-dates span{font-size:11px;letter-spacing:.2em}
 .tag-count{margin-top:calc(12 * var(--u))}
 .tag-count .t-days{font-size:12px}.tag-count .t-unit{font-size:11px}.tag-count .t-time{font-size:11px;letter-spacing:.14em}
-.hero-print{left:calc(116 * var(--u));top:calc(372 * var(--u));width:calc(258 * var(--u))}
-.hang{height:calc(712 * var(--u))}
+.hero-print{left:calc(116 * var(--u));top:calc(272 * var(--u));width:calc(258 * var(--u))}
+/* the tag is shorter (paper trimmed above and below the words), the print rises with it; the line under it keeps clear air */
+.hang{height:calc(674 * var(--u))}
 .hero-sub{font-size:16px;line-height:1.5}
-.play-hint{margin-top:18px}
 @media (min-width:900px){
   .tag{left:calc(50% - 250px);top:-196px;width:380px}
   .hero-num{font-size:150px}
   .hero-dates .script{font-size:44px}
   .hero-dates span{font-size:12px}
   .tag-count .t-days{font-size:16px}.tag-count .t-unit,.tag-count .t-time{font-size:12px}
-  .hero-print{left:calc(50% - 10px);top:330px;width:380px}
+  .hero-print{left:calc(50% - 10px);top:190px;width:380px}
   .hero-sub{font-size:22px}
 }
 
@@ -857,3 +846,19 @@ img{display:block;max-width:100%}
 
 /* caption titles break only at the spaces around " · ", never inside a place name (西湖音乐节 · 杭州) */
 .cp .t .nw,.yr .nw{white-space:nowrap}
+
+/* ---------- the player, before the first tap: the label beside the record says what it does
+   (TAP TO PLAY, her line small under it), and one fine hairline ring breathes out from the record.
+   after the first tap it is the song title again ---------- */
+.mini{min-height:44px;min-width:44px;justify-content:flex-end}
+.mini.fresh .mini-txt{display:flex;flex-direction:column;align-items:flex-end;gap:4px;max-width:180px;padding:6px 10px 6px 11px;font-style:normal}
+.mini.fresh .mini-txt::before{content:none}
+.mt-en{font-family:var(--lat);font-style:normal;font-size:9.5px;line-height:1;letter-spacing:.26em;text-transform:uppercase;color:var(--wine)}
+.mt-zh{font-family:var(--zh);font-size:9px;line-height:1;letter-spacing:.16em;color:var(--ink2)}
+.mini-dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(90,15,23,.55);opacity:0;pointer-events:none}
+.mini.fresh .mini-dot::after{animation:halo 3.6s cubic-bezier(.2,.6,.3,1) 1.8s infinite}
+@keyframes halo{0%{opacity:0;transform:scale(.9)}18%{opacity:.7}70%,100%{opacity:0;transform:scale(1.32)}}
+.mini.fresh.tuck:not(.open) .mini-txt{max-width:0;padding:0;opacity:0;box-shadow:none}
+@media (prefers-reduced-motion:reduce){.mini.fresh .mini-dot::after{animation:none;opacity:.45;transform:none}}
+/* the date: with the countdown card gone, the strip and its line sit centred in the screen (no empty tail) */
+.cal{display:flex;flex-direction:column;justify-content:center}

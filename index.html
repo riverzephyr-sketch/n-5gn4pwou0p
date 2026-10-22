@@ -8,9 +8,9 @@
 <title>1461 DAYS WITH YOU</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%235a0f17%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/tag.webp" as="image">
+<link rel="preload" href="assets/tag-short.webp" as="image">
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -21,7 +21,7 @@
   <div class="hang">
     <figure class="print hero-print" id="heroPrint"></figure>
     <div class="tag obj" id="tag">
-      <img src="assets/tag.webp" width="660" height="1623" alt="" fetchpriority="high">
+      <img src="assets/tag-short.webp" width="660" height="1363" alt="" fetchpriority="high">
       <i class="light" aria-hidden="true"></i>
       <div class="tag-face">
         <h1 class="hero-num" aria-label="1461 Days with you"><span class="d" aria-hidden="true">1</span><span class="d" aria-hidden="true">4</span><span class="d" aria-hidden="true">6</span><span class="d" aria-hidden="true">1</span></h1>
@@ -31,7 +31,6 @@
     </div>
   </div>
   <p class="hero-sub" id="heroSub"></p>
-  <button class="play-hint" id="playHint" type="button"></button>
 </header>
 
 <!-- 2 · 江湖 — one printed post: the song he shared, the line she left -->
@@ -93,7 +92,7 @@
   <div class="story" id="story"></div>
 </section>
 
-<!-- 5½ · the date — a strip of three days, the 30th circled once by hand; then the days left, taped on -->
+<!-- 5½ · the date — a strip of three days, the 30th circled once by hand -->
 <section class="sec paper cal" id="calendar">
   <p class="cal-kick"><span class="kick">October</span><i class="script" id="calScript"></i></p>
   <div class="cal-beat">
@@ -106,10 +105,6 @@
     <figure class="print cal-print" id="calPrint"></figure>
   </div>
   <p class="cal-line" id="calLine"></p>
-  <div class="count-card" id="countCard">
-    <img class="tape-img" src="assets/tape.webp" width="360" height="90" alt="" loading="lazy">
-    <b class="cc-n" id="ccN"></b><span class="cc-l" id="ccL"></span>
-  </div>
 </section>
 
 <!-- 6 · ending: the years, the envelope, the passcode -->
@@ -137,7 +132,7 @@
 </section>
 
 <!-- the music, folded small (bottom-right, inside the safe area) -->
-<button class="mini" id="mini" aria-label="播放 / 暂停音乐"><span class="mini-txt" id="miniTxt" translate="no"></span><span class="mini-dot" aria-hidden="true"><i></i></span></button>
+<button class="mini fresh" id="mini" type="button" aria-label="播放 / 暂停音乐"><span class="mini-txt" id="miniTxt" translate="no"></span><span class="mini-dot" aria-hidden="true"><i></i></span></button>
 <audio id="song" preload="none" loop playsinline></audio>
 
 <!-- City card -->
@@ -184,6 +179,6 @@
 <script src="content.js?v=30"></script>
 <script src="map-data.js?v=30"></script>
 <script src="photos/sizes.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>

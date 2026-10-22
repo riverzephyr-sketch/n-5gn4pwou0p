@@ -86,9 +86,12 @@ tick(); setInterval(tick, 1000);
 /* ---------- MUSIC ---------- */
 const MU = C.music, audio = $("#song"), mini = $("#mini");
 const songName = isTodo(MU.title) ? "Side A" : MU.title;
-$("#playHint").textContent = (MU.prompt || "").replace(/^▶\s*/, "");
+const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
+// until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
+let fresh = true;
 let playing = false, ctx = null, gain = null, fadeT = null;
-function setMini() { $("#miniTxt").textContent = songName; mini.classList.toggle("on", playing); const cv = $("#jhCover"); if (cv) cv.classList.toggle("on", playing); }
+function setMini() { const t = $("#miniTxt");
+  if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`; else t.textContent = songName; mini.classList.toggle("on", playing); const cv = $("#jhCover"); if (cv) cv.classList.toggle("on", playing); }
 function fadeTo(v, dur, done) {
   clearInterval(fadeT);
   if (gain) { const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
@@ -96,6 +99,7 @@ function fadeTo(v, dur, done) {
   fadeT = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / dur); audio.volume = from + (v - from) * k; if (k >= 1) { clearInterval(fadeT); done && done(); } }, 40);
 }
 function play() {
+  if (fresh) { fresh = false; mini.classList.remove("fresh"); }
   if (!audio.src) audio.src = MU.src;
   if (!ctx && location.protocol.startsWith("http") && (window.AudioContext || window.webkitAudioContext)) {
     try { ctx = new (window.AudioContext || window.webkitAudioContext)(); const src = ctx.createMediaElementSource(audio); gain = ctx.createGain(); gain.gain.value = 0; src.connect(gain).connect(ctx.destination); } catch (e) { ctx = null; gain = null; }
@@ -112,11 +116,10 @@ function pause() { playing = false; document.body.classList.remove("playing"); s
 let miniT = 0; const peek = () => { mini.classList.add("open"); clearTimeout(miniT); miniT = setTimeout(() => mini.classList.remove("open"), 2600); };
 const toggle = () => { playing ? pause() : play(); peek(); };
 mini.addEventListener("click", toggle);
-$("#playHint").addEventListener("click", () => { playing ? pause() : play(); });
 // 江湖: the cover of the song he shared is a quiet play / pause for the music on this page
 $("#jhCover").addEventListener("click", () => { playing ? pause() : play(); peek(); });
 setMini();
-// the player is visible from the first screen on (the hint in the hero plays too)
+// the player is visible from the first screen on
 requestAnimationFrame(() => mini.classList.add("show"));
 // keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
 { const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/;
@@ -145,20 +148,13 @@ requestAnimationFrame(() => mini.classList.add("show"));
   new MutationObserver(queue).observe(mini, { attributes: true, attributeFilter: ["class"] }); }
 
 
-/* ---------- THE DATE: 29 · 30 · 31, the 30th circled; the days left on a taped wine card ---------- */
+/* ---------- THE DATE: 29 · 30 · 31, the 30th circled ---------- */
 { const K = C.calendar || {}, day = new Date(K.date || "2026-10-30T00:00:00+08:00");
   $("#calScript").textContent = K.script || "";
   $("#calSince").textContent = K.since || "";
   $("#calLine").textContent = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Shanghai" });
   if (K.print) { const f = $("#calPrint"); f.innerHTML = img(K.print, "") + `<figcaption>${(K.printCaption || []).map((t, i) => `<span class="${i ? "c" : "d"}">${esc(t)}</span>`).join("")}</figcaption>`; }
   else $("#calPrint").remove();
-  // calendar days in Beijing time: 8 days to go … 1 day to go … today (1461) … then the running count
-  const bjDay = t => Math.floor((t + 8 * 36e5) / 864e5);
-  const setCount = () => { const left = bjDay(day.getTime()) - bjDay(Date.now());
-    const n = left > 0 ? left : Math.floor((Date.now() - start) / 864e5);
-    $("#ccN").textContent = left === 0 ? TARGET : n;
-    $("#ccL").textContent = left > 1 ? "days to go" : left === 1 ? "day to go" : left === 0 ? "days · today" : "days with you"; };
-  setCount(); setInterval(setCount, 6e4);
   hairIO.observe($(".cal-ring")); }
 
 /* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
