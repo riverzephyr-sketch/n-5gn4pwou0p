@@ -122,5 +122,9 @@ window.PHOTO_SIZES = {
 "photos/m11.webp": [
 1050,
 1400
+],
+"photos/m12.webp": [
+933,
+1400
 ]
 };
