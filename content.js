@@ -45,6 +45,8 @@ window.CONTENT = {
     himWechat: "Follow",          // 他的微信名（分享歌的人）
     meWechat: "helios",           // 我的微信名（留言的人）
     from: "北京", to: "重庆",
+    // 江湖页四周散落的 Aimer 歌名（小字；Polaris 用酒红色）
+    aimerTitles: ["StarRingChild", "Brave Shine", "六等星の夜", "茜さす", "カタオモイ", "Polaris", "残響散歌"],
     // 游戏里的情侣时装：photos/wardrobe/m01–m27.webp（4:5），由原图裁好
     // wardrobe: { dir: "photos/wardrobe", count: 27 },   // 时装定格动画：已撤下（文件留在 photos/wardrobe/，页面不再加载）
   },
@@ -147,6 +149,14 @@ window.CONTENT = {
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
     ]},
   ],
+
+  // 日历页：29 / 30 / 31，圈出 30 号；下面是倒数卡片（10.30 当天显示 1461）
+  calendar: {
+    date: "2026-10-30T00:00:00+08:00",
+    script: "save the date",
+    since: "2022.10.30",
+    print: "photos/n2.webp", printCaption: ["2023.10.30", "一周年 · 重庆"],
+  },
 
   // 最后的信封
   // 点照片进入的「放大场景」（照片上的 scene: "fridge" / "dali" 对应这里）

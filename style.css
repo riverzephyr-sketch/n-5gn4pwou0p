@@ -491,3 +491,121 @@ img{display:block;max-width:100%}
   .closing{left:auto;right:30px;top:auto;bottom:40px;width:330px}
   .closing span{font-size:19px}.closing .script{font-size:46px}
 }
+
+/* ============ English + numerals as the display layer; Chinese as the quieter second voice ============ */
+.kick{display:block;font-family:var(--lat);font-style:normal;font-weight:400;font-size:10px;line-height:1;letter-spacing:.42em;text-transform:uppercase;color:var(--wine);margin-bottom:18px}
+.night .kick,.wine .kick{color:var(--chalk2)}
+.lk.lk-en{display:flex;flex-direction:column}
+.lk.lk-en .kick{order:-2}
+.lk.lk-en .en{order:-1;margin:0 !important}
+.lk.lk-en .e{display:block !important;margin:0 !important;font-family:var(--lat);font-style:normal;font-weight:400;font-size:30px;line-height:1.08;letter-spacing:.06em;text-transform:uppercase;color:inherit}
+.lk.lk-en .c{display:inline-block !important;margin-top:14px;font-size:13px !important;font-weight:300;line-height:1.6;letter-spacing:.34em !important;color:var(--ink2)}
+.lk.lk-en .c+.c{margin-top:0}
+.lk.lk-en .c1:not(:only-of-type){display:inline !important}
+.night .lk.lk-en .c,.wine .lk.lk-en .c{color:var(--chalk2) !important}
+.lk-hotel.lk-en{display:flex}.lk-hotel.lk-en .e{font-size:32px;color:var(--ink)}
+.chapters .lk.lk-en .e{color:var(--chalk)}
+.map-sec .lk.lk-en .e{font-size:28px}
+.lk-finale.lk-en{align-items:center}.lk-finale.lk-en .e{font-size:30px;letter-spacing:.14em;color:var(--chalk)}.lk-finale.lk-en .kick{margin-bottom:22px}
+.lk-secret.lk-en .e,.lk-polaris.lk-en .e{color:var(--wine);letter-spacing:.14em}
+.lk-polaris.lk-en{align-items:center}
+.lk-jianghu .kick{margin-bottom:22px}
+/* the route: city names in Bodoni caps, the Chinese under them */
+.itin span{gap:7px}
+.itin small{order:-1;font-family:var(--lat);font-style:normal;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.itin b{font-size:11px;letter-spacing:.34em;color:var(--mute);font-weight:300}
+.itin i{margin-top:8px}
+/* rolls */
+.yr-t small{font-size:10.5px;letter-spacing:.38em;color:var(--chalk)}
+.cp{font-size:13px}.cp .tx,.ev-h .tx{font-size:13px;color:var(--chalk2)}
+.cp .t,.ev-h .t{font-weight:300;color:rgba(236,230,220,.82)}
+.cp .d,.ev-h .d{font-size:11px;letter-spacing:.24em;color:var(--chalk2)}
+.feature figcaption .tx{font-size:15px;font-weight:300;letter-spacing:.1em;color:rgba(236,230,220,.82)}
+.feature figcaption .d{font-size:11px}
+/* places: number, the English name, coordinates; the Chinese name small */
+.st-tx h3{flex-direction:column;align-items:flex-start;gap:6px}
+.st-tx h3 i{order:-1;font-style:normal;font-size:19px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.st-tx h3 span{font-size:12px;letter-spacing:.34em;color:var(--mute);font-weight:300}
+.st-geo{display:block;margin-top:10px;font-family:var(--lat);font-size:9.5px;letter-spacing:.26em;color:var(--mute);font-variant-numeric:lining-nums}
+.st-d{font-size:10.5px;letter-spacing:.26em}
+.st-tx p{color:rgba(27,23,20,.66)}
+.lyrics .cn{font-size:13px}
+.stats span{font-size:9.5px}
+
+/* ============ 江湖: Aimer titles set tiny around the slip, one red heart as the only accent ============ */
+.slip-wrap{position:relative;width:calc(300 * var(--u));margin:calc(96 * var(--u)) auto 0}
+.slip-wrap .slip{margin:0;width:100%}
+.aimer{position:absolute;inset:0;list-style:none;pointer-events:none;z-index:0}
+.at{position:absolute;font-family:var(--lat);font-size:8.5px;line-height:1.3;letter-spacing:.22em;text-transform:uppercase;color:rgba(27,23,20,.46);white-space:nowrap}
+.at.jp{font-family:var(--zh);font-size:9.5px;letter-spacing:.28em;text-transform:none}
+.at.hi{color:var(--wine)}
+.at1{left:-2%;top:calc(-46 * var(--u))}
+.at2{right:-2%;top:calc(-30 * var(--u))}
+.at3{left:calc(-34 * var(--u));top:34%;writing-mode:vertical-rl}
+.at4{right:calc(-34 * var(--u));top:56%;writing-mode:vertical-rl}
+.at5{left:4%;bottom:calc(-58 * var(--u))}
+.at6{left:50%;bottom:calc(-84 * var(--u));transform:translateX(-50%);letter-spacing:.3em}
+.at7{right:2%;bottom:calc(-48 * var(--u))}
+.heart-sticker{position:absolute;z-index:4;right:9%;top:73.5%;width:calc(30 * var(--u));height:auto;transform:rotate(9deg);filter:drop-shadow(0 .6px .6px rgba(60,10,15,.35)) drop-shadow(1px 3px 3px rgba(60,10,15,.18))}
+.jianghu .lk-jianghu{margin-top:calc(150 * var(--u))}
+
+/* ============ the date ============ */
+.cal{min-height:100vh;min-height:100svh;padding:110px 28px 120px;overflow:hidden;overflow:clip}
+.cal-kick{text-align:center}
+.cal-kick .kick{margin-bottom:14px;letter-spacing:.5em}
+.cal-kick .script{display:block;font-size:46px;line-height:1;color:var(--wine)}
+.cal-beat{position:relative;margin:58px -28px 0}
+.cal-strip{--cw:calc(178 * var(--u));position:relative;left:50%;display:flex;width:calc(var(--cw) * 3);margin-left:calc(var(--cw) * -1.5);border-top:1px solid rgba(90,15,23,.55);border-bottom:1px solid rgba(90,15,23,.55);color:var(--wine)}
+.cal-cell{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding-bottom:calc(26 * var(--u));text-align:center}
+.cal-cell+.cal-cell{border-left:1px solid rgba(90,15,23,.55)}
+.cal-cell .wd{display:block;align-self:stretch;padding:9px 0 8px;border-bottom:1px solid rgba(90,15,23,.55);font-family:var(--lat);font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink2)}
+.cal-cell b{display:block;margin-top:calc(26 * var(--u));font-family:var(--lat);font-weight:400;font-size:calc(96 * var(--u));line-height:.86;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.cal-cell .mo{display:block;margin-top:calc(12 * var(--u));font-family:var(--lat);font-size:calc(17 * var(--u));letter-spacing:.2em;text-transform:uppercase}
+.cal-cell:not(.on) b,.cal-cell:not(.on) .mo{opacity:.92}
+.cal-cell .since{display:block;margin-top:calc(5 * var(--u));font-family:var(--lat);font-size:8px;letter-spacing:.26em;color:var(--ink2)}
+.cal-ring{left:50%;top:calc(50% + 27px);width:calc(180 * var(--u));height:calc(200 * var(--u));transform:translate(-50%,-50%) rotate(-4deg)}
+.cal-ring path{stroke:#7d1420;stroke-width:2.9;stroke-linecap:round;stroke-linejoin:round;opacity:.92}
+.mark.cal-ring path{transition:stroke-dashoffset 1.9s cubic-bezier(.55,.05,.3,1) .25s}
+.cal-print{position:absolute;z-index:3;left:calc(12 * var(--u));top:calc(136 * var(--u));width:calc(112 * var(--u));padding:6px 6px 32px;transform:rotate(-5deg)}
+.cal-print img{height:auto;aspect-ratio:4/5}
+.cal-print figcaption{position:absolute;left:8px;right:8px;bottom:6px;display:flex;flex-direction:column;gap:3px;font-size:8px;line-height:1.2;color:var(--mute)}
+.cal-print figcaption .d{font-family:var(--lat);letter-spacing:.14em}.cal-print figcaption .c{letter-spacing:.16em}
+.cal-line{margin-top:calc(118 * var(--u));text-align:center;font-family:var(--lat);font-style:italic;font-size:14px;letter-spacing:.02em;color:var(--ink2)}
+.count-card{position:relative;width:calc(222 * var(--u));margin:calc(150 * var(--u)) auto 0;padding:calc(70 * var(--u)) 0 calc(58 * var(--u));text-align:center;color:var(--chalk);
+  background:var(--wine) url(assets/wine-field.webp) center/300%;box-shadow:0 1px 2px rgba(45,25,15,.3),4px 12px 18px rgba(45,25,15,.18),10px 28px 40px rgba(45,25,15,.14);transform:rotate(-2deg)}
+.count-card .tape-img{left:33%;top:-12px;width:34%;height:auto;transform:rotate(-3deg)}
+.cc-n{display:block;font-family:var(--lat);font-weight:400;font-size:calc(112 * var(--u));line-height:.9;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.cc-l{display:block;margin-top:calc(16 * var(--u));font-family:var(--lat);font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--chalk2)}
+
+@media (min-width:900px){
+  .slip-wrap{grid-column:2;width:450px;margin:70px 0 150px}
+  .at{font-size:10px}.at.jp{font-size:11px}
+  .at1{left:-60px;top:-50px}.at2{right:-70px;top:-24px}.at3{left:-90px}.at4{right:-90px}
+  .at5{left:-40px;bottom:-70px}.at6{bottom:-110px}.at7{right:-50px;bottom:-56px}
+  .heart-sticker{width:44px}
+  .jianghu .lk-jianghu{margin:0}
+  .kick{font-size:11px}
+  .lk.lk-en .e{font-size:44px}.lk-hotel.lk-en .e{font-size:48px}.map-sec .lk.lk-en .e{font-size:42px}.lk-finale.lk-en .e{font-size:40px}
+  .lk.lk-en .c{font-size:14px !important}
+  .itin small{font-size:18px}
+  .st-tx h3 i{font-size:22px}
+  .cal{padding:150px 0 170px}
+  .cal>*{max-width:none}
+  .cal-kick .script{font-size:64px}
+  .cal-beat{margin:90px 0 0}
+  .cal-strip{--cw:48vw}
+  .cal-cell .wd{font-size:11px;padding:14px 0 12px}
+  .cal-cell b{margin-top:40px;font-size:190px}
+  .cal-cell .mo{margin-top:20px;font-size:30px}
+  .cal-cell .since{font-size:10px;margin-top:14px}
+  .cal-cell{padding-bottom:44px}
+  .cal-ring{width:360px;height:326px;top:calc(50% + 22px)}
+  .cal-ring path{stroke-width:1.7}
+  .cal-print{left:calc(50% - 600px);top:210px;width:210px;padding:10px 10px 34px}
+  .cal-print figcaption{left:12px;right:12px;bottom:10px;font-size:10px;flex-direction:row;justify-content:space-between}
+  .cal-line{font-size:17px;margin-top:150px}
+  .count-card{width:320px;margin-top:180px;padding:96px 0 80px}
+  .cc-n{font-size:160px}.cc-l{font-size:12px;margin-top:22px}
+}
+.lk.lk-en .cn-row{display:block;margin-top:14px}
+.lk.lk-en .cn-row .c{display:inline !important;margin:0 !important}

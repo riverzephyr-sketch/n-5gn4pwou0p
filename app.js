@@ -39,6 +39,12 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const lines = (arr, cls) => (arr || []).map((t, i) => `<span class="${cls} ${cls}${i + 1}">${esc(t)}</span>`).join("");
 $$("[data-lk]").forEach(e => { const t = C.titles[e.dataset.lk]; if (!t) return;
   e.insertAdjacentHTML("beforeend", `${lines(t.cn, "c")}<span class="en">${lines(t.en, "e")}</span>`); });
+// English + numerals are the display layer; the Chinese title sits under it, smaller and lighter
+const CHAPTER = { jianghu: 1, hotel: 2, chapters: 3, map: 4, finale: 5 };
+$$("[data-lk]").forEach(e => { const k = e.dataset.lk, n = CHAPTER[k];
+  if (n) e.insertAdjacentHTML("afterbegin", `<span class="kick">Chapter ${pad2(n)}</span>`);
+  if (k !== "jianghu") { e.classList.add("lk-en"); const cs = [...e.querySelectorAll(":scope > .c")];
+    if (cs.length) { const row = el("span", "cn-row"); cs[0].before(row); row.append(...cs); } } });
 $$(".lk-jianghu .c").forEach(c => { c.innerHTML = [...c.textContent].map(ch => `<span class="ch">${esc(ch)}</span>`).join(""); });
 const paren = arr => arr && arr.length ? `<span class="paren"><b>(</b><span>${arr.map((t, i) => i ? esc(t) : `<i>${esc(t)}</i>`).join("<br>")}</span><b>)</b></span>` : "";
 const hairIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); hairIO.unobserve(e.target); } }), { threshold: .35 });
@@ -48,6 +54,8 @@ const hairIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersec
 const H = C.hero;
 $("#heroSub").textContent = H.subtitle;
 const placeById = Object.fromEntries(C.places.map(p => [p.id, p]));
+const dms = (v, pos, neg) => { const a = Math.abs(v), d = Math.floor(a), m = Math.round((a - d) * 60); return `${v >= 0 ? pos : neg} ${d}°${pad2(m === 60 ? 59 : m)}′`; };
+const geo = p => p && p.lat != null ? `${dms(p.lat, "N", "S")} · ${dms(p.lon, "E", "W")}` : "";
 const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.photo] : []);
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
 if (H.print) $("#heroPrint").innerHTML = img(H.print, "", true); else $("#heroPrint").remove();
@@ -121,6 +129,22 @@ if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(
   new MutationObserver(queue).observe(mini, { attributes: true, attributeFilter: ["class"] }); }
 
 
+/* ---------- THE DATE: 29 · 30 · 31, the 30th circled; the days left on a taped wine card ---------- */
+{ const K = C.calendar || {}, day = new Date(K.date || "2026-10-30T00:00:00+08:00");
+  $("#calScript").textContent = K.script || "";
+  $("#calSince").textContent = K.since || "";
+  $("#calLine").textContent = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Shanghai" });
+  if (K.print) { const f = $("#calPrint"); f.innerHTML = img(K.print, "") + `<figcaption>${(K.printCaption || []).map((t, i) => `<span class="${i ? "c" : "d"}">${esc(t)}</span>`).join("")}</figcaption>`; }
+  else $("#calPrint").remove();
+  // calendar days in Beijing time: 8 days to go … 1 day to go … today (1461) … then the running count
+  const bjDay = t => Math.floor((t + 8 * 36e5) / 864e5);
+  const setCount = () => { const left = bjDay(day.getTime()) - bjDay(Date.now());
+    const n = left > 0 ? left : Math.floor((Date.now() - start) / 864e5);
+    $("#ccN").textContent = left === 0 ? TARGET : n;
+    $("#ccL").textContent = left > 1 ? "days to go" : left === 1 ? "day to go" : left === 0 ? "days · today" : "days with you"; };
+  setCount(); setInterval(setCount, 6e4);
+  hairIO.observe($(".cal-ring")); }
+
 /* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
 
 /* ---------- JIANGHU ---------- */
@@ -128,6 +152,7 @@ const J = C.jianghu;
 // a typographic collage of the real names only: 方 / 保护我方姐姐 / 晚来天欲雪 / 《天涯明月刀手游》
 $("#jhSr").textContent = `《${J.game}》 ${J.guild} · ${J.me} · ${J.him} · ${J.himWechat || ""} · ${J.quietSong} · ${J.meWechat || ""}：${J.quiet}`;
 $("#jhGame").textContent = `《${J.game}》`; $("#jhGuild").textContent = J.guild; $("#jhMe").textContent = J.me; $("#jhHim").textContent = J.him;
+{ const at = $("#aimer"); (J.aimerTitles || []).forEach((t, i) => at.append(el("li", "at at" + (i + 1) + (t === "Polaris" ? " hi" : "") + (/[\u3040-\u30ff\u4e00-\u9fff]/.test(t) ? " jp" : ""), esc(t)))); }
 $("#jhWho").textContent = J.himWechat || ""; $("#jhMeW").textContent = J.meWechat || ""; $("#jhQuiet").textContent = J.quiet || "";
 // the shared song: "Artist · Title" (the colon in Ref:rain kept legible)
 { const sp = (J.quietSong || "").split(/\s*·\s*/), artist = sp.length > 1 ? sp[0] : "", title = sp.length > 1 ? sp.slice(1).join(" · ") : sp[0];
@@ -302,7 +327,7 @@ function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on"
       if (k === 0 && s.scene && SCN[s.scene]) f.insertAdjacentHTML("beforeend", '<span class="cue-mark" aria-hidden="true"></span>');
       ph.append(f); });
     const mem = isTodo(s.memory) ? "" : s.memory;
-    e.append(ph, el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3>` +
+    e.append(ph, el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
       (s.note ? `<span class="st-d">${esc(s.note)}</span>` : "") + (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
     st.append(e); });
 })();
