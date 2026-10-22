@@ -140,8 +140,7 @@ window.CONTENT = {
   // 最后的信封
   finale: {
     lockedTitle: "NEXT CHAPTER",
-    lockedHint: "10.31",       // 密码提示（留空 "" 就不显示）
-    code: "1030",
+    code: "411223",            // 隐藏页密码（几位数字都可以，圆点个数会自动跟着变）
     seal: "4",                 // 火漆印上的字（1–2 个字符最好看）
     letterTitle: "给夏天的信",
     // 每一段放一个字符串，用逗号隔开（最后一句如果和 closing 相同，会用斜体单独显示）

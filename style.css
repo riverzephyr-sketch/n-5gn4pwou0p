@@ -357,8 +357,7 @@ em,i{font-style:normal}
 .seal svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
 .envelope.open .seal .crack{opacity:1}
 .seal .crack{opacity:0;transition:opacity .15s}
-.lc-hint{font-family:var(--lat);font-style:italic;font-size:14px;letter-spacing:.24em;color:rgba(232,235,240,.6);margin-top:34px}
-.dots{display:flex;gap:16px;justify-content:center;margin:20px auto 26px}
+.dots{display:flex;gap:14px;justify-content:center;margin:44px auto 30px}
 .dots span{width:8px;height:8px;border-radius:50%;border:1px solid rgba(232,235,240,.6);transition:background .2s}
 .dots span.f{background:var(--moon)}
 .dots.bad{animation:shake .45s}.dots.bad span{border-color:#e7a0a3}
@@ -559,7 +558,6 @@ p,.s-mem,.cp .tx,.letter p,.heart-line,.then .pen{text-wrap:pretty}
 .pin:focus-visible{outline:none}.pin:focus-visible .ring{stroke:var(--ink);stroke-width:1.4;vector-effect:non-scaling-stroke}
 /* dark-section contrast */
 .finale .pcn{color:rgba(236,234,230,.78)}
-.lc-hint{color:rgba(236,234,230,.8)}
 .pad button{border-color:rgba(236,234,230,.4)}
 .pad button.fn{color:rgba(236,234,230,.72)}
 .dots span{border-color:rgba(236,234,230,.75)}

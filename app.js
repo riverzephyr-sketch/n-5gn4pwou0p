@@ -289,7 +289,7 @@ alignCaps(); addEventListener("resize", alignCaps); addEventListener("load", ali
 
 /* ---------- FINALE ---------- */
 const F = C.finale;
-$("#lcTitle").textContent = F.lockedTitle; $("#lcHint").textContent = F.lockedHint || ""; $("#envTo").textContent = C.him; $("#fTL").innerHTML = paren(["For", C.him]); $("#fTR").innerHTML = paren(["From", F.signature]);
+$("#lcTitle").textContent = F.lockedTitle; $("#envTo").textContent = C.him; $("#fTL").innerHTML = paren(["For", C.him]); $("#fTR").innerHTML = paren(["From", F.signature]);
 function sealSVG(text, id, size = 34) {
   let blob = ""; const N = 28;
   for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2, r = 44 + Math.sin(i * 2.7) * 2.6 + Math.cos(i * 5.3) * 2.2 + (i % 4 === 0 ? 3 : 0); blob += (i ? "L" : "M") + (Math.cos(a) * r).toFixed(1) + " " + (Math.sin(a) * r).toFixed(1); }
@@ -303,22 +303,23 @@ function sealSVG(text, id, size = 34) {
 }
 $("#seal").innerHTML = sealSVG(F.seal || "4", "envSeal", 40);
 const dotsEl = $("#dots");
-for (let i = 0; i < 4; i++) dotsEl.append(el("span"));
-let code = "";
+const LEN = String(F.code).length; // number of digits = length of finale.code
+for (let i = 0; i < LEN; i++) dotsEl.append(el("span"));
+let code = "", checking = false;
 const dots = [...dotsEl.children];
 ["1", "2", "3", "4", "5", "6", "7", "8", "9", "清除", "0", "删除"].forEach(k => {
   const b = el("button", isNaN(k) ? "fn" : "", k);
-  b.onclick = () => {
-    if (k === "清除") code = ""; else if (k === "删除") code = code.slice(0, -1); else if (code.length < 4) code += k;
+  b.onclick = () => { if (checking) return;
+    if (k === "清除") code = ""; else if (k === "删除") code = code.slice(0, -1); else if (code.length < LEN) code += k;
     dots.forEach((d, j) => d.classList.toggle("f", j < code.length));
-    if (code.length === 4) setTimeout(check, 200);
+    if (code.length === LEN) { checking = true; setTimeout(check, 200); }
   };
   $("#pad").append(b);
 });
 function check() {
-  if (code === String(F.code)) { unlock(); return; }
+  if (code === String(F.code)) { checking = false; unlock(); return; }
   dotsEl.classList.add("bad"); if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
-  setTimeout(() => { dotsEl.classList.remove("bad"); code = ""; dots.forEach(x => x.classList.remove("f")); }, 650);
+  setTimeout(() => { dotsEl.classList.remove("bad"); code = ""; checking = false; dots.forEach(x => x.classList.remove("f")); }, 650);
 }
 
 /* hidden page */
@@ -362,7 +363,7 @@ $("#heart").addEventListener("click", e => {
 
 /* ---------- MOTION (GSAP, self-hosted in vendor/) ----------
    Three moments only, each plays on its own:
-   1. the 1461 counter counts up once   2. the red string draws itself (scroll-scrubbed)   3. the wax seal breaks on 1030
+   1. the 1461 counter counts up once   2. the red string draws itself (scroll-scrubbed)   3. the wax seal breaks on the right passcode
    Reduced motion → every moment jumps straight to its final state. */
 let mm = null;
 const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
