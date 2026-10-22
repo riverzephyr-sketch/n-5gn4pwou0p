@@ -13,6 +13,8 @@ const GROUPS = {};
 const USED = new Set([C.hero && C.hero.print, ...C.chapters.flatMap(c => c.items.flatMap(m => [m.photo, ...(m.scans || [])]))].filter(Boolean));
 const SCN = C.scenes || {}; // photo viewer groups: { id: [{ src, date, place, scene }] }
 const isTodo = s => !s || /待填写/.test(s);
+// no single-character last line: the last two characters (plus any closing punctuation) never split, e.g. 他的 / 生日
+const nobr = s => { s = String(s); const m = s.match(/[^\s。，、！？」』）.,!?]{2}[。，、！？」』）.,!?]*$/u); return m ? esc(s.slice(0, m.index)) + `<span class="nw">${esc(m[0])}</span>` : esc(s); };
 // placeholder text: hidden unless showTodo
 const txt = s => isTodo(s) ? (SHOW ? '<span class="todo">待填写</span>' : "") : esc(s);
 if (SHOW) document.body.classList.add("show-todo");
@@ -418,7 +420,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   const tapPhoto = (box, src, m) => { if (!src) return box; const k = add(src, m); box.dataset.vg = gid; box.dataset.vi = k;
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
     if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
-  const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = txt(m.text);
+  const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = isTodo(m.text) ? txt(m.text) : nobr(m.text);
     return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t.split(" · ").map(w => `<span class="nw">${w}</span>`).join(" · ")}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
   // every roll is a vertical strip of film (the original rolls); layout values in content.js are kept but no longer change the form
   const L = "strip";
@@ -430,7 +432,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     c.items.forEach(m => {
       const cap = m.milestone ? "" : capHTML(m), cont = !m.milestone && !cap && last;
       const ev = cont ? last : el("article", "ev" + (m.highlight ? " hi" : "") + (m.milestone ? " ms" : ""));
-      if (!cont) { if (m.milestone) ev.innerHTML = `<header class="ev-h"><span class="d">${esc(m.date)}</span><span class="ms-k">Milestone</span><span class="t">${esc(m.title)}</span>${m.text ? `<span class="tx">${esc(m.text)}</span>` : ""}</header>`;
+      if (!cont) { if (m.milestone) ev.innerHTML = `<header class="ev-h"><span class="d">${esc(m.date)}</span><span class="ms-k">Milestone</span><span class="t">${nobr(m.title)}</span>${m.text ? `<span class="tx">${nobr(m.text)}</span>` : ""}</header>`;
         else if (cap) ev.append(el("header", "ev-h", cap)); }
       if (m.scans) { const w = el("div", "ev-ph ev-pair"); m.scans.forEach(src => { const f = el("div", "scan-ph", img(src, m.title)); tapPhoto(f, src, m); w.append(f); }); ev.append(w); }
       else if (m.photo) { const r = (m.crop && m.crop.ratio) || "4/5", size = /^3\/2$/.test(r) ? "L" : (m.highlight ? "P" : "S");
@@ -459,7 +461,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
   c.items.forEach(m => {
     const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
-    if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${esc(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
+    if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
       const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
@@ -468,7 +470,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
       fr.append(ph); }
     fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
     vs.append(fr);
-    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), m.milestone ? `<span class="d">${esc(m.date)}</span><span class="t">${esc(m.title)}</span>${m.text ? `<span class="tx">${esc(m.text)}</span>` : ""}` : capHTML(m)));
+    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), m.milestone ? `<span class="d">${esc(m.date)}</span><span class="t">${nobr(m.title)}</span>${m.text ? `<span class="tx">${nobr(m.text)}</span>` : ""}` : capHTML(m)));
   });
   vr.append(vs, caps); y.append(vr); list.append(y);
 });
