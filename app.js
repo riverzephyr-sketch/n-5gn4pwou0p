@@ -46,7 +46,8 @@ const hairIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersec
 
 /* ---------- HERO ---------- */
 const H = C.hero;
-$("#heroSub").textContent = H.subtitle;
+// the one line is split across the two sides of the stack (text unchanged): "…favorite place" | "since 2022."
+{ const m = (H.subtitle || "").match(/^(.*\S)\s+(since\s.*)$/i); $("#heroSub").textContent = m ? m[1] : H.subtitle; $("#heroSub2").textContent = m ? m[2] : ""; }
 const placeById = Object.fromEntries(C.places.map(p => [p.id, p]));
 const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.photo] : []);
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
@@ -118,7 +119,7 @@ $("#jhFrom").textContent = J.from; $("#jhTo").textContent = J.to;
 // the pose is the same in every frame, so a cut reads as the clothes changing; a fade would ghost two outfits together).
 // swipe / drag / ← → flips by hand and pauses the auto-play for a while. reduced motion: frame 1, by hand only.
 (() => { const WD = J.wardrobe, fig = $("#wardrobe"); if (!WD || !WD.count || !fig) return;
-  const N = WD.count, desk = matchMedia("(min-width:900px)").matches, pre = desk ? "d" : "m", st = $("#wdStack"), out = $("#wdN");
+  const N = WD.count, pre = "m", st = $("#wdStack"), out = $("#wdN");
   const src = i => `${WD.dir}/${pre}${pad2(i + 1)}.webp`, ims = [], ready = [];
   fig.hidden = false; fig.tabIndex = 0; fig.setAttribute("role", "img"); fig.setAttribute("aria-label", `《${J.game}》 · ${N}`);
   let cur = 0, timer = 0, holdT = 0, visible = false, held = false;
@@ -537,9 +538,9 @@ document.addEventListener("keydown", e => { if (V.el && V.el.classList.contains(
   const b = e.target.closest && e.target.closest("[data-vg]"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openViewer(b.dataset.vg, b.dataset.vi, b); } }, true);
 
 /* ---------- SPINE: one red line through the whole page ----------
-   It runs: from under the 1461 tag → the sound wave in 江湖 → 北京 → 重庆 → the taxi detour → down the rolls' margin
+   It runs: from under the 1461 tag → the sound wave in 江湖 → 北京 → 重庆 → 「重庆 · 初见」 → past the key cards → down the rolls' margin
    → under the map paper into the string → down the margin → the finale, and off the right edge (the next chapter).
-   The designed pieces (wave, route, taxi, map string) are drawn by their own SVGs; the spine only draws the joins.
+   The designed pieces (wave, route, map string) are drawn by their own SVGs; the spine only draws the joins.
    It never sits over text or photos: wherever it would cross one, it breaks and passes "behind" with a small gap. */
 const SP = { svgs: [] };
 function buildSpine() { try {
@@ -560,14 +561,13 @@ function buildSpine() { try {
     d += nearB ? ` L ${B[0]} ${B[1]}` : ` C ${g} ${y2 + k}, ${cx(B[0] - db[0] * k)} ${B[1] - db[1] * k}, ${B[0]} ${B[1]}`;
     return d; };
   const D = [0, 1], segs = [];
-  const tag = R($("#tag")), route = ends($("#jhA")), taxi = ends($("#taxiPath"));
-  const P0 = [tag.l + tag.w * .5, tag.t + tag.h * .55];
-  segs.push(join(P0, [-.6, .8], route.s, route.sd));          // hero → past the sound wave (it branches off here) → 北京
+  const tag = R($("#tag")), route = ends($("#jhA"));
+  const dr = R($("#hero .drape")), P0 = [dr.l + dr.w * .5, dr.b - 12];   // the thread leaves from the foot of the hanging stack
+  segs.push(join(P0, [-.15, 1], route.s, route.sd));          // hero → past the sound wave (it branches off here) → 北京
   const hl = R($("#hLabel"));
   segs.push(join(route.e, route.ed, [gx, hl.t - 4], D));      // 重庆 → down into 「重庆 · 初见」
-  segs.push(join([gx, hl.t - 4], D, taxi.s, taxi.sd));        // → the taxi detour
   const cl = R($("#chapterList")), tx = cl.l - 11.5, t0 = cl.t + 60, t1 = cl.b - 40;
-  segs.push(join(taxi.e, taxi.ed, [tx, t0], D)); segs.push(`M${tx} ${t0} L ${tx} ${t1}`);
+  segs.push(join([gx, hl.t - 4], D, [tx, t0], D));          // quietly down the margin past the two key cards segs.push(`M${tx} ${t0} L ${tx} ${t1}`);
   const str = $("#mapSvg .string"); let mapEnd = [tx, t1], mapD = D;
   if (str && str.getTotalLength && str.getTotalLength() > 0) { const m = ends(str); segs.push(join([tx, t1], D, m.s, [0, 1])); mapEnd = m.e; mapD = [0, 1]; }
   const fin = R($("#finale")), env = R($("#envelope")), Y = env.b + 18, fw = fin.w;
@@ -586,7 +586,7 @@ function buildSpine() { try {
     while ((n = tw.nextNode())) { if (!n.nodeValue.trim()) continue; const pe = n.parentElement; if (!pe || pe.closest(".sr-only,svg.spine")) continue;
       if (pe.closest("svg")) { add((pe.closest("text") || pe).getBoundingClientRect(), 6); continue; }
       rg.selectNodeContents(n); for (const r of rg.getClientRects()) add(r); }
-    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature,.wardrobe").forEach(e => add(e.getBoundingClientRect(), 6)); });
+    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature,.wardrobe,.drape").forEach(e => add(e.getBoundingClientRect(), 6)); });
   const B = 200, bucket = {}; obs.forEach((o, i) => { for (let k = Math.floor(o[1] / B); k <= Math.floor(o[3] / B); k++) (bucket[k] = bucket[k] || []).push(o); });
   const hit = (x, y) => (bucket[Math.floor(y / B)] || []).some(o => x >= o[0] && x <= o[2] && y >= o[1] && y <= o[3]);
   // one svg per section, holding the part of the line inside it
@@ -669,7 +669,6 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         const wt = gsap.timeline({ scrollTrigger: { trigger: key, start: "top 80%", once: true } })
           .fromTo(key, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: .6, ease: "power3.out", clearProps: "clipPath" }, 0);
         if (words) wt.fromTo(words, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5, ease: "power2.out" }, .35); });
-      draw(".taxi-line .rl-p", ".taxi-line");
       // the spine: each section's part draws as you scroll through it (the hero's part draws after the counter)
       const spTweens = []; SP.onBuild = () => { spTweens.splice(0).forEach(t => { try { t.scrollTrigger && t.scrollTrigger.kill(); t.kill(); } catch (e) {} });
         SP.svgs.forEach(sv => { const p = sv.querySelector("path");

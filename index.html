@@ -9,29 +9,32 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%237a1f24%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=10221100">
+<link rel="stylesheet" href="style.css?v=10221300">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 
 <!-- 1. HERO -->
 <header class="hero paper" id="hero">
+  <!-- centre: the 1461 tag on its ribbon, two prints hanging beneath it, fabric behind -->
   <div class="hang">
     <div class="ribbon"></div>
-    <figure class="behind b1" id="behind1"></figure>
-    <figure class="behind b2" id="behind2"></figure>
+    <i class="drape" aria-hidden="true"></i>
     <div class="tag" id="tag">
       <i class="grommet"></i>
-      <div class="tag-top"><span>No. 1461</span></div>
       <h1 class="hero-num" aria-label="1461 Days with you"><span class="d" aria-hidden="true">1</span><span class="d" aria-hidden="true">4</span><span class="d" aria-hidden="true">6</span><span class="d" aria-hidden="true">1</span></h1>
-      <p class="hero-dates"><i>Days with you</i><span>2022.10.30 — 2026.10.30</span></p>
-      <div class="tag-count"><span class="t-days" id="cDays">0</span><span class="t-unit">天</span>
-        <span class="t-time"><span id="cH">00</span><em>:</em><span id="cM">00</span><em>:</em><span id="cS">00</span></span></div>
-      <div class="t-bar"><i id="bar"></i></div>
     </div>
+    <figure class="behind b1" id="behind1"></figure>
+    <figure class="behind b2" id="behind2"></figure>
   </div>
-  <p class="hero-sub" id="heroSub"></p>
-  <p class="play-hint" id="playHint"></p>
+  <!-- the existing words, set in the corners and on the two sides -->
+  <p class="hc hc-tl hero-dates"><span class="hc-no">No. 1461</span><i>Days with you</i></p>
+  <p class="hc hc-tr hero-dates"><span>2022.10.30</span><span class="hc-dash">—</span><span>2026.10.30</span></p>
+  <p class="hero-sub hs-l" id="heroSub"></p>
+  <p class="hero-sub hs-r" id="heroSub2"></p>
+  <div class="hc hc-bl tag-count"><span class="t-row"><span class="t-days" id="cDays">0</span><span class="t-unit">天</span></span>
+    <span class="t-time"><span id="cH">00</span><em>:</em><span id="cM">00</span><em>:</em><span id="cS">00</span></span><span class="t-bar"><i id="bar"></i></span></div>
+  <p class="hc hc-br play-hint" id="playHint"></p>
   <a class="cue" href="#jianghu" aria-label="往下"><i></i></a>
 </header>
 
@@ -42,17 +45,16 @@
     <p class="sr-only" id="jhSr"></p>
     <!-- beat 1 · two players, one guild -->
     <div class="jh-beat jh-players">
-      <header class="jh-head" aria-hidden="true"><span class="jh-game" id="jhGame"></span><span class="jh-k">Guild</span><span class="jh-guild" id="jhGuild"></span></header>
+      <header class="jh-head" aria-hidden="true"><span class="jh-game" id="jhGame"></span><span class="jh-guild" id="jhGuild"></span></header>
       <div class="jh-plates" aria-hidden="true">
-        <figure class="plate plate-her"><span class="plate-name jh-big" id="jhBig"></span><figcaption class="jh-k">Her</figcaption></figure>
-        <figure class="plate plate-him"><span class="plate-name jh-him" id="jhHim"></span><figcaption class="jh-k">Him</figcaption></figure>
+        <figure class="plate plate-her"><span class="plate-name jh-big" id="jhBig"></span></figure>
+        <figure class="plate plate-him"><span class="plate-name jh-him" id="jhHim"></span></figure>
       </div>
       <figure class="wardrobe" id="wardrobe" hidden><div class="wd-stack" id="wdStack"></div><figcaption class="wd-n" id="wdN"></figcaption></figure>
     </div>
     <!-- beat 2 · the song he shared, her reply -->
     <div class="jh-beat jh-moment">
-      <span class="jh-k" aria-hidden="true">Moments</span>
-      <div class="share" id="jhShare" aria-hidden="true"><i class="share-cover"></i><span class="share-t"><b class="share-title" id="jhTitle" translate="no"></b><span class="share-artist" id="jhArtist" translate="no"></span></span></div>
+            <div class="share" id="jhShare" aria-hidden="true"><i class="share-cover"></i><span class="share-t"><b class="share-title" id="jhTitle" translate="no"></b><span class="share-artist" id="jhArtist" translate="no"></span></span></div>
       <p class="reply" aria-hidden="true"><span class="jh-quiet" id="jhQuiet"></span></p>
       <svg class="jh-wave" viewBox="0 0 120 40" aria-hidden="true"><path class="rl-p" id="jhWave" d="M0 20 C 4 20, 5 12, 8 12 S 12 28, 15 28 S 19 8, 22 8 S 26 30, 29 30 S 33 14, 36 14 S 40 24, 43 24 S 50 20, 56 20 L 120 20"/></svg>
     </div>
@@ -66,11 +68,6 @@
 <section class="sec paper hotel" id="hotel">
   <span class="corner tl" id="hLabel"></span>
   <div class="lk lk-hotel" data-lk="hotel"></div>
-  <svg class="taxi-line" viewBox="0 0 340 112" aria-hidden="true">
-    <path class="rl-p" id="taxiPath" d="M0 26 C 110 26, 220 30, 296 40 C 322 44, 322 72, 296 74 C 220 80, 140 84, 74 84 C 40 84, 16 88, 0 104"/>
-    <circle cx="296" cy="40" r="3" class="o"/><circle cx="74" cy="84" r="3"/>
-    <text x="296" y="24" text-anchor="middle">JW Marriott</text><text x="74" y="104" text-anchor="middle">Marriott</text>
-  </svg>
   <div class="score" aria-live="polite"><span class="score-lab" id="scoreLab"></span><span class="score-hist" id="scoreHist"></span><span class="score-now"><b id="score">100</b></span></div>
   <div class="hotels" id="hotels"></div>
   <blockquote class="then" id="then" aria-live="polite"></blockquote>
@@ -164,9 +161,9 @@
   </div>
 </div>
 
-<script src="content.js?v=10221100"></script>
-<script src="map-data.js?v=10221100"></script>
-<script src="photos/sizes.js?v=10221100"></script>
-<script src="app.js?v=10221100"></script>
+<script src="content.js?v=10221300"></script>
+<script src="map-data.js?v=10221300"></script>
+<script src="photos/sizes.js?v=10221300"></script>
+<script src="app.js?v=10221300"></script>
 </body>
 </html>

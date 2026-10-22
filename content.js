@@ -42,7 +42,7 @@ window.CONTENT = {
     quiet: "我也喜欢",            // 朋友圈里的第一句话
     quietSong: "Aimer · Ref:rain", // 那条朋友圈分享的歌
     from: "北京", to: "重庆",
-    // 游戏里的情侣时装：photos/wardrobe/m01–m27.webp（手机 4:5）和 d01–d27.webp（电脑 3:2），由原图裁好
+    // 游戏里的情侣时装：photos/wardrobe/m01–m27.webp（4:5），由原图裁好
     wardrobe: { dir: "photos/wardrobe", count: 27 },
   },
 

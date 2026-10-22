@@ -1029,3 +1029,77 @@ p,.s-mem,.cp .tx,.letter p,.heart-line,.then .pen{text-wrap:pretty}
 .wd-n{margin-top:10px;text-align:right;font-family:var(--lat);font-size:11px;letter-spacing:.12em;color:var(--mute);font-variant-numeric:lining-nums tabular-nums}
 .wardrobe:focus-visible .wd-stack{outline:1px solid rgba(122,31,36,.5);outline-offset:4px}
 @media (min-width:900px){.wardrobe{max-width:760px;margin:36px auto 0}.wd-stack{aspect-ratio:3/2}}
+
+/* =========  v9 · hero as one poster: a hanging stack in the centre, the words in the corners  ========= */
+.hero{--rib:13vh;--rib:13svh;--o2:.2;
+  --w:min(42vw, calc((100vh - 13vh - 120px) / 3.1), 320px);
+  --w:min(42vw, calc((100svh - 13svh - 120px) / 3.1), 320px);
+  height:100vh;height:100svh;min-height:0;padding:0 !important;display:block;overflow:hidden;overflow:clip;position:relative}
+.hero .hang{position:absolute;left:50%;top:0;width:var(--w);margin:0 0 0 calc(var(--w) / -2);display:flex;flex-direction:column;align-items:center;z-index:2}
+.hero .ribbon{width:calc(var(--w) * .1);height:var(--rib);flex:none}
+.hero .ribbon::after{bottom:calc(var(--w) * -.06);height:calc(var(--w) * .11)}
+.hero .tag{width:100%;margin-top:-4px;padding:calc(var(--w) * .13) calc(var(--w) * .07) calc(var(--w) * .1);z-index:3}
+.hero .grommet{top:calc(var(--w) * .035)}
+.hero .hero-num{font-size:calc(var(--w) * .475);line-height:.8;margin:calc(-.12em) 0 0;text-indent:-.03em;letter-spacing:0}
+.hero .behind{position:relative;left:auto;right:auto;top:auto;width:calc(var(--w) * .96);padding:calc(var(--w) * .045) calc(var(--w) * .045) calc(var(--w) * .15);margin:0;box-shadow:0 12px 22px -12px rgba(40,20,10,.5)}
+.hero .behind .ph{aspect-ratio:3/4}
+.hero .behind figcaption{left:calc(var(--w) * .05);bottom:calc(var(--w) * .045);font-size:clamp(9px, calc(var(--w) * .062), 13px)}
+.hero .b1{z-index:2;margin-top:calc(var(--w) * -.1);transform:rotate(-2.5deg) translateX(-3%)}
+.hero .b2{z-index:1;margin-top:calc(var(--w) * -1 * var(--o2));transform:rotate(2.2deg) translateX(4%)}
+.drape{position:absolute;z-index:0;left:50%;top:calc(var(--rib) + var(--w) * .45);width:calc(var(--w) * 1.22);height:calc(var(--w) * 2.75);margin-left:calc(var(--w) * -.61);
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0 1px,transparent 1px 3px),
+    linear-gradient(100deg,#4e1217 0%,#6b1a20 22%,#5a151a 40%,#7a1f24 58%,#561418 78%,#6e1b21 100%);
+  clip-path:polygon(14% 0,86% 2%,90% 30%,100% 58%,92% 78%,78% 100%,40% 94%,8% 86%,0 60%,6% 30%);transform:rotate(-3deg);box-shadow:0 20px 40px -20px rgba(0,0,0,.5);pointer-events:none}
+/* corners + sides */
+.hc{position:absolute;z-index:3;margin:0;color:var(--ink);font-family:var(--lat);line-height:1.35}
+.hc-tl{left:22px;top:calc(22px + env(safe-area-inset-top));display:grid;gap:6px}
+.hc-tl .hc-no{font-style:italic;font-size:12px;color:var(--wine)}
+.hc-tl i{font-size:15px;font-style:normal}
+.hc-tr{right:22px;top:calc(22px + env(safe-area-inset-top));display:grid;justify-items:end;gap:2px;font-style:italic;font-size:12px;color:var(--mute);font-variant-numeric:lining-nums}
+.hc-tr .hc-dash{line-height:.9}
+.hero .hero-sub{position:absolute;z-index:3;margin:0;width:calc((100% - var(--w)) / 2 - 40px);max-width:200px;font-size:15px;line-height:1.4;text-align:left}
+.hero .hs-l{right:calc(50% + var(--w) / 2 + 16px);top:calc(var(--rib) + var(--w) * 1.05);text-align:right}
+.hero .hs-r{left:calc(50% + var(--w) / 2 + 16px);top:calc(var(--rib) + var(--w) * 2.15)}
+.hero .hc-bl{left:22px;bottom:calc(22px + env(safe-area-inset-bottom));top:auto;display:grid;gap:4px;margin:0;padding:0;border:0;width:auto}
+.hero .hc-bl .t-row{display:flex;align-items:baseline;gap:5px}
+.hero .hc-bl .t-days{font-size:22px}.hero .hc-bl .t-unit{font-size:12px}
+.hero .hc-bl .t-time{margin:0;font-size:12px}
+.hero .hc-bl .t-bar{display:block;width:76px;margin:6px 0 0}
+.hero .play-hint.hc-br{position:absolute;right:16px;left:auto;bottom:calc(14px + env(safe-area-inset-bottom));margin:0;padding:8px 6px;max-width:7.5em;text-align:right;font-family:var(--zh);font-size:11.5px;line-height:1.7;letter-spacing:.2em;color:var(--wine)}
+.hero .cue{left:50%;bottom:calc(14px + env(safe-area-inset-bottom));height:30px;z-index:3}
+@media (max-height:700px){.hc-tl i{font-size:14px}.hero .hero-sub{font-size:14px}.hero .hc-bl .t-days{font-size:20px}}
+@media (min-width:900px){
+  .hero{--o2:.5;--rib:10vh;--rib:10svh;--w:min(250px, calc((100vh - 10vh - 120px) / 2.8));--w:min(250px, calc((100svh - 10svh - 120px) / 2.8))}
+  .hc-tl{left:max(40px, calc(50% - 520px));top:40px}.hc-tr{right:max(40px, calc(50% - 520px));top:40px}
+  .hero .hc-bl{left:max(40px, calc(50% - 520px));bottom:40px}.hero .play-hint.hc-br{right:max(34px, calc(50% - 526px));bottom:32px;max-width:none}
+  .hc-tl .hc-no,.hc-tr{font-size:14px}.hc-tl i{font-size:19px}
+  .hero .hero-sub{font-size:21px;width:240px;max-width:none}
+  .hero .hs-l{right:calc(50% + var(--w) / 2 + 56px)}.hero .hs-r{left:calc(50% + var(--w) / 2 + 56px)}
+  .hero .hc-bl .t-days{font-size:28px}.hero .hc-bl .t-time{font-size:14px}.hero .hc-bl .t-bar{width:110px}
+  .hero .cue{bottom:28px}
+}
+
+/* 江湖 · no English labels; the wardrobe as a small framed card under the plates */
+.jh-head .jh-guild{margin-top:16px}
+.plate{padding-bottom:0}
+.jh .jh-him{margin-bottom:0}
+.wardrobe{width:58%;margin:48px auto 8px;padding:8px 8px 0;background:#fbf8f1;border:1px solid var(--hair);box-shadow:0 14px 26px -18px rgba(40,20,10,.5)}
+.wd-stack{box-shadow:none}
+.wd-n{margin:0;padding:7px 0 8px;text-align:center;font-size:10px}
+.jh-moment{margin-top:64px}
+@media (min-width:900px){.wardrobe{width:300px;max-width:300px;margin:64px auto 8px}.wd-stack{aspect-ratio:4/5}}
+
+/* 万豪 · no drawn route; the key cards and the score carry it */
+.hotel .score{margin:34px 0 22px}
+.hero{--rib:16vh;--rib:16svh;--w:min(42vw, calc((100vh - 16vh - 120px) / 3.1), 320px);--w:min(42vw, calc((100svh - 16svh - 120px) / 3.1), 320px)}
+.hero .hs-l{right:calc(50% + var(--w) * .66 + 10px);width:calc((100% - var(--w) * 1.32) / 2 - 32px)}
+.hero .hs-r{left:calc(50% + var(--w) * .66 + 10px);width:calc((100% - var(--w) * 1.32) / 2 - 32px)}
+.hero .play-hint.hc-br{max-width:none;white-space:nowrap}
+@media (min-width:900px){
+  .hero{--rib:11vh;--rib:11svh;--w:min(250px, calc((100vh - 11vh - 120px) / 2.8));--w:min(250px, calc((100svh - 11svh - 120px) / 2.8))}
+  .hero .hs-l{right:calc(50% + var(--w) * .66 + 40px);width:240px}.hero .hs-r{left:calc(50% + var(--w) * .66 + 40px);width:240px}
+  .hc-tr{font-size:15px}
+}
+/* on tall phones the ribbon takes up the extra height, so the stack always hangs down to the bottom band */
+@media (max-width:899px){.hero .hang{--rib:max(16vh, calc(100vh - var(--w) * 3.1 - 150px));--rib:max(16svh, calc(100svh - var(--w) * 3.1 - 150px))}
+  .hero .hs-l,.hero .hs-r{--rib:max(16svh, calc(100svh - var(--w) * 3.1 - 150px))}}
