@@ -101,7 +101,7 @@ em,i{font-style:normal}
 .paren span{font-family:var(--lat)}
 .paren i{font-style:italic}
 /* =========  HERO  ========= */
-.hero{min-height:100svh;padding:0 22px 64px;position:relative;overflow:hidden;overflow:clip;display:flex;flex-direction:column;align-items:center}
+.hero{min-height:100vh;min-height:100svh;padding:0 22px 64px;position:relative;overflow:hidden;overflow:clip;display:flex;flex-direction:column;align-items:center}
 .hang{position:relative;width:282px;transform-origin:50% 0;animation:sway 8s ease-in-out infinite}
 @keyframes sway{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1deg)}}
 .ribbon{width:22px;height:110px;margin:0 auto;position:relative;z-index:4;border-radius:0 0 3px 3px;
@@ -577,3 +577,6 @@ p,.s-mem,.cp .tx,.letter p,.heart-line,.then .pen{text-wrap:pretty}
 .env-flap{will-change:transform}
 #seal .half{will-change:transform,opacity}
 .t-days{font-variant-numeric:lining-nums tabular-nums;font-feature-settings:"tnum" 1,"lnum" 1;min-width:3.2ch;display:inline-block}
+
+/* snow canvas sits behind the 江湖 content (rule was lost in the v4 clean-up) */
+.snow{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0}

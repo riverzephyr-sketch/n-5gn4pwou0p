@@ -104,8 +104,9 @@ $("#chat").innerHTML = `<span class="ch">[${esc(J.guild)}]</span><span class="nm
 $("#jhQuiet").textContent = J.quiet ? `「${J.quiet}」` : ""; $("#jhSong").textContent = J.quietSong || "";
 $("#jhFrom").textContent = J.from; $("#jhTo").textContent = J.to;
 (() => { // faint snow — 晚来天欲雪
-  const cv = $("#snow"), g = cv.getContext("2d"), sec = $("#jianghu"); let W, Hh, flakes = [], on = false, raf;
-  const size = () => { const r = sec.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1); W = r.width; Hh = r.height; cv.width = W * dpr; cv.height = Hh * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  const cv = $("#snow"), g = cv.getContext("2d"), sec = $("#jianghu");
+  Object.assign(cv.style, { position: "absolute", left: "0", top: "0", width: "100%", height: "100%", pointerEvents: "none", zIndex: "0" }); let W, Hh, flakes = [], on = false, raf;
+  const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); W = sec.clientWidth; Hh = Math.min(sec.clientHeight, 1400); cv.width = W * dpr; cv.height = Hh * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); };
   const mk = y => ({ x: Math.random() * W, y: y ?? Math.random() * Hh, r: .6 + Math.random() * 1.6, v: .2 + Math.random() * .4, w: Math.random() * 6.28, a: .18 + Math.random() * .3 });
   const loop = () => { g.clearRect(0, 0, W, Hh); flakes.forEach(f => { f.y += f.v; f.w += .01; f.x += Math.sin(f.w) * .25; if (f.y > Hh + 4) Object.assign(f, mk(-4));
     g.beginPath(); g.arc(f.x, f.y, f.r, 0, 6.28); g.fillStyle = `rgba(150,140,130,${f.a})`; g.fill(); }); if (on) raf = requestAnimationFrame(loop); };
@@ -132,7 +133,7 @@ $("#hotels").append(wrongC, rightC);
 const xm = el("span", "mark xmark", MARK.x); wrongC.querySelector(".ph").append(xm);
 const stamp = el("span", "stamp", esc(HT.stamp || "扣分")); wrongC.append(stamp);
 const okr = el("span", "mark okring", MARK.circle); rightC.append(okr);
-const qParts = HT.quote.split(/(?<=[，！。？])/).filter(Boolean);
+const qParts = (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
 $("#then").innerHTML = `<span class="qm o">“</span>${qParts.map((t, i) => `<span class="l l${i + 1}">${esc(t)}</span>`).join("")}<span class="qm c">”</span><span class="pen">${(HT.quoteEn || []).map(esc).join("<br>")}</span>`;
 let score = HT.startScore; const hist = [];
 const scoreWrap = $("#score").parentElement;
@@ -342,7 +343,7 @@ function unlock() {
   const openPage = () => { const s = $("#secret"); s.classList.add("open"); s.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
     s.scrollTop = 0; $("#secretClose").focus({ preventScroll: true }); setTimeout(() => s.classList.add("dev"), 60); };
   $("#envelope").classList.add("open");
-  if (MO.sealTL) MO.sealTL(openPage); else setTimeout(openPage, 300);
+  if (MO.sealTL) (() => { try { MO.sealTL(openPage); } catch (e) { motionOff(); openPage(); } })(); else setTimeout(openPage, 300);
 }
 $("#secretClose").onclick = () => { const s = $("#secret"); s.setAttribute("aria-hidden", "true"); s.classList.remove("open", "dev"); document.body.style.overflow = ""; $("#envelope").classList.remove("open"); MO.sealReset && MO.sealReset(); code = ""; dots.forEach(x => x.classList.remove("f")); };
 
@@ -363,15 +364,19 @@ $("#heart").addEventListener("click", e => {
    Three moments only, each plays on its own:
    1. the 1461 counter counts up once   2. the red string draws itself (scroll-scrubbed)   3. the wax seal breaks on 1030
    Reduced motion → every moment jumps straight to its final state. */
-if (window.gsap) {
+let mm = null;
+const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
+  document.documentElement.classList.remove("js-motion"); try { tick(); } catch (e) {} };
+function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) return; try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
-  const mm = gsap.matchMedia();
+  document.documentElement.classList.add("js-motion");
+  mm = gsap.matchMedia();
   const promiseEls = [promisePath, promiseLbl];
   mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduce: "(prefers-reduced-motion: reduce)" }, ctx => {
     const { reduce } = ctx.conditions;
     /* 1 · counter: once, on first view; tabular figures keep the width still */
     const days = Math.floor(Math.max(0, Date.now() - start) / 864e5);
-    if (!reduce) {
+    if (!reduce && performance.now() < 1800) { // only if it can still feel like 'first view'
       MO.counting = true;
       const o = { v: 0 }, out = $("#cDays");
       gsap.to(o, { v: days, duration: 1.8, ease: "power2.out", delay: .3,
@@ -406,6 +411,18 @@ if (window.gsap) {
     MO.sealReset = () => { seal.pause(0); gsap.set(flap, { clearProps: "zIndex" }); };
     return () => { MO.counting = false; MO.finishString = null; };
   });
-  addEventListener("load", () => ScrollTrigger.refresh());
-}
+  addEventListener("load", () => { try { ScrollTrigger.refresh(); } catch (e) { motionOff(); } });
+} catch (e) { motionOff(); } }
+// GSAP is optional: the page is complete without it. Load it after the content is on screen;
+// if it hasn't arrived within 2.5s (slow network), skip the motion entirely.
+(() => { const V = (document.querySelector('script[src^="app.js"]') || {}).src || "", q = (V.split("?")[1] || "");
+  const files = ["vendor/gsap.min.js", "vendor/ScrollTrigger.min.js", "vendor/DrawSVGPlugin.min.js"]; let late = false;
+  const giveUp = setTimeout(() => { late = true; }, 2500);
+  const next = i => { if (i === files.length) { clearTimeout(giveUp); if (!late) initMotion(); return; }
+    const sc = document.createElement("script"); sc.src = files[i] + (q ? "?" + q : ""); sc.async = false;
+    sc.onload = () => next(i + 1); sc.onerror = () => clearTimeout(giveUp); document.head.appendChild(sc); };
+  next(0); })();
+// safety net: if the counter is still running after 2.5s, show the real number
+setTimeout(() => { if (MO.counting) { MO.counting = false; tick(); } }, 5000);
+addEventListener("error", () => motionOff());
 })();
