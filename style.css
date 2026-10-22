@@ -578,7 +578,7 @@ img{display:block;max-width:100%}
 .cc-l{display:block;margin-top:calc(16 * var(--u));font-family:var(--lat);font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--chalk2)}
 
 @media (min-width:900px){
-  .slip-wrap{grid-column:2;width:450px;margin:70px 0 150px}
+  .slip-wrap{grid-column:2;width:450px;margin:64px 0 80px}
   .at{font-size:10px}.at.jp{font-size:11px}
   .at1{left:-60px;top:-50px}.at2{right:-70px;top:-24px}.at3{left:-90px}.at4{right:-90px}
   .at5{left:-40px;bottom:-70px}.at6{bottom:-110px}.at7{right:-50px;bottom:-56px}
