@@ -35,7 +35,7 @@ window.CONTENT = {
 
   // 序章：江湖（网游 CP 奔现）
   jianghu: {
-    game: "天涯明月刀",
+    game: "天涯明月刀手游",
     guild: "晚来天欲雪",
     him: "保护我方姐姐",
     me: "方",
@@ -95,7 +95,7 @@ window.CONTENT = {
     { city: "beijing",   photo: "photos/beijing.jpg", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.jpg", memory: "陪我出差。" },
-    { city: "dali",      photo: "photos/dali-first-shadows.jpg", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
+    { city: "dali",      photo: "photos/dali-first-shadows.jpg", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
     { city: "hangzhou",  photo: null, scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"], scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
     { city: "fukuoka",   photo: null, memory: "待填写" },
@@ -112,32 +112,43 @@ window.CONTENT = {
   promise: { from: 5, to: 15, label: "约定" },
 
   // 四个年份章节（每一卷胶卷），每个年份可以放任意多条
+  // crop（可选）：同一张照片在胶卷里换一个取景，避免和「我们走过的地方」重复；pos = 取景中心，zoom = 放大，ratio = 画幅。点开仍是完整照片
+  // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
+  //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
-    { year: "2022", title: "待填写", items: [
+    { year: "2022", layout: "strip", title: "待填写", items: [
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2023", title: "待填写", items: [
+    { year: "2023", layout: "feature", title: "待填写", items: [
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.jpg" },
-      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.jpg" },
-      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.jpg", highlight: true },
+      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.jpg", scene: "dali" },
+      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.jpg", highlight: true, scene: "fridge", feature: true },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2024", title: "待填写", items: [
+    { year: "2024", layout: "contact", title: "待填写", items: [
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2025–26", title: "待填写", items: [
+    { year: "2025–26", layout: "peak", title: "待填写", items: [
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
-      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.jpg" },
-      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.jpg" },
-      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.jpg", highlight: true },
-      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.jpg" },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.jpg" },
+      { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"] },
+      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.jpg", crop: { pos: "42% 16%", zoom: 1.7, ratio: "1/1" } },
+      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.jpg", crop: { pos: "48% 78%", zoom: 1.8, ratio: "4/3" } },
+      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.jpg", highlight: true, crop: { pos: "66% 60%", zoom: 1.55, ratio: "4/5" } },
+      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.jpg", crop: { pos: "50% 22%", zoom: 1, ratio: "21/9" } },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.jpg", crop: { pos: "62% 80%", zoom: 1.25, ratio: "16/10" } },
     ]},
   ],
 
   // 最后的信封
+  // 点照片进入的「放大场景」（照片上的 scene: "fridge" / "dali" 对应这里）
+  // origin = 镜头推进的位置（横 竖 %），zoom = 最后放大倍数，lines = 最后出现的字（最多两行）
+  scenes: {
+    fridge: { photo: "photos/chongqing-fridge-flowers.jpg", origin: "42% 64%", zoom: 1.9, lines: ["2023.08 · 重庆", "你为了迎接我，布置了一冰箱的花。"] },
+    dali:   { photo: "photos/dali-first-shadows.jpg", origin: "66% 44%", zoom: 1.45, lines: ["2023.05 · 大理", "「等求婚的时候，再来一次吧。」"] },
+  },
+
   finale: {
     lockedTitle: "NEXT CHAPTER",
     code: "411223",            // 隐藏页密码（几位数字都可以，圆点个数会自动跟着变）

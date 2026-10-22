@@ -8,14 +8,15 @@
 <title>1461 DAYS WITH YOU</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%237a1f24%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=10220705">
+<script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
+<link rel="stylesheet" href="style.css?v=10221200">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 
 <!-- 1. HERO -->
 <header class="hero paper" id="hero">
-  <span class="corner bl">2022.10.30</span><span class="corner br">2026.10.30</span>
+  <svg class="rl rl-hero" id="rlHero" aria-hidden="true"><path class="rl-p" id="rlHeroPath"/></svg>
   <div class="hang">
     <div class="ribbon"></div>
     <figure class="behind b1" id="behind1"></figure>
@@ -23,32 +24,32 @@
     <div class="tag" id="tag">
       <i class="grommet"></i>
       <div class="tag-top"><span>No. 1461</span></div>
-      <h1 class="lk lk-hero" data-lk="hero"><span class="num">1461</span></h1>
+      <h1 class="hero-num" aria-label="1461 Days with you"><span class="d" aria-hidden="true">1</span><span class="d" aria-hidden="true">4</span><span class="d" aria-hidden="true">6</span><span class="d" aria-hidden="true">1</span></h1>
+      <p class="hero-dates"><i>Days with you</i><span>2022.10.30 — 2026.10.30</span></p>
       <div class="tag-count"><span class="t-days" id="cDays">0</span><span class="t-unit">天</span>
         <span class="t-time"><span id="cH">00</span><em>:</em><span id="cM">00</span><em>:</em><span id="cS">00</span></span></div>
       <div class="t-bar"><i id="bar"></i></div>
-      <div class="tag-foot"><span>since 2022.10.30</span></div>
     </div>
   </div>
   <p class="hero-sub" id="heroSub"></p>
-  <div class="record-spot">
-    <div class="vinyl" id="vinyl" role="button" tabindex="0" aria-label="播放 / 暂停">
-      <div class="v-label"><span class="v-t">Side A</span><span class="v-s" id="vTitle" translate="no"></span><span class="v-b">1461</span></div>
-    </div>
-    <div class="tonearm" id="tonearm"><i class="pivot"></i><i class="arm"></i><i class="head"></i></div>
-    <button class="play-tag" id="playTag"><i class="grommet sm"></i><span class="tri"></span><span id="playTagText"></span></button>
-  </div>
+  <p class="play-hint" id="playHint"></p>
   <a class="cue" href="#jianghu" aria-label="往下"><i></i></a>
 </header>
 
 <!-- 1.5 JIANGHU -->
 <section class="sec paper jianghu" id="jianghu">
   <canvas class="snow" id="snow" aria-hidden="true"></canvas>
-  <span class="corner tl" id="jhTL"></span>
-  <div class="chat" id="chat"></div>
-  <p class="jh-quiet" id="jhQuiet"></p><p class="jh-song" id="jhSong" translate="no"></p>
+  <div class="jh-collage" id="jhCollage">
+    <p class="sr-only" id="jhSr"></p>
+    <span class="jh-game" id="jhGame" aria-hidden="true"></span>
+    <span class="jh-big" aria-hidden="true" id="jhBig"></span>
+    <span class="jh-him" aria-hidden="true" id="jhHim"></span>
+    <span class="jh-guild" aria-hidden="true" id="jhGuild"></span>
+    <div class="jh-like"><p class="jh-quiet" id="jhQuiet"></p><p class="jh-song" id="jhSong" translate="no"></p>
+      <svg class="jh-wave" viewBox="0 0 120 40" aria-hidden="true"><path class="rl-p" id="jhWave" d="M0 20 C 4 20, 5 12, 8 12 S 12 28, 15 28 S 19 8, 22 8 S 26 30, 29 30 S 33 14, 36 14 S 40 24, 43 24 S 50 20, 56 20 C 80 20, 96 26, 120 40"/></svg></div>
+  </div>
   <div class="lk lk-jianghu" data-lk="jianghu"></div>
-  <svg class="jh-route" viewBox="0 0 300 60" aria-hidden="true"><path class="hair" d="M276 12 C 236 8, 214 34, 178 30 S 120 22, 92 40 S 44 52, 24 48"/><circle cx="276" cy="12" r="2.4"/><circle cx="24" cy="48" r="2.4"/><text x="282" y="15" id="jhFrom"></text><text x="18" y="51" text-anchor="end" id="jhTo"></text></svg>
+  <svg class="jh-route" viewBox="0 0 300 96" aria-hidden="true"><path class="rl-p" id="jhA" d="M4 8 C 60 10, 92 40, 150 78"/><path class="rl-p" id="jhB" d="M296 8 C 240 12, 206 44, 150 78"/><circle cx="150" cy="78" r="2.6"/><text x="4" y="24" id="jhFrom"></text><text x="150" y="94" text-anchor="middle" id="jhTo"></text></svg>
 </section>
 
 <!-- 2. HOTEL -->
@@ -56,7 +57,7 @@
   <span class="corner tl" id="hLabel"></span>
   <div class="lk lk-hotel" data-lk="hotel"></div>
   <svg class="taxi-line" viewBox="0 0 340 90" aria-hidden="true">
-    <path class="hair" d="M20 70 C 60 70, 70 20, 120 22 C 170 24, 180 78, 230 62 C 268 50, 262 16, 300 20 C 330 24, 330 60, 300 64 C 270 68, 200 90, 120 80 C 80 76, 50 74, 24 71"/>
+    <path class="rl-p" d="M20 70 C 60 70, 70 20, 120 22 C 170 24, 180 78, 230 62 C 268 50, 262 16, 300 20 C 330 24, 330 60, 300 64 C 270 68, 200 90, 120 80 C 80 76, 50 74, 24 71"/>
     <circle cx="20" cy="70" r="3"/><circle cx="300" cy="20" r="3" class="o"/>
     <text x="20" y="88">Marriott</text><text x="300" y="10" text-anchor="middle">JW Marriott</text>
   </svg>
@@ -78,22 +79,23 @@
 <!-- 4. MAP -->
 <section class="sec crumple map-sec" id="map">
   <div class="lk lk-map" data-lk="map"></div>
-  <div class="stats" id="stats"></div>
+  <div class="map-sheet"><i class="tape t1"></i><i class="tape t2"></i><svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="zoom" id="zoom">
     <button data-z="all" class="on">全图</button>
     <button data-z="yrd">长三角</button>
     <button data-z="prd">珠三角</button>
     <button data-z="ne">日韩</button>
   </div>
-  <div class="map-sheet"><i class="tape t1"></i><i class="tape t2"></i><svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="stats" id="stats"></div>
   <div class="chips" id="chips"></div>
+  <div class="story" id="story"></div>
 </section>
 
 <!-- 6. FINALE -->
 <section class="sec film finale" id="finale">
   <span class="pcn tl" id="fTL"></span><span class="pcn tr" id="fTR"></span>
-  <i class="f-star" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 2 L21.4 18.6 L38 20 L21.4 21.4 L20 38 L18.6 21.4 L2 20 L18.6 18.6 Z"/></svg></i>
-  <div class="lk lk-finale" data-lk="finale"></div>
+  <svg class="rl rl-finale" id="rlFinale" aria-hidden="true"><path class="rl-p" id="rlFinalePath"/></svg>
+  <div class="fin-title"><div class="years" id="years" aria-hidden="true"></div><div class="lk lk-finale" data-lk="finale"></div></div>
   <div class="envelope" id="envelope">
     <div class="env-back"></div>
     <div class="env-letter" aria-hidden="true"><span></span></div>
@@ -112,7 +114,7 @@
 </section>
 
 <!-- Floating mini player -->
-<button class="mini" id="mini" aria-label="音乐"><span class="mini-disc"></span><span class="mini-txt" id="miniTxt" translate="no"></span></button>
+<button class="mini show" id="mini" aria-label="播放 / 暂停音乐"><svg class="wave" id="wave" viewBox="0 0 60 20" aria-hidden="true"><path class="rl-p" d="M0 10 C 3 10, 4 4, 7 4 S 11 16, 14 16 S 18 2, 21 2 S 25 18, 28 18 S 32 5, 35 5 S 39 14, 42 14 S 46 8, 49 8 S 54 10, 60 10"/></svg><span class="mini-disc"></span><span class="mini-txt" id="miniTxt" translate="no"></span></button>
 <audio id="song" preload="none" loop playsinline></audio>
 
 <!-- City card -->
@@ -132,7 +134,7 @@
 </div>
 
 <!-- Hidden page -->
-<div class="secret paper" id="secret" aria-hidden="true">
+<div class="secret paper" id="secret" aria-hidden="true" tabindex="-1">
   <div class="develop" aria-hidden="true"></div>
   <div class="secret-in">
     <button class="x" id="secretClose" aria-label="关闭"><i></i></button>
@@ -140,22 +142,22 @@
     <div class="lk lk-secret" data-lk="secret"></div>
     <figure class="silhouette" id="silhouette"></figure>
     <div class="pair" id="pair"></div>
-    <article class="letter-card"><i class="tape top"></i>
-      <h3 class="letter-title" id="letterTitle"></h3>
-      <div class="letter" id="letter"></div>
-      <p class="sig" id="sig"></p>
-    </article>
     <figure class="pola small" id="secPola"></figure>
     <div class="rings" id="rings"></div>
     <div class="lyrics" id="lyrics"></div>
     <div class="lk lk-polaris" data-lk="polaris"></div>
     <figure class="pola undeveloped" id="weddingPola"></figure>
+    <article class="letter-card letter-end">
+      <h3 class="letter-title" id="letterTitle"></h3>
+      <div class="letter" id="letter"></div>
+      <p class="sig" id="sig"></p>
+    </article>
   </div>
 </div>
 
-<script src="content.js?v=10220705"></script>
-<script src="map-data.js?v=10220705"></script>
-<script src="photos/sizes.js?v=10220705"></script>
-<script src="app.js?v=10220705"></script>
+<script src="content.js?v=10221200"></script>
+<script src="map-data.js?v=10221200"></script>
+<script src="photos/sizes.js?v=10221200"></script>
+<script src="app.js?v=10221200"></script>
 </body>
 </html>
