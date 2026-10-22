@@ -10,7 +10,7 @@
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/tag.webp" as="image">
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -67,8 +67,10 @@
 <!-- 4 · four rolls -->
 <section class="sec night chapters" id="chapters">
   <div class="lk lk-chapters" data-lk="chapters"></div>
-  <p class="can" id="canister"><span id="can1"></span><b id="can2"></b></p>
-  <nav class="strip-h" id="stripH" aria-label="Rolls"></nav>
+  <div class="roll-intro">
+    <div class="canister" id="canister"><i class="ccap top"></i><div class="can-body"><span class="can-small" id="can1"></span><b class="can-big" id="can2"></b></div><i class="ccap bot"></i></div>
+    <div class="strip-win"><nav class="strip-h" id="stripH" aria-label="Rolls"></nav></div>
+  </div>
   <div id="chapterList"></div>
 </section>
 
@@ -152,9 +154,9 @@
   </div>
 </div>
 
-<script src="content.js?v=12"></script>
-<script src="map-data.js?v=12"></script>
-<script src="photos/sizes.js?v=12"></script>
-<script src="app.js?v=12"></script>
+<script src="content.js?v=13"></script>
+<script src="map-data.js?v=13"></script>
+<script src="photos/sizes.js?v=13"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>
