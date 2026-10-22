@@ -147,7 +147,8 @@ window.CONTENT = {
       { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
       { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp" },   // 夜里自拍
     ]},
-    { year: "2025–26", layout: "peak", title: "待填写", items: [
+    { year: "2025–26", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2025–26 thumbnail
+      { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp" },   // 贴脸自拍
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
       { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"] },
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
