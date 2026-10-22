@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%237a1f24%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=10221030">
+<link rel="stylesheet" href="style.css?v=10221100">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -41,12 +41,13 @@
   <div class="jh">
     <p class="sr-only" id="jhSr"></p>
     <!-- beat 1 · two players, one guild -->
-    <div class="jh-beat jh-players" aria-hidden="true">
-      <header class="jh-head"><span class="jh-game" id="jhGame"></span><span class="jh-k">Guild</span><span class="jh-guild" id="jhGuild"></span></header>
-      <div class="jh-plates">
+    <div class="jh-beat jh-players">
+      <header class="jh-head" aria-hidden="true"><span class="jh-game" id="jhGame"></span><span class="jh-k">Guild</span><span class="jh-guild" id="jhGuild"></span></header>
+      <div class="jh-plates" aria-hidden="true">
         <figure class="plate plate-her"><span class="plate-name jh-big" id="jhBig"></span><figcaption class="jh-k">Her</figcaption></figure>
         <figure class="plate plate-him"><span class="plate-name jh-him" id="jhHim"></span><figcaption class="jh-k">Him</figcaption></figure>
       </div>
+      <figure class="wardrobe" id="wardrobe" hidden><div class="wd-stack" id="wdStack"></div><figcaption class="wd-n" id="wdN"></figcaption></figure>
     </div>
     <!-- beat 2 · the song he shared, her reply -->
     <div class="jh-beat jh-moment">
@@ -58,7 +59,7 @@
   </div>
   <!-- beat 3 · from the game to the world -->
   <div class="lk lk-jianghu" data-lk="jianghu"></div>
-  <svg class="jh-route" viewBox="0 0 300 120" aria-hidden="true"><path class="rl-p" id="jhA" d="M0 6 C 0 58, 70 92, 150 96"/><circle cx="0" cy="6" r="2.4"/><circle cx="150" cy="96" r="3"/><text x="12" y="12" id="jhFrom"></text><text x="164" y="100" id="jhTo"></text></svg>
+  <svg class="jh-route" viewBox="0 0 300 120" aria-hidden="true"><path class="rl-p" id="jhA" d="M0 6 C 0 52, 150 44, 150 96"/><circle cx="0" cy="6" r="2.4"/><circle cx="150" cy="96" r="3"/><text x="12" y="12" id="jhFrom"></text><text x="162" y="92" id="jhTo"></text></svg>
 </section>
 
 <!-- 2. HOTEL -->
@@ -163,9 +164,9 @@
   </div>
 </div>
 
-<script src="content.js?v=10221030"></script>
-<script src="map-data.js?v=10221030"></script>
-<script src="photos/sizes.js?v=10221030"></script>
-<script src="app.js?v=10221030"></script>
+<script src="content.js?v=10221100"></script>
+<script src="map-data.js?v=10221100"></script>
+<script src="photos/sizes.js?v=10221100"></script>
+<script src="app.js?v=10221100"></script>
 </body>
 </html>

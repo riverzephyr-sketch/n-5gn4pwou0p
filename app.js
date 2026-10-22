@@ -114,6 +114,36 @@ $("#jhQuiet").textContent = J.quiet ? `「${J.quiet}」` : "";
   $("#jhTitle").innerHTML = esc(title).replace(":", '<span class="cl">:</span>'); $("#jhArtist").textContent = artist;
   if (!title) $("#jhShare").remove(); }
 $("#jhFrom").textContent = J.from; $("#jhTo").textContent = J.to;
+// the wardrobe: their couple outfits in the game, as a stop-motion. ~1s per outfit, a hard cut (no crossfade:
+// the pose is the same in every frame, so a cut reads as the clothes changing; a fade would ghost two outfits together).
+// swipe / drag / ← → flips by hand and pauses the auto-play for a while. reduced motion: frame 1, by hand only.
+(() => { const WD = J.wardrobe, fig = $("#wardrobe"); if (!WD || !WD.count || !fig) return;
+  const N = WD.count, desk = matchMedia("(min-width:900px)").matches, pre = desk ? "d" : "m", st = $("#wdStack"), out = $("#wdN");
+  const src = i => `${WD.dir}/${pre}${pad2(i + 1)}.webp`, ims = [], ready = [];
+  fig.hidden = false; fig.tabIndex = 0; fig.setAttribute("role", "img"); fig.setAttribute("aria-label", `《${J.game}》 · ${N}`);
+  let cur = 0, timer = 0, holdT = 0, visible = false, held = false;
+  const show = i => { i = (i + N) % N; if (!ready[i]) return false; if (ims[cur]) ims[cur].classList.remove("on"); cur = i; ims[cur].classList.add("on");
+    out.textContent = `${pad2(cur + 1)} / ${pad2(N)}`; return true; };
+  const next = () => { for (let k = 1; k <= N; k++) if (ready[(cur + k) % N]) { show(cur + k); return; } };
+  for (let i = 0; i < N; i++) { const im = new Image(); im.alt = ""; im.decoding = "async"; im.draggable = false; ims.push(im); st.append(im); }
+  const load = i => new Promise(r => { const im = ims[i]; if (ready[i]) return r(); im.onload = () => { ready[i] = true; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(r); }; im.onerror = r; im.src = src(i); });
+  let started = false; const start = () => { if (started) return; started = true;
+    load(0).then(() => { show(0); let i = 1; const go = () => { if (i < N) load(i++).then(go); }; go(); }); };
+  const play = () => { clearInterval(timer); if (reduced || held || !visible) return; timer = setInterval(next, 1000); };
+  const hold = () => { held = true; clearInterval(timer); clearTimeout(holdT); holdT = setTimeout(() => { held = false; play(); }, 4000); };
+  out.textContent = `01 / ${pad2(N)}`;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) start(); }), { rootMargin: "600px 0px" }).observe(fig);
+    new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; play(); }), { threshold: .4 }).observe(fig);
+  } else { start(); visible = true; play(); }
+  // drag to flip: every ~26px of horizontal travel is one outfit
+  let px = null, acc = 0;
+  fig.addEventListener("pointerdown", e => { px = e.clientX; acc = 0; hold(); });
+  fig.addEventListener("pointermove", e => { if (px === null) return; acc += e.clientX - px; px = e.clientX;
+    while (Math.abs(acc) >= 26) { show(cur + (acc < 0 ? 1 : -1)); acc += acc < 0 ? 26 : -26; } });
+  const up = () => { px = null; }; fig.addEventListener("pointerup", up); fig.addEventListener("pointercancel", up); fig.addEventListener("pointerleave", up);
+  fig.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); hold(); show(cur + (e.key === "ArrowRight" ? 1 : -1)); } });
+})();
 (() => { // faint snow — 晚来天欲雪
   const cv = $("#snow"), g = cv.getContext("2d"), sec = $("#jianghu");
   Object.assign(cv.style, { position: "absolute", left: "0", top: "0", width: "100%", height: "100%", pointerEvents: "none", zIndex: "0" }); let W, Hh, flakes = [], on = false, raf;
@@ -522,7 +552,7 @@ function buildSpine() { try {
     return { s: a, sd: u(a, a2), e: b, ed: u(b2, b) }; };
   const cx = v => Math.max(2, Math.min(W - 2, v));
   // a join from A (leaving in direction da) to B (arriving in direction db) that travels down the margin g
-  const join = (A, da, B, db, g = gx) => { const dy = B[1] - A[1], k = Math.max(12, Math.min(90, dy / 4.2)), nearA = Math.abs(A[0] - g) < 4, nearB = Math.abs(B[0] - g) < 4;
+  const join = (A, da, B, db, g = gx) => { const dy = B[1] - A[1], nearA = Math.abs(A[0] - g) < 4, nearB = Math.abs(B[0] - g) < 4, k = Math.max(12, (nearA || nearB) ? Math.min(120, dy / 2.2) : Math.min(90, dy / 4.2));
     const y1 = nearA ? A[1] : A[1] + 2 * k, y2 = nearB ? B[1] : B[1] - 2 * k;
     let d = `M${A[0]} ${A[1]}`;
     d += nearA ? "" : ` C ${cx(A[0] + da[0] * k)} ${A[1] + da[1] * k}, ${g} ${y1 - k}, ${g} ${y1}`;
@@ -556,7 +586,7 @@ function buildSpine() { try {
     while ((n = tw.nextNode())) { if (!n.nodeValue.trim()) continue; const pe = n.parentElement; if (!pe || pe.closest(".sr-only,svg.spine")) continue;
       if (pe.closest("svg")) { add((pe.closest("text") || pe).getBoundingClientRect(), 6); continue; }
       rg.selectNodeContents(n); for (const r of rg.getClientRects()) add(r); }
-    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature").forEach(e => add(e.getBoundingClientRect(), 6)); });
+    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature,.wardrobe").forEach(e => add(e.getBoundingClientRect(), 6)); });
   const B = 200, bucket = {}; obs.forEach((o, i) => { for (let k = Math.floor(o[1] / B); k <= Math.floor(o[3] / B); k++) (bucket[k] = bucket[k] || []).push(o); });
   const hit = (x, y) => (bucket[Math.floor(y / B)] || []).some(o => x >= o[0] && x <= o[2] && y >= o[1] && y <= o[3]);
   // one svg per section, holding the part of the line inside it
