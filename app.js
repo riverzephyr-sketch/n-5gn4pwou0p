@@ -396,7 +396,7 @@ if ("IntersectionObserver" in window && !(window.matchMedia && matchMedia("(pref
 
 C.chapters.forEach((c, ci) => {
   const ph = c.items.find(m => m.photo);
-  const f = el("button", "fr", `<i class="fr-ph">${ph ? img(ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
+  const f = el("button", "fr", `<i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
   f.onclick = () => $("#yr" + ci).scrollIntoView({ behavior: "smooth" }); strip.append(f);
 });
 const list = $("#chapterList");

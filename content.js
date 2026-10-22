@@ -136,8 +136,10 @@ window.CONTENT = {
       { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2024", layout: "feature", title: "待填写", items: [
+    { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
+      { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp" },   // 水母灯
       { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true },
+      { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp" },
       { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp" },
     ]},
     { year: "2025–26", layout: "peak", title: "待填写", items: [
