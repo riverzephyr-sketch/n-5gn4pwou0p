@@ -17,6 +17,7 @@ window.CONTENT = {
   hero: {
     title: "1461 DAYS WITH YOU",
     subtitle: "You’ve been my favorite place since 2022.",
+    print: "photos/sunset-sit.webp",   // 吊牌后面那张照片
     vol: "Vol. 04",
     canister: ["35MM · 4 YEARS", "1461"], // 胶卷盒上的字
   },
@@ -41,6 +42,8 @@ window.CONTENT = {
     me: "方",
     quiet: "我也喜欢",            // 朋友圈里的第一句话
     quietSong: "Aimer · Ref:rain", // 那条朋友圈分享的歌
+    himWechat: "Follow",          // 他的微信名（分享歌的人）
+    meWechat: "helios",           // 我的微信名（留言的人）
     from: "北京", to: "重庆",
     // 游戏里的情侣时装：photos/wardrobe/m01–m27.webp（4:5），由原图裁好
     // wardrobe: { dir: "photos/wardrobe", count: 27 },   // 时装定格动画：已撤下（文件留在 photos/wardrobe/，页面不再加载）
@@ -91,24 +94,24 @@ window.CONTENT = {
   // photoNotes：多张照片时，每张照片角落的小字（和 photos 一一对应）
   // 真实拍立得的扫描件（自带白边）：用 scans: [...]，会原样显示，不再套相框
   // 竖长的大头贴：加 tall: true
-  // 一站想放多张照片：把 photo 换成 photos: ["photos/a.jpg", "photos/b.jpg"]（点照片切换）
+  // 一站想放多张照片：把 photo 换成 photos: ["photos/a.webp", "photos/b.webp"]（点照片切换）
   stops: [
-    { city: "chongqing", photos: ["photos/chongqing-2nd.jpg", "photos/chongqing-fridge-flowers.jpg"], photoNotes: ["第二次来重庆 · 2023", "2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
-    { city: "beijing",   photo: "photos/beijing.jpg", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
+    { city: "chongqing", photos: ["photos/n1.webp", "photos/chongqing-2nd.webp", "photos/chongqing-fridge-flowers.webp"], photoNotes: ["2022 · 重庆", "第二次来重庆 · 2023", "2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
+    { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
-    { city: "dongguan",  photo: "photos/dongguan.jpg", memory: "陪我出差。" },
-    { city: "dali",      photo: "photos/dali-first-shadows.jpg", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
-    { city: "hangzhou",  photo: null, scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"], scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
+    { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
+    { city: "dali",      photo: "photos/dali-first-shadows.webp", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
+    { city: "hangzhou",  photo: null, scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
     { city: "fukuoka",   photo: null, memory: "待填写" },
     { city: "wuning",    photo: null, memory: "待填写" },
-    { city: "krabi",     photo: "photos/krabi.jpg", memory: "待填写", note: "2025.10 · 十一" },
+    { city: "krabi",     photo: "photos/krabi.webp", memory: "待填写", note: "2025.10 · 十一" },
     { city: "jiaxing",   photo: null, memory: "待填写" },
     { city: "shenzhen",  photo: null, memory: "待填写" },
     { city: "seoul",     photo: null, memory: "待填写" },
-    { city: "tokyo",     photo: "photos/tokyo.jpg", memory: "来东京，是为了带回 Helios 和 Polaris。", note: "2026.05 · 五一" },
-    { city: "dali",      photo: "photos/dali-proposal.jpg", memory: "第二次来大理，你向我求婚了。你把一句病中的约定，变成了三年后的答案。大理终于不再是遗憾。", note: "2026.06.22", highlight: true, seal: "6.22", song: "Aimer《Polaris》" },
-    { city: "kk",        photos: ["photos/kota-kinabalu.jpg", "photos/sunset-kiss.jpg"], memory: "待填写", note: "2026.10 · 十一" },
+    { city: "tokyo",     photo: "photos/tokyo.webp", memory: "来东京，是为了带回 Helios 和 Polaris。", note: "2026.05 · 五一" },
+    { city: "dali",      photo: "photos/dali-proposal.webp", memory: "第二次来大理，你向我求婚了。你把一句病中的约定，变成了三年后的答案。大理终于不再是遗憾。", note: "2026.06.22", highlight: true, seal: "6.22", song: "Aimer《Polaris》" },
+    { city: "kk",        photos: ["photos/kota-kinabalu.webp", "photos/sunset-kiss.webp"], memory: "待填写", note: "2026.10 · 十一" },
   ],
   // 地图上额外的一条虚线：从第 5 站连到第 15 站
   promise: { from: 5, to: 15, label: "约定" },
@@ -120,27 +123,28 @@ window.CONTENT = {
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
     { year: "2022", layout: "strip", title: "待填写", items: [
-      { title: "待填写", date: "待填写", text: "待填写", photo: null },
+      { title: "重庆", date: "2022", text: "", photo: "photos/n1.webp" },   // 第一张合照 · 奔现
     ]},
     { year: "2023", layout: "feature", title: "待填写", items: [
-      { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.jpg" },
-      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.jpg", scene: "dali" },
-      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.jpg", highlight: true, scene: "fridge", feature: true },
+      { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
+      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali" },
+      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, scene: "fridge", feature: true },
+      { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp" },
+      { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
-    { year: "2024", layout: "contact", title: "待填写", items: [
-      { title: "待填写", date: "待填写", text: "待填写", photo: null },
-      { title: "待填写", date: "待填写", text: "待填写", photo: null },
-      { title: "待填写", date: "待填写", text: "待填写", photo: null },
+    { year: "2024", layout: "feature", title: "待填写", items: [
+      { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true },
+      { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp" },
     ]},
     { year: "2025–26", layout: "peak", title: "待填写", items: [
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
-      { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"] },
-      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.jpg", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
-      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.jpg", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
-      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.jpg", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
-      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.jpg", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" } },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.jpg", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
+      { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"] },
+      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
+      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
+      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
+      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.webp", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" } },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
     ]},
   ],
 
@@ -148,8 +152,8 @@ window.CONTENT = {
   // 点照片进入的「放大场景」（照片上的 scene: "fridge" / "dali" 对应这里）
   // origin = 镜头推进的位置（横 竖 %），zoom = 最后放大倍数，lines = 最后出现的字（最多两行）
   scenes: {
-    fridge: { photo: "photos/chongqing-fridge-flowers.jpg", origin: "42% 64%", zoom: 1.9, lines: ["2023.08 · 重庆", "你为了迎接我，布置了一冰箱的花。"] },
-    dali:   { photo: "photos/dali-first-shadows.jpg", origin: "66% 44%", zoom: 1.45, lines: ["2023.05 · 大理", "「等求婚的时候，再来一次吧。」"] },
+    fridge: { photo: "photos/chongqing-fridge-flowers.webp", origin: "42% 64%", zoom: 1.9, lines: ["2023.08 · 重庆", "你为了迎接我，布置了一冰箱的花。"] },
+    dali:   { photo: "photos/dali-first-shadows.webp", origin: "66% 44%", zoom: 1.45, lines: ["2023.05 · 大理", "「等求婚的时候，再来一次吧。」"] },
   },
 
   finale: {
@@ -169,10 +173,10 @@ window.CONTENT = {
       "I would choose you in every version of my life.",
     ],
     signature: "Helios",
-    photo: "photos/dali-proposal.jpg",   // 隐藏页上的拍立得
+    photo: "photos/dali-proposal.webp",   // 隐藏页上的拍立得
     photoCaption: "大理 · 2026.06.22",
     // 隐藏页上的「两半」：两张真实拍立得原样摆放
-    pair: { scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"], caption: "杭州 · 2025.05.20" },
+    pair: { scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], caption: "杭州 · 2025.05.20" },
     // 《Polaris》歌词摘录（日文 + 中文）
     lyricTitle: "Aimer《Polaris》",
     lyrics: [
@@ -188,7 +192,7 @@ window.CONTENT = {
       { name: "Helios",  is: "是我",               item: "对戒" },
       { name: "Polaris", is: "我想成为的那颗星",   item: "钻戒" },
     ],
-    // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.jpg）里抠出来的轮廓，里面填满我们的照片
+    // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.webp）里抠出来的轮廓，里面填满我们的照片
     // （photos/silhouette.webp，加了新照片后运行 python3 tools/make_silhouette.py 重新生成）
     silhouette: "photos/silhouette.webp",
     silhouetteCaption: "亚庇 · 2026.10",

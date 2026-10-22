@@ -1,58 +1,82 @@
 window.PHOTO_SIZES = {
-"photos/beijing.jpg": [
-844,
-1500
+"photos/beijing.webp": [
+788,
+1400
 ],
-"photos/chongqing-2nd.jpg": [
-1600,
-1200
+"photos/chongqing-2nd.webp": [
+1400,
+1050
 ],
-"photos/chongqing-fridge-flowers.jpg": [
-1128,
-1500
+"photos/chongqing-fridge-flowers.webp": [
+1053,
+1400
 ],
-"photos/dali-first-shadows.jpg": [
-1200,
-1600
+"photos/dali-first-shadows.webp": [
+1050,
+1400
 ],
-"photos/dali-proposal.jpg": [
-1500,
-2002
+"photos/dali-proposal.webp": [
+1049,
+1400
 ],
-"photos/dongguan.jpg": [
-1200,
-1600
+"photos/dongguan.webp": [
+1050,
+1400
 ],
-"photos/hangzhou-ears.jpg": [
-1500,
-1819
+"photos/hangzhou-ears.webp": [
+1154,
+1400
 ],
-"photos/hangzhou-eyes.jpg": [
-1500,
-1820
+"photos/hangzhou-eyes.webp": [
+1154,
+1400
 ],
-"photos/kota-kinabalu.jpg": [
-1500,
-2000
+"photos/kota-kinabalu.webp": [
+1050,
+1400
 ],
-"photos/krabi.jpg": [
-1500,
-2250
+"photos/krabi.webp": [
+933,
+1400
+],
+"photos/n0-hardware.webp": [
+1050,
+1400
+],
+"photos/n1.webp": [
+1050,
+1400
+],
+"photos/n2.webp": [
+680,
+907
+],
+"photos/n3.webp": [
+1050,
+1400
+],
+"photos/n4.webp": [
+1050,
+1400
+],
+"photos/refrain-cover.webp": [
+360,
+360
 ],
 "photos/silhouette.webp": [
 1200,
 953
 ],
-"photos/sunset-kiss.jpg": [
-1200,
-1600
+"photos/sunset-kiss.webp": [
+1050,
+1400
 ],
-"photos/sunset-sit.jpg": [
-1067,
-1600
+"photos/sunset-sit.webp": [
+934,
+1400
 ],
-"photos/tokyo.jpg": [
-1500,
-2000
+"photos/tokyo.webp": [
+1050,
+1400
 ]
 };
