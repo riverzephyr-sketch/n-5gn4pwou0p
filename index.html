@@ -9,14 +9,13 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%237a1f24%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=10221200">
+<link rel="stylesheet" href="style.css?v=10221030">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 
 <!-- 1. HERO -->
 <header class="hero paper" id="hero">
-  <svg class="rl rl-hero" id="rlHero" aria-hidden="true"><path class="rl-p" id="rlHeroPath"/></svg>
   <div class="hang">
     <div class="ribbon"></div>
     <figure class="behind b1" id="behind1"></figure>
@@ -39,27 +38,37 @@
 <!-- 1.5 JIANGHU -->
 <section class="sec paper jianghu" id="jianghu">
   <canvas class="snow" id="snow" aria-hidden="true"></canvas>
-  <div class="jh-collage" id="jhCollage">
+  <div class="jh">
     <p class="sr-only" id="jhSr"></p>
-    <span class="jh-game" id="jhGame" aria-hidden="true"></span>
-    <span class="jh-big" aria-hidden="true" id="jhBig"></span>
-    <span class="jh-him" aria-hidden="true" id="jhHim"></span>
-    <span class="jh-guild" aria-hidden="true" id="jhGuild"></span>
-    <div class="jh-like"><p class="jh-quiet" id="jhQuiet"></p><p class="jh-song" id="jhSong" translate="no"></p>
-      <svg class="jh-wave" viewBox="0 0 120 40" aria-hidden="true"><path class="rl-p" id="jhWave" d="M0 20 C 4 20, 5 12, 8 12 S 12 28, 15 28 S 19 8, 22 8 S 26 30, 29 30 S 33 14, 36 14 S 40 24, 43 24 S 50 20, 56 20 C 80 20, 96 26, 120 40"/></svg></div>
+    <!-- beat 1 · two players, one guild -->
+    <div class="jh-beat jh-players" aria-hidden="true">
+      <header class="jh-head"><span class="jh-game" id="jhGame"></span><span class="jh-k">Guild</span><span class="jh-guild" id="jhGuild"></span></header>
+      <div class="jh-plates">
+        <figure class="plate plate-her"><span class="plate-name jh-big" id="jhBig"></span><figcaption class="jh-k">Her</figcaption></figure>
+        <figure class="plate plate-him"><span class="plate-name jh-him" id="jhHim"></span><figcaption class="jh-k">Him</figcaption></figure>
+      </div>
+    </div>
+    <!-- beat 2 · the song he shared, her reply -->
+    <div class="jh-beat jh-moment">
+      <span class="jh-k" aria-hidden="true">Moments</span>
+      <div class="share" id="jhShare" aria-hidden="true"><i class="share-cover"></i><span class="share-t"><b class="share-title" id="jhTitle" translate="no"></b><span class="share-artist" id="jhArtist" translate="no"></span></span></div>
+      <p class="reply" aria-hidden="true"><span class="jh-quiet" id="jhQuiet"></span></p>
+      <svg class="jh-wave" viewBox="0 0 120 40" aria-hidden="true"><path class="rl-p" id="jhWave" d="M0 20 C 4 20, 5 12, 8 12 S 12 28, 15 28 S 19 8, 22 8 S 26 30, 29 30 S 33 14, 36 14 S 40 24, 43 24 S 50 20, 56 20 L 120 20"/></svg>
+    </div>
   </div>
+  <!-- beat 3 · from the game to the world -->
   <div class="lk lk-jianghu" data-lk="jianghu"></div>
-  <svg class="jh-route" viewBox="0 0 300 96" aria-hidden="true"><path class="rl-p" id="jhA" d="M4 8 C 60 10, 92 40, 150 78"/><path class="rl-p" id="jhB" d="M296 8 C 240 12, 206 44, 150 78"/><circle cx="150" cy="78" r="2.6"/><text x="4" y="24" id="jhFrom"></text><text x="150" y="94" text-anchor="middle" id="jhTo"></text></svg>
+  <svg class="jh-route" viewBox="0 0 300 120" aria-hidden="true"><path class="rl-p" id="jhA" d="M0 6 C 0 58, 70 92, 150 96"/><circle cx="0" cy="6" r="2.4"/><circle cx="150" cy="96" r="3"/><text x="12" y="12" id="jhFrom"></text><text x="164" y="100" id="jhTo"></text></svg>
 </section>
 
 <!-- 2. HOTEL -->
 <section class="sec paper hotel" id="hotel">
   <span class="corner tl" id="hLabel"></span>
   <div class="lk lk-hotel" data-lk="hotel"></div>
-  <svg class="taxi-line" viewBox="0 0 340 90" aria-hidden="true">
-    <path class="rl-p" d="M20 70 C 60 70, 70 20, 120 22 C 170 24, 180 78, 230 62 C 268 50, 262 16, 300 20 C 330 24, 330 60, 300 64 C 270 68, 200 90, 120 80 C 80 76, 50 74, 24 71"/>
-    <circle cx="20" cy="70" r="3"/><circle cx="300" cy="20" r="3" class="o"/>
-    <text x="20" y="88">Marriott</text><text x="300" y="10" text-anchor="middle">JW Marriott</text>
+  <svg class="taxi-line" viewBox="0 0 340 112" aria-hidden="true">
+    <path class="rl-p" id="taxiPath" d="M0 26 C 110 26, 220 30, 296 40 C 322 44, 322 72, 296 74 C 220 80, 140 84, 74 84 C 40 84, 16 88, 0 104"/>
+    <circle cx="296" cy="40" r="3" class="o"/><circle cx="74" cy="84" r="3"/>
+    <text x="296" y="24" text-anchor="middle">JW Marriott</text><text x="74" y="104" text-anchor="middle">Marriott</text>
   </svg>
   <div class="score" aria-live="polite"><span class="score-lab" id="scoreLab"></span><span class="score-hist" id="scoreHist"></span><span class="score-now"><b id="score">100</b></span></div>
   <div class="hotels" id="hotels"></div>
@@ -94,7 +103,6 @@
 <!-- 6. FINALE -->
 <section class="sec film finale" id="finale">
   <span class="pcn tl" id="fTL"></span><span class="pcn tr" id="fTR"></span>
-  <svg class="rl rl-finale" id="rlFinale" aria-hidden="true"><path class="rl-p" id="rlFinalePath"/></svg>
   <div class="fin-title"><div class="years" id="years" aria-hidden="true"></div><div class="lk lk-finale" data-lk="finale"></div></div>
   <div class="envelope" id="envelope">
     <div class="env-back"></div>
@@ -155,9 +163,9 @@
   </div>
 </div>
 
-<script src="content.js?v=10221200"></script>
-<script src="map-data.js?v=10221200"></script>
-<script src="photos/sizes.js?v=10221200"></script>
-<script src="app.js?v=10221200"></script>
+<script src="content.js?v=10221030"></script>
+<script src="map-data.js?v=10221030"></script>
+<script src="photos/sizes.js?v=10221030"></script>
+<script src="app.js?v=10221030"></script>
 </body>
 </html>

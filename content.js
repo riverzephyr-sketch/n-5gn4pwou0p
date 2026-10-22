@@ -112,7 +112,8 @@ window.CONTENT = {
   promise: { from: 5, to: 15, label: "约定" },
 
   // 四个年份章节（每一卷胶卷），每个年份可以放任意多条
-  // crop（可选）：同一张照片在胶卷里换一个取景，避免和「我们走过的地方」重复；pos = 取景中心，zoom = 放大，ratio = 画幅。点开仍是完整照片
+  // crop（可选）：照片在胶卷里的取景；pos = 取景中心，zoom = 放大，ratio = 画幅（只用两种："3/2" 横幅通栏，"4/5" 竖幅；highlight 的竖幅通栏，其余 64% 宽）。点开仍是完整照片
+  // 没有日期、标题、文字的那张，会自动接在上一条后面，算同一件事
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
@@ -133,11 +134,11 @@ window.CONTENT = {
     { year: "2025–26", layout: "peak", title: "待填写", items: [
       { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
       { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.jpg", "photos/hangzhou-eyes.jpg"] },
-      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.jpg", crop: { pos: "42% 16%", zoom: 1.7, ratio: "1/1" } },
-      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.jpg", crop: { pos: "48% 78%", zoom: 1.8, ratio: "4/3" } },
-      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.jpg", highlight: true, crop: { pos: "66% 60%", zoom: 1.55, ratio: "4/5" } },
-      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.jpg", crop: { pos: "50% 22%", zoom: 1, ratio: "21/9" } },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.jpg", crop: { pos: "62% 80%", zoom: 1.25, ratio: "16/10" } },
+      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.jpg", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
+      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.jpg", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
+      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.jpg", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
+      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.jpg", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" } },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.jpg", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
     ]},
   ],
 

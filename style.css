@@ -847,3 +847,176 @@ p,.s-mem,.cp .tx,.letter p,.heart-line,.then .pen{text-wrap:pretty}
 .secret .letter-end .sig{margin-top:30px}
 .secret .hair{stroke-dashoffset:0 !important;transition:none !important}
 @media (min-width:900px){.jh-song,.jianghu .jh-song{font-size:16px !important}}
+
+/* =========  v8 · mobile refine: restrained, systematic  ========= */
+/* the red line (spine): one svg per section, never over text (it breaks and passes behind) */
+.sec>svg.rl.spine,.hero>svg.rl.spine{position:absolute !important;left:0;top:0;width:100%;max-width:none !important;margin:0 !important;pointer-events:none;z-index:1;overflow:visible}
+.motion-pending .hero>svg.spine{opacity:0}
+#track{visibility:hidden}
+
+/* hero: 1461 fits its tag with real margins; less air above */
+.hero{--tw:min(272px,72vw);justify-content:flex-start;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:72px}
+.hero .hang{width:var(--tw);margin-top:clamp(0px,2svh,24px)}
+.ribbon{height:56px}
+.tag{padding:26px 22px 14px}
+.hero-num{font-size:calc((var(--tw) - 56px) / 1.78);letter-spacing:-.025em;margin:calc(12px - .12em) 0 0}
+.b1{left:-84px;top:196px;width:116px;transform:rotate(-7deg)}
+.b2{right:-86px;top:232px;width:116px;transform:rotate(6deg)}
+.hero-sub{margin-top:30px;font-size:17px}
+/* the hint is part of the hero's flow (it can't collide with the line above it) */
+.play-hint{position:static;margin:22px 0 0;padding:12px 4px;font-size:11.5px;letter-spacing:.2em;line-height:1}
+.playing .play-hint{opacity:.5;pointer-events:auto}
+.hero .cue{bottom:14px;height:34px}
+
+/* the player: a small paper record; a tap opens it for a moment */
+.mini{right:max(12px,env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));height:36px;min-height:0;padding:4px;gap:0;border-radius:18px;
+  background:#f4efe6;border:1px solid rgba(122,31,36,.26);box-shadow:0 6px 14px -10px rgba(40,20,10,.4);transition:opacity .4s,transform .4s,padding .35s}
+.mini::before{content:"";position:absolute;inset:-5px}
+.mini:not(.show){opacity:0;transform:translateY(6px);pointer-events:none}
+.mini .mini-disc{width:26px;height:26px;order:3;flex:none}
+.mini .wave{order:1;max-width:0;opacity:0;margin:0;transition:max-width .35s,opacity .3s,margin .35s}
+.mini .mini-txt{order:2;max-width:0;opacity:0;overflow:hidden;font-size:12px;transition:max-width .35s,opacity .3s,margin .35s}
+.mini.open{padding-left:12px}
+.mini.open .wave{max-width:26px;opacity:1;margin-right:8px}
+.mini.open .mini-txt{max-width:130px;opacity:1;margin-right:8px}
+
+/* 江湖 · three beats: two players in one guild → the song and her reply → from the game to the world */
+.jianghu{padding-top:72px;padding-bottom:64px}
+.jh{position:relative;z-index:1;text-align:left}
+.jh-k{display:block;font-family:var(--lat);font-weight:500;font-size:9.5px;line-height:1;letter-spacing:.32em;text-transform:uppercase;color:var(--mute)}
+.jh-head{display:grid;justify-items:center;text-align:center;margin-bottom:26px}
+.jh .jh-game{position:static;font-size:13px;letter-spacing:.3em;margin-right:-.3em;color:var(--mute)}
+.jh-head .jh-k{margin-top:22px}
+.jh .jh-guild{position:static;background:none;border:0;box-shadow:none;padding:0;margin:10px -.5em 0 0;font-size:22px;font-weight:300;letter-spacing:.5em;color:var(--ink)}
+.jh-plates{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.plate{position:relative;margin:0;height:226px;display:flex;align-items:center;justify-content:center;padding-bottom:22px;border:1px solid rgba(122,31,36,.32);background:rgba(251,248,241,.55)}
+.plate figcaption{position:absolute;left:0;right:0;bottom:14px;text-align:center}
+.jh .jh-big{position:static;font-size:124px;line-height:1;font-weight:200;color:var(--wine);letter-spacing:0}
+.jh .jh-him{position:static;writing-mode:vertical-rl;font-size:22px;font-weight:300;letter-spacing:.3em;line-height:1;color:var(--ink);margin-bottom:-.3em}
+.jh-moment{margin-top:72px;display:grid;justify-items:start}
+.jh-moment>.jh-k{margin-bottom:14px}
+.share{display:flex;align-items:center;gap:14px;width:100%;max-width:300px;padding:10px;background:#fbf8f1;border:1px solid var(--hair);box-shadow:0 10px 20px -16px rgba(40,20,10,.4)}
+.share-cover{position:relative;flex:none;width:56px;height:56px;background:var(--wine)}
+.share-cover::before{content:"";position:absolute;inset:13px;border-radius:50%;border:1px solid rgba(239,233,223,.6)}
+.share-cover::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#efe9df}
+.share-t{display:grid;gap:6px}
+.share-title{font-family:var(--lat);font-weight:400;font-size:22px;line-height:1;color:var(--ink)}
+.share-title .cl{margin:0 .1em;font-weight:600;color:var(--wine)}
+.share-artist{font-family:var(--lat);font-style:italic;font-size:13px;line-height:1;color:var(--mute)}
+.reply{margin:20px 0 0 18px !important;padding:2px 0 2px 16px;border-left:1px solid rgba(122,31,36,.45)}
+.jianghu .reply .jh-quiet{margin:0 !important;font-size:22px;font-weight:300;letter-spacing:.16em;color:var(--ink);text-align:left}
+.jh-moment .jh-wave{display:block;width:150px;height:50px;margin:26px 0 0;overflow:visible}
+.jianghu .lk-jianghu{margin-top:64px !important}
+.jh-route{margin-top:26px !important}
+.jh-route text{font-size:11px;letter-spacing:.3em;fill:var(--mute)}
+
+/* 万豪 · two hotel key cards, type only */
+.hotels{gap:14px;padding:6px 0}
+.hcard.key{position:relative;aspect-ratio:1.586;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:12px;text-align:center;
+  background:#fbf8f1;border:1px solid rgba(35,30,27,.16);border-radius:4px;box-shadow:0 10px 20px -14px rgba(40,20,10,.45);color:var(--ink)}
+.hcard.key:nth-child(1){transform:rotate(-1.5deg)}.hcard.key:nth-child(2){transform:rotate(1.5deg) translateY(8px)}
+.hcard.key:active{transform:scale(.97)}
+.key-n{position:relative;display:inline-block}
+.hcard.key .nm{display:inline;font-size:19px;font-weight:400;letter-spacing:.12em;margin-right:-.12em}
+.key-rule{display:block;width:26px;height:1px;background:currentColor;opacity:.3}
+.hcard.key .en{display:block;margin:0;font-family:var(--lat);font-style:italic;font-size:12px;color:var(--mute)}
+.hcard.key.right{background:var(--wine);border-color:var(--wine);color:#f3ece2}
+.hcard.key.right .en{color:rgba(243,236,226,.72)}
+.strike{position:absolute;left:-8px;right:-8px;top:50%;height:6px;margin-top:-2px;z-index:3}
+.strike path{stroke:var(--line);stroke-width:1.2}
+.hcard.key .stamp{top:50%}
+.taxi-line{margin:22px auto 10px}
+.taxi-line text{font-size:11px}
+
+/* the rolls · 2025–26 as events: date → place → line → photo */
+.events{display:block;margin-top:10px}
+.ev{position:relative;margin:0 0 84px}
+.ev:last-child{margin-bottom:28px}
+.ev-h{position:relative;display:grid;gap:5px;margin-bottom:14px;color:var(--chalk)}
+.ev-h::before{content:"";position:absolute;left:-14px;top:4px;width:5px;height:5px;border-radius:50%;background:var(--line)}
+.ev-h .d{font-family:var(--lat);font-style:italic;font-size:12px;line-height:1.2;letter-spacing:.04em;color:var(--edge)}
+.ev-h .t{font-size:16px;line-height:1.4;letter-spacing:.1em}
+.ev-h .tx{font-size:13px;line-height:1.8;color:rgba(236,234,230,.78)}
+.ev.ms .ev-h{border-top:1px solid var(--line);padding-top:14px}
+.ev.ms .ev-h::before{top:18px}
+.ev-h .ms-k{font-family:var(--lat);font-style:italic;font-size:11px;color:#e7a0a3}
+.ev-ph{margin:0}
+.ev-ph .ph{border:4px solid #efe9df;box-shadow:0 18px 30px -14px rgba(0,0,0,.8)}
+.ev-L,.ev-P{width:100%}
+.ev-S{width:64%}
+.ev-more{margin:14px 0 0 auto}
+.ev-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ev-pair .scan-ph img{display:block;width:100%;height:auto;box-shadow:0 14px 24px -14px rgba(0,0,0,.8)}
+.ev-pair .scan-ph:first-child{transform:rotate(-1.5deg)}.ev-pair .scan-ph:nth-child(2){transform:rotate(1.5deg)}
+
+/* map · near full width on a phone, taller frame */
+@media (max-width:899px){
+  .map-sec .map-sheet{margin:0 -16px;transform:none;padding:4px}
+  .map-sheet .t1{left:-6px}.map-sheet .t2{right:-6px}
+}
+
+@media (min-width:900px){
+  .hero{--tw:380px;justify-content:center;padding-top:40px;padding-bottom:96px}
+  .hero .hang{width:var(--tw)}
+  .ribbon{height:80px}
+  .tag{padding:34px 28px 18px}
+  .hero-num{font-size:calc((var(--tw) - 64px) / 1.78);margin:calc(14px - .12em) 0 0}
+  .b1{left:-150px;top:270px;width:176px}.b2{right:-154px;top:318px;width:176px}
+  .hero-sub{margin-top:44px;font-size:20px}
+  .jianghu{padding-top:110px}
+  .jh{max-width:600px !important}
+  .jh .jh-game{font-size:14px}
+  .jh .jh-guild{font-size:28px}
+  .plate{height:320px}
+  .jh .jh-big{font-size:184px}
+  .jh .jh-him{font-size:30px}
+  .jh-plates{gap:24px}
+  .share{max-width:360px}
+  .jh-moment{padding-left:60px}
+  .jianghu .lk-jianghu .c{font-size:76px}
+  .hcard.key .nm{font-size:24px}
+  .events{max-width:760px}
+  .ev{display:grid;grid-template-columns:220px 1fr;column-gap:44px;align-items:start;margin-bottom:110px}
+  .ev-h{grid-column:1;grid-row:1/span 3;margin:0}
+  .ev-ph{grid-column:2}
+  .ev-more{margin-top:18px}
+  .ev.ms{display:block}
+  .ev-h .t{font-size:19px}.ev-h .tx{font-size:14px}.ev-h .d{font-size:13px}
+}
+/* v8 hero tuning */
+.hero{--tw:min(288px,76vw)}
+.hero .hang{margin-top:clamp(0px,calc((100svh - 640px) / 2),56px)}
+.hero-num{font-size:calc((var(--tw) - 60px) / 1.98);text-indent:-.05em}
+@media (min-width:900px){.hero{--tw:400px}.hero .hang{margin-top:0}.hero-num{font-size:calc((var(--tw) - 72px) / 1.98)}}
+.hero-num{font-size:calc((var(--tw) - 60px) / 1.77);letter-spacing:0;text-indent:-.03em}
+@media (min-width:900px){.hero-num{font-size:calc((var(--tw) - 72px) / 1.77)}}
+/* v8: the designed pieces of the line start from the margin the spine runs in */
+.jh-moment .jh-wave{margin-left:-11px}
+.jh-route{display:block;width:min(300px,calc(100% + 11px));max-width:none !important;margin:30px 0 0 -11px !important;overflow:visible}
+.taxi-line{width:calc(100% + 11px);max-width:none !important;margin:22px 0 10px -11px}
+@media (min-width:900px){
+  .jh{max-width:760px !important}
+  .jh-plates{max-width:600px;margin:0 auto}
+  .jh-head{max-width:600px;margin-left:auto;margin-right:auto}
+  .jh-moment{padding-left:0}
+  .jh-route{width:340px}
+  .hotel>.taxi-line{max-width:none !important;width:calc(100% + 11px);margin-left:calc((100% - 760px) / 2 - 11px)}
+}
+@media (min-width:900px){
+  .hotel>.taxi-line{width:771px;max-width:771px !important;margin-left:calc(50% - 391px)}
+  .jianghu>.jh-route{margin-left:calc(50% - 391px) !important}
+}
+@media (min-width:900px){
+  .hotel>.hotels{max-width:600px !important}
+  .ev-P{width:82%}
+}
+@media (min-width:900px){
+  .story .st-bleed>.st-ph{width:100vw;max-width:none;justify-self:start;margin:0 0 0 calc(50% - 50vw)}
+}
+.map-sec{overflow-x:hidden;overflow-x:clip}
+@media (min-width:900px){.story .st-bleed>.st-ph{margin-left:calc((min(1120px, 100vw - 44px) - 100vw) / 2)}}
+@media (min-width:900px){.story .st-bleed:nth-child(n)>.st-ph{grid-column:1/-1}}
+.plate{height:240px;padding-bottom:32px}
+.plate figcaption{bottom:13px}
+.jh .jh-him{letter-spacing:.24em;margin-bottom:-.24em}
+@media (min-width:900px){.plate{height:330px;padding-bottom:36px}}

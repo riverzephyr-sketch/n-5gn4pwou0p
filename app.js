@@ -91,30 +91,28 @@ function play() {
   if (p && p.catch) p.catch(() => { playing = false; document.body.classList.remove("playing"); setMini(); });
 }
 function pause() { playing = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
-const toggle = () => playing ? pause() : play();
+// the player rests as a small record; a tap opens it to show the song for a moment, then it folds back
+let miniT = 0; const peek = () => { mini.classList.add("open"); clearTimeout(miniT); miniT = setTimeout(() => mini.classList.remove("open"), 2600); };
+const toggle = () => { playing ? pause() : play(); peek(); };
 mini.addEventListener("click", toggle);
-$("#playHint").addEventListener("click", play);
+$("#playHint").addEventListener("click", () => { playing ? pause() : play(); });
 setMini();
+// in the hero the hint is the player; the record appears once the hint has scrolled away
+if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => mini.classList.toggle("show", !e.isIntersecting))).observe($("#playHint"));
 
-/* ---------- THE RED LINE (one fine wine stroke: sound → meeting → time → place → future) ---------- */
-// hero: starts at the player's sound wave (bottom right), passes behind 1461, leaves bottom-left toward 江湖
-function layoutHeroLine() {
-  const hero = $("#hero"), r = hero.getBoundingClientRect(), W = r.width, Hh = hero.offsetHeight, svgL = $("#rlHero");
-  const m = mini.getBoundingClientRect(), t = $("#tag").getBoundingClientRect();
-  const x0 = m.left - r.left + 4, y0 = Math.min(Hh - 24, m.top + m.height / 2); // the pill is fixed: at scroll 0 its viewport y is its y in the hero
-  const cx = t.left - r.left + t.width / 2, cy = t.top - r.top + t.height * .42;
-  svgL.setAttribute("viewBox", `0 0 ${W} ${Hh}`); svgL.style.height = Hh + "px";
-  $("#rlHeroPath").setAttribute("d", `M${x0} ${y0} C ${x0 - 70} ${y0 - 6}, ${W + 30} ${cy + 150}, ${cx + 60} ${cy} S ${-50} ${cy + 120}, ${-4} ${Hh - 4}`);
-}
-layoutHeroLine(); addEventListener("resize", layoutHeroLine); addEventListener("load", layoutHeroLine);
+/* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
 
 /* ---------- JIANGHU ---------- */
 const J = C.jianghu;
 // a typographic collage of the real names only: 方 / 保护我方姐姐 / 晚来天欲雪 / 《天涯明月刀手游》
-$("#jhSr").textContent = `《${J.game}》 [${J.guild}] ${J.him} · ${J.me}`;
+$("#jhSr").textContent = `《${J.game}》 ${J.guild} · ${J.me} · ${J.him} · ${J.quietSong} · ${J.quiet}`;
 $("#jhGame").textContent = `《${J.game}》`; $("#jhBig").textContent = J.me; $("#jhGuild").textContent = J.guild;
 $("#jhHim").innerHTML = esc(J.him).replace(esc(J.me), `<em>${esc(J.me)}</em>`);
-$("#jhQuiet").textContent = J.quiet ? `「${J.quiet}」` : ""; $("#jhSong").innerHTML = esc(J.quietSong || "").replace(":", '<span class="cl">:</span>');
+$("#jhQuiet").textContent = J.quiet ? `「${J.quiet}」` : "";
+// the shared song: "Artist · Title" → a small share card (the colon in Ref:rain kept legible)
+{ const sp = (J.quietSong || "").split(/\s*·\s*/), artist = sp.length > 1 ? sp[0] : "", title = sp.length > 1 ? sp.slice(1).join(" · ") : sp[0];
+  $("#jhTitle").innerHTML = esc(title).replace(":", '<span class="cl">:</span>'); $("#jhArtist").textContent = artist;
+  if (!title) $("#jhShare").remove(); }
 $("#jhFrom").textContent = J.from; $("#jhTo").textContent = J.to;
 (() => { // faint snow — 晚来天欲雪
   const cv = $("#snow"), g = cv.getContext("2d"), sec = $("#jianghu");
@@ -131,19 +129,15 @@ $("#jhFrom").textContent = J.from; $("#jhTo").textContent = J.to;
 /* ---------- HOTEL ---------- */
 const HT = C.hotel;
 $("#hLabel").textContent = "( " + HT.label + " )"; $("#scoreLab").textContent = HT.scoreLabel || "";
-const ICON = {
-  taxi: '<svg viewBox="0 0 64 64"><path d="M12 40 L16 30 Q17.5 26.5 21 26.5 L43 26.5 Q46.5 26.5 48 30 L52 40"/><path d="M8 40 H56 V48 H8 Z"/><circle cx="19" cy="48" r="4.5"/><circle cx="45" cy="48" r="4.5"/><path d="M27 26.5 V21.5 H37 V26.5"/></svg>',
-  bell: '<svg viewBox="0 0 64 64"><path d="M14 44 C 14 31, 22 23.5, 32 23.5 C 42 23.5, 50 31, 50 44 Z"/><path d="M9 48.5 H55"/><path d="M32 23.5 V18.5"/><path d="M28.5 18 H35.5"/></svg>',
-};
+// two hotel key cards, type only: the wrong one gets a fine red strike, the right one is the wine-red card
 const card = (o, kind) => {
-  const b = el("button", `hcard pola ${kind}`);
-  b.innerHTML = `<i class="tape top ${kind === "right" ? "wine" : ""}"></i>${kind === "right" ? '<svg class="clip" viewBox="0 0 16 46"><path d="M5 40 V8 a4 4 0 0 1 8 0 V36 a6 6 0 0 1 -12 0 V12"/></svg>' : ""}<div class="ph">${ICON[kind === "wrong" ? "taxi" : "bell"]}</div>
-    <div class="cap"><span class="nm">${esc(o.name)}</span><span class="en">${esc(o.en)}</span></div>`;
+  const b = el("button", `hcard key ${kind}`);
+  b.innerHTML = `<span class="key-n"><span class="nm">${esc(o.name)}</span></span><i class="key-rule"></i><span class="en">${esc(o.en)}</span>`;
   return b;
 };
 const wrongC = card(HT.wrong, "wrong"), rightC = card(HT.right, "right");
 $("#hotels").append(wrongC, rightC);
-const xm = el("span", "mark xmark", MARK.x); wrongC.querySelector(".ph").append(xm);
+const xm = el("span", "mark strike", '<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path pathLength="1" d="M0 6 L100 4"/></svg>'); wrongC.querySelector(".key-n").append(xm); hairIO.observe(xm);
 const stamp = el("span", "stamp", esc(HT.stamp || "扣分")); wrongC.append(stamp);
 const okr = el("span", "mark okring", MARK.circle); rightC.append(okr);
 const qParts = (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
@@ -219,7 +213,9 @@ function layoutMap(z) {
   Object.entries(lblEls).forEach(([id, t]) => { const p = placeById[id], [x, y] = proj(p.lon, p.lat), [dx, dy, an] = LBL[id] || [9, 3, "start"];
     t.setAttribute("x", x + dx * z); t.setAttribute("y", y + dy * z); t.setAttribute("text-anchor", an); t.setAttribute("font-size", 11.5 * z); t.style.strokeWidth = 3.2 * z; });
 }
-const fullVB = [-5, 0, M.w + 10, M.h];
+// on a phone the map gets a tighter, taller frame around the route (it runs near full width)
+const fullVB = innerWidth < 900 ? [4, 30, 416, 430] : [-5, 0, M.w + 10, M.h];
+if (innerWidth < 900) svg.style.aspectRatio = `${fullVB[2]} / ${fullVB[3]}`;
 function box(l0, a1, l1, a0) { const [x0, y0] = proj(l0, a1), [x1, y1] = proj(l1, a0); const w = x1 - x0, h = y1 - y0, s = Math.max(w, h); return [x0 + (w - s) / 2, y0 + (h - s) / 2, s, s]; }
 const regions = { all: fullVB, yrd: box(117.6, 32.6, 123.6, 28.4), prd: box(111.6, 24.8, 116.4, 21), ne: box(124, 41, 142, 30) };
 let vb = fullVB.slice();
@@ -322,18 +318,22 @@ C.chapters.forEach((c, ci) => {
     return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
   const L = c.layout || "strip";
   if (L === "peak") {
-    // the emotional peak: a loose composition of prints instead of a strip
-    const pk = el("div", "peak");
-    c.items.forEach((m, mi) => {
-      const fig = el("figure", "pk pk" + (mi + 1) + (m.highlight ? " hi" : "") + (m.milestone ? " ms" : "") + (m.scans ? " pk-scans" : ""));
-      if (m.milestone) fig.innerHTML = `<div class="ms-band"><span class="ms-k">Milestone</span><b>${esc(m.title)}</b><span class="ms-d">${esc(m.date)}</span>${m.text ? `<span class="ms-x">${esc(m.text)}</span>` : ""}</div>`;
-      else if (m.scans) { const w = el("div", "pk-pair"); m.scans.forEach(src => { const f = el("div", "scan-ph", img(src, m.title)); tapPhoto(f, src, m); w.append(f); }); fig.append(w); }
-      else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
-        if (m.crop) { const im = ph.querySelector("img"); ph.classList.add("crop"); ph.style.aspectRatio = m.crop.ratio || ""; fig.classList.add("pk-crop");
-          if (im) { im.style.objectPosition = m.crop.pos || "50% 50%"; im.style.transformOrigin = m.crop.pos || "50% 50%"; if (m.crop.zoom && m.crop.zoom !== 1) im.style.transform = `scale(${m.crop.zoom})`; } }
-        fig.append(ph); }
-      if (!m.milestone) { const cp = capHTML(m); if (cp) fig.append(el("figcaption", "", cp)); }
-      pk.append(fig); frameNo++;
+    // the emotional peak as a sequence of events, one module each: date → place → line → photo.
+    // photo sizes come from a small system, not per photo: L = full width 3:2 · P = full width 4:5 (highlight) · S = 64% 4:5 · pair = real prints.
+    // an item without any caption of its own is the same event continuing (e.g. a second photo of the same trip).
+    const pk = el("div", "peak events"); let last = null;
+    c.items.forEach(m => {
+      const cap = m.milestone ? "" : capHTML(m), cont = !m.milestone && !cap && last;
+      const ev = cont ? last : el("article", "ev" + (m.highlight ? " hi" : "") + (m.milestone ? " ms" : ""));
+      if (!cont) { if (m.milestone) ev.innerHTML = `<header class="ev-h"><span class="d">${esc(m.date)}</span><span class="ms-k">Milestone</span><span class="t">${esc(m.title)}</span>${m.text ? `<span class="tx">${esc(m.text)}</span>` : ""}</header>`;
+        else if (cap) ev.append(el("header", "ev-h", cap)); }
+      if (m.scans) { const w = el("div", "ev-ph ev-pair"); m.scans.forEach(src => { const f = el("div", "scan-ph", img(src, m.title)); tapPhoto(f, src, m); w.append(f); }); ev.append(w); }
+      else if (m.photo) { const r = (m.crop && m.crop.ratio) || "4/5", size = /^3\/2$/.test(r) ? "L" : (m.highlight ? "P" : "S");
+        const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); ph.style.aspectRatio = size === "L" ? "3/2" : "4/5";
+        const im = ph.querySelector("img"); if (im && m.crop) { im.style.objectPosition = m.crop.pos || "50% 50%"; im.style.transformOrigin = m.crop.pos || "50% 50%"; if (m.crop.zoom && m.crop.zoom !== 1) im.style.transform = `scale(${m.crop.zoom})`; }
+        const f = el("div", `ev-ph ev-${size}${cont ? " ev-more" : ""}`); f.append(ph); ev.append(f); }
+      if (!cont) { pk.append(ev); last = m.milestone ? null : ev; }
+      frameNo++;
     });
     y.append(pk); list.append(y); return;
   }
@@ -369,11 +369,6 @@ alignCaps(); addEventListener("resize", alignCaps); addEventListener("load", ali
 
 /* ---------- FINALE ---------- */
 const F = C.finale;
-// the red line comes in from the top-left and runs off the right edge — the next chapter isn't drawn yet
-function layoutFinaleLine() { const f = $("#finale"), W = f.clientWidth, env = $("#envelope"), Y = env.offsetTop + env.offsetHeight + 18;
-  const sv2 = $("#rlFinale"); sv2.setAttribute("viewBox", `0 0 ${W} ${Y + 60}`); sv2.style.height = (Y + 60) + "px";
-  $("#rlFinalePath").setAttribute("d", `M-4 4 C ${W * .25} 40, ${W * .02} ${Y * .55}, ${W * .3} ${Y * .72} S ${W * .8} ${Y + 30}, ${W + 40} ${Y - 10}`); }
-layoutFinaleLine(); addEventListener("load", layoutFinaleLine); addEventListener("resize", layoutFinaleLine);
 $("#years").innerHTML = ["2022", "2023", "2024", "2025", "2026"].map(y => `<span>${y}</span>`).join("");
 $("#lcTitle").textContent = F.lockedTitle; $("#envTo").textContent = C.him; $("#fTL").innerHTML = paren(["For", C.him]); $("#fTR").innerHTML = paren(["From", F.signature]);
 function sealSVG(text, id, size = 34) {
@@ -511,6 +506,78 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-vg]"
 document.addEventListener("keydown", e => { if (V.el && V.el.classList.contains("open")) { if (e.key === "Escape") { e.stopImmediatePropagation(); closeViewer(); } else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); return; }
   const b = e.target.closest && e.target.closest("[data-vg]"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openViewer(b.dataset.vg, b.dataset.vi, b); } }, true);
 
+/* ---------- SPINE: one red line through the whole page ----------
+   It runs: from under the 1461 tag → the sound wave in 江湖 → 北京 → 重庆 → the taxi detour → down the rolls' margin
+   → under the map paper into the string → down the margin → the finale, and off the right edge (the next chapter).
+   The designed pieces (wave, route, taxi, map string) are drawn by their own SVGs; the spine only draws the joins.
+   It never sits over text or photos: wherever it would cross one, it breaks and passes "behind" with a small gap. */
+const SP = { svgs: [] };
+function buildSpine() { try {
+  const W = document.documentElement.clientWidth, sy = scrollY, NSs = "http://www.w3.org/2000/svg", desk = W >= 900;
+  // the margin the line travels in: on a phone the page gutter; on desktop the left edge of the 760px column (the story spreads wider, so the line steps out to the page margin there)
+  const gx = desk ? Math.round((W - 760) / 2) - 11 : 11, gOut = desk ? Math.max(28, Math.round((W - 1120) / 2) - 44) : 11;
+  const R = (e) => { const r = e.getBoundingClientRect(); return { l: r.left, t: r.top + sy, r: r.right, b: r.bottom + sy, w: r.width, h: r.height }; };
+  const ends = p => { const m = p.getScreenCTM(), L = p.getTotalLength(), at = l => { const q = p.getPointAtLength(l).matrixTransform(m); return [q.x, q.y + sy]; };
+    const a = at(0), a2 = at(Math.min(L, 6)), b = at(L), b2 = at(Math.max(0, L - 6)), u = (p, q) => { const d = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return [(q[0] - p[0]) / d, (q[1] - p[1]) / d]; };
+    return { s: a, sd: u(a, a2), e: b, ed: u(b2, b) }; };
+  const cx = v => Math.max(2, Math.min(W - 2, v));
+  // a join from A (leaving in direction da) to B (arriving in direction db) that travels down the margin g
+  const join = (A, da, B, db, g = gx) => { const dy = B[1] - A[1], k = Math.max(12, Math.min(90, dy / 4.2)), nearA = Math.abs(A[0] - g) < 4, nearB = Math.abs(B[0] - g) < 4;
+    const y1 = nearA ? A[1] : A[1] + 2 * k, y2 = nearB ? B[1] : B[1] - 2 * k;
+    let d = `M${A[0]} ${A[1]}`;
+    d += nearA ? "" : ` C ${cx(A[0] + da[0] * k)} ${A[1] + da[1] * k}, ${g} ${y1 - k}, ${g} ${y1}`;
+    d += ` L ${g} ${y2}`;
+    d += nearB ? ` L ${B[0]} ${B[1]}` : ` C ${g} ${y2 + k}, ${cx(B[0] - db[0] * k)} ${B[1] - db[1] * k}, ${B[0]} ${B[1]}`;
+    return d; };
+  const D = [0, 1], segs = [];
+  const tag = R($("#tag")), route = ends($("#jhA")), taxi = ends($("#taxiPath"));
+  const P0 = [tag.l + tag.w * .5, tag.t + tag.h * .55];
+  segs.push(join(P0, [-.6, .8], route.s, route.sd));          // hero → past the sound wave (it branches off here) → 北京
+  const hl = R($("#hLabel"));
+  segs.push(join(route.e, route.ed, [gx, hl.t - 4], D));      // 重庆 → down into 「重庆 · 初见」
+  segs.push(join([gx, hl.t - 4], D, taxi.s, taxi.sd));        // → the taxi detour
+  const cl = R($("#chapterList")), tx = cl.l - 11.5, t0 = cl.t + 60, t1 = cl.b - 40;
+  segs.push(join(taxi.e, taxi.ed, [tx, t0], D)); segs.push(`M${tx} ${t0} L ${tx} ${t1}`);
+  const str = $("#mapSvg .string"); let mapEnd = [tx, t1], mapD = D;
+  if (str && str.getTotalLength && str.getTotalLength() > 0) { const m = ends(str); segs.push(join([tx, t1], D, m.s, [0, 1])); mapEnd = m.e; mapD = [0, 1]; }
+  const fin = R($("#finale")), env = R($("#envelope")), Y = env.b + 18, fw = fin.w;
+  const f0 = [gOut, fin.t + 40];
+  segs.push(join(mapEnd, mapD, f0, D, gOut));
+  segs.push(`M${f0[0]} ${f0[1]} C ${gOut} ${fin.t + (Y - fin.t) * .45}, ${fw * .02} ${fin.t + (Y - fin.t) * .55}, ${fw * .3} ${fin.t + (Y - fin.t) * .72} S ${fw * .8} ${Y + 30}, ${fw + 40} ${Y - 10}`);
+  // sample the joins
+  let ms = SP.m; if (!ms) { ms = SP.m = document.createElementNS(NSs, "svg"); ms.setAttribute("aria-hidden", "true"); ms.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;visibility:hidden"; ms.append(document.createElementNS(NSs, "path")); document.body.append(ms); }
+  const mp = ms.firstChild, pts = [];
+  segs.forEach(d => { mp.setAttribute("d", d); const L = mp.getTotalLength(), n = Math.max(2, Math.ceil(L / 4)); const run = [];
+    for (let i = 0; i <= n; i++) { const q = mp.getPointAtLength(L * i / n); run.push([q.x, q.y]); } pts.push(run); });
+  // obstacles: every line of text, every photo and card
+  const secs = [$("#hero"), ...$$(".sec")], obs = [], pad = 9, add = (r, p = pad) => { if (r.width > 0 && r.height > 0) obs.push([r.left - p, r.top + sy - p, r.right + p, r.bottom + sy + p]); };
+  const rg = document.createRange();
+  secs.forEach(sec => { const tw = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT); let n;
+    while ((n = tw.nextNode())) { if (!n.nodeValue.trim()) continue; const pe = n.parentElement; if (!pe || pe.closest(".sr-only,svg.spine")) continue;
+      if (pe.closest("svg")) { add((pe.closest("text") || pe).getBoundingClientRect(), 6); continue; }
+      rg.selectNodeContents(n); for (const r of rg.getClientRects()) add(r); }
+    sec.querySelectorAll("img,.ph,.tag,.behind,.hcard,.share,.map-sheet,.envelope,.vstrip,.contact,.canister,.strip-h,.pad button,.seal,.heart,.chips button,.zoom button,.plate,.cue,.feature").forEach(e => add(e.getBoundingClientRect(), 6)); });
+  const B = 200, bucket = {}; obs.forEach((o, i) => { for (let k = Math.floor(o[1] / B); k <= Math.floor(o[3] / B); k++) (bucket[k] = bucket[k] || []).push(o); });
+  const hit = (x, y) => (bucket[Math.floor(y / B)] || []).some(o => x >= o[0] && x <= o[2] && y >= o[1] && y <= o[3]);
+  // one svg per section, holding the part of the line inside it
+  SP.svgs.forEach(s => s.remove()); SP.svgs = [];
+  secs.forEach(sec => { const r = R(sec); let d = "";
+    pts.forEach(run => { let line = [];
+      const flush = () => { if (line.length > 1) { const q = [line[0]]; for (let i = 1; i < line.length - 1; i++) { const a = q[q.length - 1], b = line[i], c = line[i + 1];
+          if (Math.abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) > .6) q.push(b); } q.push(line[line.length - 1]);
+          d += q.map((p, i) => (i ? "L" : "M") + (p[0] - r.l).toFixed(1) + " " + (p[1] - r.t).toFixed(1)).join(""); } line = []; };
+      run.forEach(([x, y]) => { if (y >= r.t - 1 && y <= r.b + 1 && !hit(x, y)) line.push([x, y]); else flush(); }); flush(); });
+    if (!d) return;
+    const sv = document.createElementNS(NSs, "svg"); sv.setAttribute("class", "rl spine"); sv.setAttribute("aria-hidden", "true");
+    sv.setAttribute("viewBox", `0 0 ${r.w} ${r.h}`); sv.style.height = r.h + "px";
+    const p = document.createElementNS(NSs, "path"); p.setAttribute("class", "rl-p"); p.setAttribute("d", d); sv.append(p); sec.prepend(sv); sv._sec = sec; SP.svgs.push(sv); });
+  if (SP.onBuild) SP.onBuild();
+} catch (e) { /* the line is decoration: never let it break the page */ } }
+let spT = 0; const spineSoon = (ms = 120) => { clearTimeout(spT); spT = setTimeout(buildSpine, ms); };
+let spW = innerWidth; addEventListener("resize", () => { if (innerWidth !== spW) { spW = innerWidth; spineSoon(250); } });
+addEventListener("load", () => spineSoon(60)); if (document.fonts) document.fonts.ready.then(() => spineSoon(60));
+buildSpine();
+
 /* ---------- MOTION (GSAP, self-hosted in vendor/) ----------
    Three moments only, each plays on its own:
    1. the 1461 counter counts up once   2. the red string draws itself (scroll-scrubbed)   3. the wax seal breaks on the right passcode
@@ -528,7 +595,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     /* 1 · hero: 1461 rises through its mask, then the dates, then the small live counter counts up, then the red line leaves the player */
     const days = Math.floor(Math.max(0, Date.now() - start) / 864e5), first = performance.now() < 2600;
     const html = document.documentElement, digits = $$(".hero-num .d"), dates = $$(".hero-dates > *");
-    if (!reduce && first) {
+    if (!reduce && first) { MO.heroPending = true;
       html.classList.remove("motion-pending"); gsap.set(digits, { y: 0, yPercent: 110 }); gsap.set(dates, { autoAlpha: 0, y: 12 }); // same frame: no flash
       MO.counting = true; $("#cDays").textContent = "0";
       const o = { v: 0 }, out = $("#cDays");
@@ -537,7 +604,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.2)
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
           onComplete: () => { MO.counting = false; tick(); } }, 1.7)
-        .fromTo("#rlHeroPath", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power1.inOut" }, 3.3);
+        .add(() => { MO.heroDrawn = true; const p = SP.svgs[0] && SP.svgs[0]._sec.id === "hero" && SP.svgs[0].querySelector("path"); if (p) gsap.fromTo(p, { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power1.inOut" }); }, 3.3);
       const go = () => heroTL.play();
       Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
     } else html.classList.remove("motion-pending");
@@ -567,14 +634,19 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .fromTo(["#jhA", "#jhB"], { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.4, ease: "power1.inOut" }, 1.4)
         .fromTo(".jh-route circle", { opacity: 0 }, { opacity: 1, duration: .4 }, 2.6);
       // rolls: one wipe on each roll's key frame as it enters, its words follow (no pinning, no scrub)
-      $$(".yr").forEach(y => { const key = y.querySelector(".feature .ph, .pk.hi .ph, .cs-row, .vfr .ph"); if (!key) return;
-        const words = y.querySelector(".feature figcaption") || y.querySelector(".pk.hi figcaption") || y.querySelector(".cs-caps") || y.querySelector(".caps .cp");
+      $$(".yr").forEach(y => { const key = y.querySelector(".feature .ph, .ev.hi .ph, .cs-row, .vfr .ph"); if (!key) return;
+        const words = y.querySelector(".feature figcaption") || y.querySelector(".ev.hi .ev-h") || y.querySelector(".cs-caps") || y.querySelector(".caps .cp");
         const wt = gsap.timeline({ scrollTrigger: { trigger: key, start: "top 80%", once: true } })
           .fromTo(key, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: .6, ease: "power3.out", clearProps: "clipPath" }, 0);
         if (words) wt.fromTo(words, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5, ease: "power2.out" }, .35); });
       draw(".taxi-line .rl-p", ".taxi-line");
-      gsap.fromTo("#track", { scaleY: 0 }, { scaleY: 1, ease: "none", transformOrigin: "50% 0%", scrollTrigger: { trigger: "#chapterList", start: "top 70%", end: "bottom 70%", scrub: 0.6 } });
-      draw("#rlFinalePath", "#finale");
+      // the spine: each section's part draws as you scroll through it (the hero's part draws after the counter)
+      const spTweens = []; SP.onBuild = () => { spTweens.splice(0).forEach(t => { try { t.scrollTrigger && t.scrollTrigger.kill(); t.kill(); } catch (e) {} });
+        SP.svgs.forEach(sv => { const p = sv.querySelector("path");
+          if (sv._sec.id === "hero") { if (MO.heroPending && !MO.heroDrawn) gsap.set(p, { drawSVG: "0%" }); return; }
+          spTweens.push(gsap.fromTo(p, { drawSVG: "0%" }, { drawSVG: "100%", ease: "none", scrollTrigger: { trigger: sv._sec, start: "top 80%", end: "bottom 80%", scrub: 0.6 } })); });
+        ScrollTrigger.refresh(); };
+      SP.onBuild();
       // the ending: the years pass one by one, then only NEXT / chapter stays
       const yrs = $$("#years span"), lk = $(".lk-finale");
       const ytl = gsap.timeline({ scrollTrigger: { trigger: ".fin-title", start: "top 72%", once: true } }).set(lk, { autoAlpha: 0 });
@@ -594,7 +666,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     MO.sealReset = () => { seal.pause(0); gsap.set(flap, { clearProps: "zIndex" }); };
     return () => { MO.counting = false; MO.finishString = null; };
   });
-  const refresh = () => { try { layoutHeroLine(); layoutFinaleLine(); ScrollTrigger.refresh(); } catch (e) { motionOff(); } };
+  const refresh = () => { try { ScrollTrigger.refresh(); spineSoon(80); } catch (e) { motionOff(); } };
   addEventListener("load", refresh); if (document.fonts) document.fonts.ready.then(refresh);
 } catch (e) { motionOff(); } }
 // GSAP is optional: the page is complete without it. Load it after the content is on screen;
