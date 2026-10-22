@@ -79,11 +79,14 @@ img{display:block;max-width:100%}
 .playing .play-hint::before{width:40px}
 
 /* the folded player: a small paper chip, bottom-right inside the safe area */
-.mini{position:fixed;z-index:120;right:max(14px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));height:34px;min-width:34px;display:flex;align-items:center;justify-content:center;gap:0;padding:0 11px;border-radius:17px;
-  background:#f3eee5 url(assets/paper-cream.webp) center/400%;box-shadow:0 1px 1px rgba(45,25,15,.22),0 6px 16px rgba(45,25,15,.16);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .4s,transform .4s}
+.mini{position:fixed;z-index:120;right:max(14px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));height:30px;min-width:30px;display:flex;align-items:center;justify-content:center;gap:0;padding:0 10px;border-radius:15px;
+  background:#f3eee5 url(assets/paper-cream.webp) center/400%;box-shadow:0 1px 1px rgba(45,25,15,.22),0 5px 14px rgba(45,25,15,.15);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .4s,transform .45s cubic-bezier(.3,.7,.2,1)}
+/* over text, photos or buttons it slides into the right edge: only a thin paper tab stays, still tappable */
+.mini.show.tuck:not(.open){transform:translateX(calc(100% + max(14px,env(safe-area-inset-right)) - 9px))}
+.mini.tuck:not(.open) .mini-dot{opacity:0}
 .mini::before{content:"";position:absolute;inset:-6px}
 .mini.show{opacity:1;transform:none;pointer-events:auto}
-.mini-dot{width:6px;height:6px;border-radius:50%;background:var(--wine);opacity:.75;flex:none}
+.mini-dot{width:6px;height:6px;border-radius:50%;background:var(--wine);opacity:.75;flex:none;transition:opacity .3s}
 .mini.on .mini-dot{animation:breathe 2.4s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.25}}
 .mini-txt{max-width:0;overflow:hidden;white-space:nowrap;font-family:var(--lat);font-style:italic;font-size:12px;color:var(--wine);transition:max-width .4s,margin .4s}

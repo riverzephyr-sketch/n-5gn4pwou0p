@@ -98,6 +98,28 @@ $("#jhCover").addEventListener("click", () => { playing ? pause() : play(); peek
 setMini();
 // in the hero the hint is the player; the record appears once the hint has scrolled away
 if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => mini.classList.toggle("show", !e.isIntersecting))).observe($("#playHint"));
+// keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
+{ const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/;
+  const under = () => { if (!mini.classList.contains("show")) return false;
+    const L = mini.offsetLeft - 6, T = mini.offsetTop - 6, R = L + mini.offsetWidth + 12, B = T + mini.offsetHeight + 12;
+    const hit = q => q.width && q.left < R && q.right > L && q.top < B && q.bottom > T;
+    const seen = new Set();
+    const pts = []; for (const fx of [.05, .28, .5, .72, .95]) for (const fy of [.05, .28, .5, .72, .95]) pts.push([L + (R - L) * fx, T + (B - T) * fy]);
+    for (const [x, y] of pts) {
+      if (!document.elementsFromPoint) break;
+      for (const e of document.elementsFromPoint(x, y)) { if (e === mini || mini.contains(e) || seen.has(e)) continue; seen.add(e);
+        const cs = getComputedStyle(e); if (cs.visibility === "hidden" || +cs.opacity < .1) continue;
+        if (MEDIA.test(e.tagName)) return true;
+        for (const n of e.childNodes) if (n.nodeType === 3 && n.textContent.trim()) { const rg = document.createRange(); rg.selectNodeContents(n);
+          for (const q of rg.getClientRects()) if (hit(q)) return true; } } }
+    return false; };
+  let raf = 0; const check = () => { raf = 0; mini.classList.toggle("tuck", under()); };
+  const queue = () => { if (!raf) raf = requestAnimationFrame(check); };
+  addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
+  // things also slide in after the scroll stops (GSAP reveals), so look again every so often while it is visible
+  setInterval(() => { if (mini.classList.contains("show") && !document.hidden) queue(); }, 600);
+  new MutationObserver(queue).observe(mini, { attributes: true, attributeFilter: ["class"] }); }
+
 
 /* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
 
