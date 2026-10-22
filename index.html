@@ -80,7 +80,7 @@
 <!-- 5 · map -->
 <section class="sec paper map-sec" id="map">
   <div class="lk lk-map" data-lk="map"></div>
-  <div class="map-sheet"><img class="tape-img t1" src="assets/tape.webp" alt="" loading="lazy"><img class="tape-img t2" src="assets/tape.webp" alt="" loading="lazy"><svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="map-sheet"><img class="tape-img t1" src="assets/tape.webp" width="360" height="90" alt="" loading="lazy" decoding="async"><img class="tape-img t2" src="assets/tape.webp" width="360" height="90" alt="" loading="lazy" decoding="async"><svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="zoom" id="zoom">
     <button data-z="all" class="on">全图</button>
     <button data-z="yrd">长三角</button>
@@ -125,7 +125,7 @@
   </div>
   <div class="lock">
     <div class="dots" id="dots"></div>
-    <div class="pad" id="pad"></div>
+    <div class="pad" id="pad" role="group" aria-label="密码"></div>
     <button class="heart" id="heart" aria-label="点一下"><svg viewBox="0 0 40 36"><path d="M20 33 C 9 25 2 18.5 2 11 C 2 5.5 6.2 2 10.8 2 C 14.6 2 17.8 4.4 20 8.2 C 22.2 4.4 25.4 2 29.2 2 C 33.8 2 38 5.5 38 11 C 38 18.5 31 25 20 33 Z"/></svg></button>
     <p class="heart-line" id="heartLine"></p>
   </div>
@@ -139,7 +139,7 @@
 <div class="sheet" id="sheet" aria-hidden="true">
   <div class="sheet-bg" data-close></div>
   <article class="pola-card" role="dialog" aria-modal="true">
-    <img class="tape-img top" src="assets/tape.webp" alt="" loading="lazy">
+    <img class="tape-img top" src="assets/tape.webp" width="360" height="90" alt="" loading="lazy" decoding="async">
     <button class="x" data-close aria-label="关闭"><i></i></button>
     <p class="s-idx" id="sIdx"></p>
     <div class="ph" id="sPhoto"></div>
@@ -152,7 +152,7 @@
 </div>
 
 <!-- Hidden page -->
-<div class="secret paper" id="secret" aria-hidden="true" tabindex="-1">
+<div class="secret paper" id="secret" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-label="Next Chapter">
   <div class="secret-in">
     <button class="x" id="secretClose" aria-label="关闭"><i></i></button>
     <span class="meta tl">2026.10.31</span>

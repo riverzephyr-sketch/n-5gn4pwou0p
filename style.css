@@ -905,3 +905,8 @@ img{display:block;max-width:100%}
 .mini.show.yield:not(.open){opacity:0;transform:translateX(14px);pointer-events:none}
 .mini.yield{transition:opacity .25s,transform .3s cubic-bezier(.3,.7,.2,1)}
 .vfr .fno{white-space:nowrap}
+/* audit (invisible / near-invisible): keyboard focus on map pins, no double-tap zoom delay on controls, 44px map zoom targets */
+#mapSvg .pin:focus-visible .ring{opacity:.9}
+button,[role=button],.hcard{touch-action:manipulation}
+.zoom button{min-height:44px}
+.tape-img{height:auto}
