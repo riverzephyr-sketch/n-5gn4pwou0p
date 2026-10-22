@@ -910,3 +910,26 @@ img{display:block;max-width:100%}
 button,[role=button],.hcard{touch-action:manipulation}
 .zoom button{min-height:44px}
 .tape-img{height:auto}
+
+/* =====================================================================
+   MOTION (branch motion): transform + opacity only; all of it off under prefers-reduced-motion
+   ===================================================================== */
+/* hero: until the motion runs, the tag and the print wait (the existing 2.5s safety net shows them if GSAP never arrives) */
+.motion-pending .tag,.motion-pending .hero-print{opacity:0}
+/* map: labels and leaders step out of the way while the map glides to another region */
+#mapSvg .plbl,#mapSvg .lead{transition:opacity .22s ease-out}
+#mapSvg.lbl-out .plbl,#mapSvg.lbl-out .lead{opacity:0;transition-duration:.15s}
+/* the envelope: a tap lifts the wax seal a few px, then it settles */
+.seal{transition:transform .45s cubic-bezier(.3,.7,.2,1)}
+.seal.lift{transform:translateY(-5px) rotate(-3deg);transition-duration:.22s}
+.envelope{cursor:pointer}
+.envelope:focus{outline:none}.envelope:focus-visible{outline:1px solid rgba(236,230,220,.6);outline-offset:6px}
+/* after 411223: the private page is uncovered like a sheet of the same paper lifted off it, then NEXT CHAPTER settles */
+.secret::before{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;background:inherit;
+  box-shadow:0 1px 0 rgba(255,255,255,.5),0 14px 26px rgba(45,25,15,.2);transform:translate3d(0,-104%,0)}
+.secret.open::before{animation:peel 1.05s cubic-bezier(.65,0,.3,1) .1s both}
+@keyframes peel{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-104%,0)}}
+.secret.open .secret-in{animation:settle 1s cubic-bezier(.2,.7,.2,1) .45s both}
+@keyframes settle{from{opacity:0;transform:translate3d(0,22px,0)}to{opacity:1;transform:none}}
+.secret{transition:opacity .35s,visibility 0s .35s}.secret.open{transition:opacity .35s}
+@media (prefers-reduced-motion:reduce){.secret::before{display:none}.seal.lift{transform:none}}

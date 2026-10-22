@@ -275,6 +275,7 @@ for (let lat = 0; lat <= 50; lat += 5) { const [, y] = proj(0, lat); gr += `M0 $
 svg.append(sv("path", { d: gr, class: "grat" }), sv("path", { d: M.land, class: "land" }));
 const LBL = { hangzhou: [-9, 4, "end"], jiaxing: [9, 9, "start"], shanghai: [9, -2, "start"], shenzhen: [9, 8, "start"], dongguan: [-9, -2, "end"],
   chongqing: [9, 10, "start"], chengdu: [-9, -3, "end"], wuning: [9, 3, "start"], dali: [-10, 14, "end"], tokyo: [-9, -6, "end"], fukuoka: [-9, 10, "end"], seoul: [-9, -4, "end"], beijing: [9, 3, "start"], kk: [9, 3, "start"], krabi: [9, 3, "start"] };
+let farMode = true;
 const LBL_FAR = { hangzhou: [-13, -13, "end"], shanghai: [7, -17, "start"], jiaxing: [21, 17, "start"], wuning: [0, 21, "middle"] };
 const leadEls = {};
 const seen = {};
@@ -301,6 +302,8 @@ function layoutMap(z) {
   let d = `M${P[0].x} ${P[0].y}`;
   for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y); d += ` Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; }
   stringPath.setAttribute("d", d);
+  // the red string keeps its hairline weight on screen when the map zooms in (it used to thicken with the zoom)
+  const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
   if (C.promise) { const a = P[C.promise.from - 1], b = P[C.promise.to - 1], r = 34 * z;
     promisePath.setAttribute("d", `M${a.x} ${a.y} C ${a.x - r * 1.6} ${a.y + r * .9}, ${a.x - r * 1.4} ${a.y - r * 1.6}, ${b.x} ${b.y}`);
     promiseLbl.setAttribute("x", a.x - r * 1.3); promiseLbl.setAttribute("y", a.y - r * .2); promiseLbl.setAttribute("font-size", 11 * z); }
@@ -313,7 +316,7 @@ function layoutMap(z) {
     e.num.setAttribute("x", x); e.num.setAttribute("y", y + .4 * z); e.num.setAttribute("font-size", 7.4 * z); });
   // in the full view the east-China cluster (杭州 · 嘉兴 · 上海, with 武宁西海 just west) is too tight for labels beside the pins:
   // those four sit a little way off, each tied to its pin by a fine leader line. zoomed in, they go back beside their pins.
-  const far = z > .7;
+  const far = farMode;
   Object.entries(lblEls).forEach(([id, t]) => { const p = placeById[id], [x, y] = proj(p.lon, p.lat), [dx, dy, an] = (far && LBL_FAR[id]) || LBL[id] || [9, 3, "start"];
     const lx = x + dx * z, ly = y + dy * z;
     t.setAttribute("x", lx); t.setAttribute("y", ly); t.setAttribute("text-anchor", an); t.setAttribute("font-size", 11.5 * z); t.style.strokeWidth = 3.2 * z;
@@ -329,11 +332,15 @@ function box(l0, a1, l1, a0) { const [x0, y0] = proj(l0, a1), [x1, y1] = proj(l1
 const regions = { all: fullVB, yrd: box(117.6, 32.6, 123.6, 28.4), prd: box(111.6, 24.8, 116.4, 21), ne: box(124, 41, 142, 30) };
 let vb = fullVB.slice();
 const applyVB = v => { svg.setAttribute("viewBox", v.join(" ")); layoutMap(v[2] / M.w); };
-function animVB(to) { const from = vb.slice(), t0 = performance.now(), Dur = 800;
-  const st = t => { let k = Math.min(1, (t - t0) / Dur); k = k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2; vb = from.map((f, i) => f + (to[i] - f) * k); applyVB(vb); if (k < 1) requestAnimationFrame(st); };
+let vbRun = 0;
+function animVB(to, far) { const run = ++vbRun, from = vb.slice(), t0 = performance.now(), Dur = 900;
+  if (reduced) { vb = to.slice(); farMode = far; applyVB(vb); return; }
+  svg.classList.add("lbl-out");
+  const st = t => { if (run !== vbRun) return; let k = Math.min(1, (t - t0) / Dur); k = k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2; vb = from.map((f, i) => f + (to[i] - f) * k); applyVB(vb);
+    if (k < 1) requestAnimationFrame(st); else { farMode = far; applyVB(vb); svg.classList.remove("lbl-out"); } };
   requestAnimationFrame(st); }
 applyVB(vb);
-$("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; MO.finishString && MO.finishString(); $("#zoom .on").classList.remove("on"); b.classList.add("on"); animVB(regions[b.dataset.z]); });
+$("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; MO.finishString && MO.finishString(); $("#zoom .on").classList.remove("on"); b.classList.add("on"); animVB(regions[b.dataset.z], b.dataset.z === "all"); });
 S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.onclick = () => openPlace(i, b); $("#chips").append(b); });
 
 let cur = 0; const pc = $(".pola-card");
@@ -552,6 +559,12 @@ function unlock() {
   $("#envelope").classList.add("open");
   if (MO.sealTL) (() => { try { MO.sealTL(openPage); } catch (e) { motionOff(); openPage(); } })(); else setTimeout(openPage, 300);
 }
+{ const env = $("#envelope"), sealEl = $("#seal");
+  env.setAttribute("role", "button"); env.tabIndex = 0; env.setAttribute("aria-label", "信封 · 输入密码");
+  const lift = () => { if (env.classList.contains("open")) return;
+    sealEl.classList.remove("lift"); void sealEl.offsetWidth; sealEl.classList.add("lift"); setTimeout(() => sealEl.classList.remove("lift"), 700);
+    const pad = $("#pad"), r = pad.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) $(".lock").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" }); };
+  env.addEventListener("click", lift); env.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); lift(); } }); }
 $("#secretClose").onclick = () => { const s = $("#secret"); s.setAttribute("aria-hidden", "true"); s.classList.remove("open", "dev"); document.body.style.overflow = ""; $("#envelope").classList.remove("open"); MO.sealReset && MO.sealReset(); code = ""; dots.forEach(x => x.classList.remove("f")); };
 
 $("#heart").addEventListener("click", e => {
@@ -651,14 +664,20 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     const days = Math.floor(Math.max(0, Date.now() - start) / 864e5), first = performance.now() < 2600;
     const html = document.documentElement, digits = $$(".hero-num .d"), dates = $$(".hero-dates > *");
     if (!reduce && first) { MO.heroPending = true;
+      const tagEl = $("#tag"), printEl = $("#heroPrint");
       html.classList.remove("motion-pending"); gsap.set(digits, { y: 0, yPercent: 110 }); gsap.set(dates, { autoAlpha: 0, y: 12 }); // same frame: no flash
+      gsap.set(tagEl, { autoAlpha: 0, y: -34, rotation: -2.6 }); if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
       MO.counting = true; $("#cDays").textContent = "0";
       const o = { v: 0 }, out = $("#cDays");
+      // the tag falls a little way on its ribbon and settles (one move, no swinging); 1461 rises as it lands; the print follows
       const heroTL = gsap.timeline({ paused: true })
-        .to(digits, { yPercent: 0, duration: .78, ease: "expo.out", stagger: .04 }, 0)
-        .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.2)
+        .to(tagEl, { autoAlpha: 1, duration: .35, ease: "power1.out" }, 0)
+        .to(tagEl, { y: 0, rotation: -1.4, duration: 1.0, ease: "power3.out", clearProps: "transform" }, 0)
+        .to(digits, { yPercent: 0, duration: .78, ease: "expo.out", stagger: .04 }, .45)
+        .to(printEl || {}, { autoAlpha: 1, y: 0, duration: .9, ease: "power2.out", clearProps: "transform,opacity,visibility" }, .7)
+        .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.35)
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
-          onComplete: () => { MO.counting = false; tick(); } }, 1.7)
+          onComplete: () => { MO.counting = false; tick(); } }, 1.85)
       const go = () => heroTL.play();
       Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
     } else html.classList.remove("motion-pending");
@@ -686,18 +705,25 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .fromTo("#slip", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1.1, ease: "power2.out" }, 0)
         .fromTo(".lk-jianghu .ch", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .7, ease: "power2.out", stagger: .06 }, .8)
         .fromTo(".lk-jianghu .e", { autoAlpha: 0 }, { autoAlpha: 1, duration: .8, ease: "power1.out" }, 1.3);
-      // rolls: one wipe on each roll's key frame as it enters, its words follow (no pinning, no scrub)
-      $$(".yr").forEach(y => { const key = y.querySelector(".feature .ph, .ev.hi .ph, .cs-row, .vfr .ph"); if (!key) return;
-        const words = y.querySelector(".feature figcaption") || y.querySelector(".ev.hi .ev-h") || y.querySelector(".cs-caps") || y.querySelector(".vfr .cp");
-        const wt = gsap.timeline({ scrollTrigger: { trigger: key, start: "top 80%", once: true } })
-          .fromTo(key, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: .6, ease: "power3.out", clearProps: "clipPath" }, 0);
-        if (words) wt.fromTo(words, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5, ease: "power2.out" }, .35); });
+      // rolls: the year and its roll label arrive first; then, frame by frame as they reach the screen, each photo develops
+      // inside its frame (opacity + a few px) and its words follow. the film strip itself never moves. once only, no scrub, no pin.
+      $$(".yr").forEach(y => { const head = y.querySelectorAll(".yr-num, .yr-t");
+        gsap.fromTo(head, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .8, ease: "power3.out", stagger: .08, clearProps: "transform",
+          scrollTrigger: { trigger: y, start: "top 86%", once: true } });
+        const frs = [...y.querySelectorAll(".vfr")], cps = [...y.querySelectorAll(".cp")];
+        frs.forEach((f, i) => { const ph = f.querySelector(".ph"), cp = cps[i]; if (!ph) return;
+          const t = gsap.timeline({ scrollTrigger: { trigger: f, start: "top 90%", once: true } })
+            .fromTo(ph, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .7, ease: "power2.out", clearProps: "transform,opacity,visibility" }, 0);
+          if (cp) t.fromTo(cp, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity,visibility" }, .18); }); });
       // the ending: the years pass one by one, then only NEXT / chapter stays
       const yrs = $$("#years span"), lk = $(".lk-finale");
       const ytl = gsap.timeline({ scrollTrigger: { trigger: ".fin-title", start: "top 72%", once: true } }).set(lk, { autoAlpha: 0 });
       yrs.forEach((s, i) => ytl.fromTo(s, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power1.out" }, i * .8).to(s, { autoAlpha: 0, duration: .4, ease: "power1.in" }, i * .8 + .5));
       ytl.to(lk, { autoAlpha: 1, duration: 1, ease: "power1.out" }, yrs.length * .8 + .1);
     }
+    /* the keypad: its keys come up softly, row by row, the first time it reaches the screen */
+    if (!reduce) gsap.fromTo("#pad button", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5, ease: "power2.out", stagger: .035, clearProps: "transform,opacity,visibility",
+      scrollTrigger: { trigger: "#pad", start: "top 92%", once: true } });
     /* 3 · the seal breaks: one ~1.2s timeline, transforms + opacity only */
     const halves = $$("#seal .half"), shut = $(".env-shut"), letter = $(".env-letter");
     const seal = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut" } })
