@@ -129,6 +129,7 @@ window.CONTENT = {
     ]},
     { year: "2023", layout: "feature", title: "待填写", items: [
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
+      { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp" },   // 胡同
       { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali" },
       { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, scene: "fridge", feature: true },
       { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp" },
@@ -145,6 +146,7 @@ window.CONTENT = {
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
       { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
       { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m2.webp", crop: { pos: "50% 50%", zoom: 1, ratio: "2/1" } },   // 洱海边的午饭（同一趟求婚旅行）
       { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.webp", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" } },
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
     ]},

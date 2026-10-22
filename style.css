@@ -835,7 +835,7 @@ img{display:block;max-width:100%}
   .lk-finale.lk-old .e{font-size:72px}.lk-finale.lk-old .e2{font-size:64px}
 }
 
-/* ---------- the stamp sheet (envelope screen) reused: 北京 on the map, the private archive ----------
+/* ---------- stamp sheet helper (currently unused; the stamp sheet lives only on the envelope screen) ----------
    each stamp: cream border, perforated edge punched with a mask, the photo in black and white */
 .stampsheet{position:relative;display:inline-block;margin:0;filter:drop-shadow(0 1px 1px rgba(45,25,15,.28)) drop-shadow(4px 10px 14px rgba(45,25,15,.18))}
 .ss-grid{display:grid;grid-template-columns:repeat(var(--cols),1fr)}
@@ -844,13 +844,6 @@ img{display:block;max-width:100%}
 .pstamp-in img{display:block;width:100%;aspect-ratio:4/5;height:auto;object-fit:cover;filter:grayscale(1) contrast(1.06) brightness(1.03) sepia(.08)}
 .pstamp.note .pstamp-in{height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:12px;font-family:var(--lat);font-size:10px;letter-spacing:.18em;line-height:1.4;color:var(--mute);text-align:left}
 .ss-clip{position:absolute;left:50%;top:-34px;width:34px;height:auto;margin-left:-17px;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
-.ss-map{width:78%;transform:rotate(-2deg)}
-.ss-map .pstamp-in img{aspect-ratio:788/700}
-.st-stamps{padding-top:30px}
-.st:nth-child(even) .st-stamps{justify-content:flex-end}
-.ss-private{display:block;width:88%;margin:40px auto 0;transform:rotate(1.4deg)}
-.pair{display:block;margin-top:64px}
-@media (min-width:900px){.ss-map{width:52%}.ss-private{width:100%;max-width:440px;margin:56px 0 0}.ss-clip{width:44px;margin-left:-22px;top:-44px}}
 /* desktop: a wider measure (≈1200) for the rolls and the map stops; the hero stays centred */
 @media (min-width:900px){
   .chapters>*{max-width:1000px}

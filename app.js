@@ -338,11 +338,7 @@ function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on"
     const mem = isTodo(s.memory) ? "" : s.memory;
     const tier = (s.highlight || i === last) ? "hero" : (own.length || mem || s.note) ? "std" : "detail";
     const e = el("article", `st t-${tier}${own.length ? " has-ph" : " type-only"}${s.tall ? " tall" : ""}${s.highlight ? " hi" : ""}`);
-    // 北京's photo-booth strip: its two frames become a small sheet of stamps
-    if (own.length === 1 && s.tall) { const ph = el("div", "st-ph st-stamps"); ph.innerHTML = stampSheet([{ src: own[0].src, alt: p.name, pos: "50% 0%" }, { src: own[0].src, alt: p.name, pos: "50% 100%" }], 2, "ss-map");
-      if (firstOf[i] != null) { const f = ph.firstElementChild; f.dataset.vg = "route"; f.dataset.vi = firstOf[i]; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
-      e.append(ph); }
-    else if (own.length) { const ph = el("div", "st-ph");
+    if (own.length) { const ph = el("div", "st-ph");
       own.forEach(({ src, k }) => { const f = el("div", "st-f st-f" + (k + 1) + (s.scans ? " raw" : ""), img(src, `${p.name}${s.note ? " · " + s.note : ""}`));
         if (firstOf[i] != null) { f.dataset.vg = "route"; f.dataset.vi = firstOf[i] + k; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
         ph.append(f); });
@@ -466,7 +462,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${esc(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
-      const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land");
+      const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
       const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
       fr.append(ph); }
     fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
@@ -526,10 +522,7 @@ const STAR = '<svg viewBox="0 0 40 40"><path d="M20 2 L22.2 17.8 L38 20 L22.2 22
 const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 4V9M20 31V36M4 20H9M31 20H36M8.7 8.7L12.2 12.2M27.8 27.8L31.3 31.3M31.3 8.7L27.8 12.2M12.2 27.8L8.7 31.3"/></svg>';
 if (F.rings) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
-// the private archive: the two 520 polaroids and the proposal, as one sheet of stamps; the captions sit in the fourth stamp
-if (F.pair && F.pair.scans) { $("#pair").innerHTML = stampSheet([...F.pair.scans.map(src => ({ src, alt: F.pair.caption || "", zoom: 1.16 })), { src: F.photo, alt: F.photoCaption || "", pos: "50% 40%" },
-    { note: [F.pair.caption, F.photoCaption].filter(Boolean) }], 2, "ss-private");
-  $("#secPola").remove(); }
+if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
 const W8 = F.wedding, wp = $("#weddingPola");
 if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
   wp.append(el("figcaption", "", `${esc(W8.label)} · ${esc(W8.date)} · <em>${esc(W8.status)}</em>`)); }

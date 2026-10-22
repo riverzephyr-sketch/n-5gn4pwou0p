@@ -78,5 +78,13 @@ window.PHOTO_SIZES = {
 "photos/tokyo.webp": [
 1050,
 1400
+],
+"photos/m0.webp": [
+1050,
+1400
+],
+"photos/m2.webp": [
+1400,
+700
 ]
 };
