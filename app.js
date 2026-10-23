@@ -594,9 +594,22 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
 // Aimer《Polaris》: one record, a ring of our photos round its rim, turning slowly (transform only).
 // no words on it but the label; it turns only while the private page is open and the record is on screen; reduced motion: still.
 (() => { const host = $("#record"), list = (F.record || []).filter(Boolean), N = list.length; if (!host || !N) return;
-  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Ástin í sumar">
+  // printed straight onto the reel paper, like a real View-Master reel: ▲ + REEL ONE, a hand-lettered title, a small printed block,
+  // and a numeral under each window (radial, so it turns with its photo). all one SVG, so it stays crisp and rotates with the disc.
+  const nums = list.map((_, k) => `<text class="vm-n" transform="rotate(${k * 360 / N}) translate(0 -23.9)" dy=".36em">${k + 1}</text>`).join("");
+  const print = `<svg class="vm-print" viewBox="-50 -50 100 100" aria-hidden="true">
+      <defs><path id="vmArc" d="M-16.6 0A16.6 16.6 0 0 1 16.6 0"/></defs>
+      <circle class="vm-ring" r="26.2"/><circle class="vm-ring2" r="21.6"/>${nums}
+      <path class="vm-tri" d="M0 -20.3L1 -18.6H-1Z"/>
+      <text class="vm-arc"><textPath href="#vmArc" startOffset="50%">REEL ONE</textPath></text>
+      <text class="vm-song" y="-5.6">ÁSTIN Í SUMAR</text>
+      <circle class="vm-ring3" r="3.4"/>
+      <text class="vm-side" y="8.6">SIDE A</text>
+      <text class="vm-sm" y="12.4">FOLLOW &amp; HELIOS</text>
+      <text class="vm-sm" y="15.4">2022.10.30 – 2026.10.30</text></svg>`;
+  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Ástin í sumar">${print}
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
-    <div class="vm-label"><b class="vm-song">Ástin í sumar</b><span class="vm-title">Side A</span><i class="vm-hole"></i></div></div>`;
+    <i class="vm-hole"></i></div>`;
   const disc = host.firstElementChild; let seen = false;
   const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
   if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);

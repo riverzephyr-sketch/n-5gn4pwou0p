@@ -5,6 +5,7 @@
 @font-face{font-family:"NSerifSC";src:url(fonts/NotoSerifSC.woff2) format("woff2");font-weight:200 600;font-display:swap}
 @font-face{font-family:"Bodoni";src:url(fonts/BodoniModa.woff2) format("woff2");font-weight:400 600;font-style:normal;font-display:swap}
 @font-face{font-family:"Bodoni";src:url(fonts/BodoniModa-Italic.woff2) format("woff2");font-weight:400 600;font-style:italic;font-display:swap}
+@font-face{font-family:"Hand";src:url(fonts/WaitingfortheSunrise.woff2) format("woff2");font-display:swap}
 @font-face{font-family:"Pinyon";src:url(fonts/PinyonScript.woff2) format("woff2");font-display:swap}
 :root{
   --cream:#efe9df; --card:#f6f1e8; --ink:#1b1714; --ink2:rgba(27,23,20,.72); --mute:rgba(27,23,20,.5); --hair:rgba(27,23,20,.16);
@@ -983,10 +984,17 @@ button,[role=button],.hcard{touch-action:manipulation}
 .vm-f{display:block;width:100%;height:100%;border-radius:2.6cqw;overflow:hidden;background:#d9cfc0;box-shadow:inset 0 0 0 1px rgba(60,35,20,.18),0 0 0 .45cqw rgba(255,255,255,.35)}
 .vm-f img{width:100%;height:100%;object-fit:cover;transform:rotate(calc(var(--a) * -1)) scale(1.42)}
 .vm-notch{position:absolute;left:50%;top:50%;width:1.5cqw;height:4.2cqw;margin:-2.1cqw 0 0 -.75cqw;border-radius:.4cqw;background:#cfc3b1;box-shadow:inset 0 1px 1.5px rgba(60,35,20,.35);transform:rotate(var(--a)) translateY(-45.5cqw);z-index:2}
-.vm-label{position:absolute;left:50%;top:50%;width:40cqw;height:40cqw;margin:-20cqw 0 0 -20cqw;border-radius:50%;z-index:3;
-  background:#f6f1e8 url(assets/paper-cream.webp) center/220%;box-shadow:inset 0 0 0 .35cqw rgba(122,31,36,.55),inset 0 0 0 .9cqw #f6f1e8,inset 0 0 0 1cqw rgba(122,31,36,.3),0 1px 2px rgba(60,35,20,.15);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.vm-song{position:absolute;top:8.6cqw;font-family:"Pinyon",cursive;font-weight:400;font-style:normal;font-size:6.4cqw;line-height:1;letter-spacing:0;white-space:nowrap;color:var(--wine)}
-.vm-title{position:absolute;bottom:11cqw;font-family:var(--lat);font-size:2.5cqw;letter-spacing:.32em;margin-right:-.32em;text-transform:uppercase;color:var(--ink2)}
-.vm-hole{position:absolute;left:50%;top:50%;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;background:#e3d9c9;box-shadow:inset 0 1px 2px rgba(60,35,20,.45)}
+/* the print: wine hairlines and numerals, a hand-lettered title in ink, small letterspaced Bodoni. SVG units = % of the disc */
+.vm-print{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
+.vm-print text{text-anchor:middle;font-family:var(--lat);fill:var(--ink2)}
+.vm-ring{fill:none;stroke:var(--wine);stroke-width:.16;opacity:.5}
+.vm-ring2{fill:none;stroke:var(--wine);stroke-width:.1;opacity:.34}
+.vm-ring3{fill:none;stroke:var(--ink);stroke-width:.1;opacity:.28}
+.vm-print .vm-n{font-size:2.5px;letter-spacing:0;fill:var(--wine)}
+.vm-tri{fill:var(--wine)}
+.vm-print .vm-arc{font-size:1.95px;letter-spacing:.62px;fill:var(--wine)}
+.vm-print .vm-song{font-family:"Hand",var(--lat);font-size:6px;letter-spacing:.2px;fill:var(--ink)}
+.vm-print .vm-side{font-size:2.2px;letter-spacing:.66px;fill:var(--ink)}
+.vm-print .vm-sm{font-size:1.9px;letter-spacing:.42px}
+.vm-hole{position:absolute;left:50%;top:50%;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;z-index:3;background:#e3d9c9;box-shadow:inset 0 1px 2px rgba(60,35,20,.45)}
 @media (prefers-reduced-motion:reduce){.vm-disc{animation:none}}
