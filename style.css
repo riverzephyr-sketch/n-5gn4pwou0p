@@ -962,8 +962,10 @@ button,[role=button],.hcard{touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){.st.rt-in{animation:none}.chips button{transition:none}}
 /* the anniversaries: one page per 10.30; the changing parts fade a few px on each turn */
 .cal-beat{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.cal-cell .wd,.cal-cell .since,.cal-line,.cal-print>*{transition:opacity .26s ease,transform .26s ease}
-.cal-out .cal-cell .wd,.cal-out .cal-cell .since,.cal-out .cal-line,.cal-out .cal-print>*{opacity:0;transform:translateY(4px)}
+/* the page turn moves only the words and the photo: the weekday rule, the cell borders and the print's paper never move */
+.cal-cell .wd .wt{display:inline-block}
+.cal-cell .wd .wt,.cal-cell .since,.cal-line,.cal-print>*{transition:opacity .26s ease,transform .26s ease}
+.cal-out .cal-cell .wd .wt,.cal-out .cal-cell .since,.cal-out .cal-line,.cal-out .cal-print>*{opacity:0;transform:translateY(4px)}
 .cal-dots{display:flex;justify-content:center;gap:2px;margin-top:14px}
 .cal-dots button{display:grid;place-items:center;width:24px;height:24px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .cal-dots i{display:block;width:5px;height:5px;border-radius:50%;border:1px solid rgba(90,15,23,.55);transition:background-color .3s ease}

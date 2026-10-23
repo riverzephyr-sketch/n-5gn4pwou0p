@@ -230,7 +230,7 @@ requestAnimationFrame(() => mini.classList.add("show"));
     P.forEach(pg => { if (pg.print) { const im = new Image(); im.src = pg.print; } });   // the photo is ready before its page turns
     let cur = -1, timer = 0, swapT = 0;
     const paint = k => { const pg = P[k], [y, m, d] = pg.date.split("-").map(Number), base = new Date(Date.UTC(y, m - 1, d));
-      wds.forEach((w, j) => { w.textContent = WD[(base.getUTCDay() + j - 1 + 7) % 7]; });
+      wds.forEach((w, j) => { (w.querySelector(".wt") || w).textContent = WD[(base.getUTCDay() + j - 1 + 7) % 7]; });   // only the word; the rule under it stays put
       $("#calSince").textContent = `${y}.${pad2(m)}.${pad2(d)}`;
       line.textContent = `${WD[base.getUTCDay()]}, October ${d}, ${y}`;
       strip.setAttribute("aria-label", `${y}.${pad2(m)}.${pad2(d)}`);
@@ -358,7 +358,7 @@ for (let lat = 0; lat <= 50; lat += 5) { const [, y] = proj(0, lat); gr += `M0 $
 svg.append(sv("path", { d: gr, class: "grat" }), sv("path", { d: M.land, class: "land" }));
 const LBL = { hangzhou: [-9, 4, "end"], jiaxing: [9, 9, "start"], shanghai: [9, -2, "start"], shenzhen: [9, 8, "start"], dongguan: [-9, -2, "end"],
   chongqing: [9, 10, "start"], chengdu: [-9, -3, "end"], wuning: [9, 3, "start"], dali: [-10, 14, "end"], tokyo: [-9, -6, "end"], fukuoka: [-9, 10, "end"], seoul: [-9, -4, "end"], beijing: [9, 3, "start"], kk: [9, 3, "start"], krabi: [9, 3, "start"] };
-let farMode = true, curRegion = "all";
+let farMode = true, curRegion = "all", focusBox = null;
 const LBL_FAR = { hangzhou: [-13, -13, "end"], shanghai: [7, -17, "start"], jiaxing: [21, 17, "start"], wuning: [0, 21, "middle"] };
 const leadEls = {};
 const seen = {};
@@ -376,8 +376,8 @@ S.forEach((s, i) => {
   const hit = sv("circle", { class: "hit" }), sh = sv("ellipse", { class: "sh" }), ring = sv("circle", { class: "ring" }), hd = sv("circle", { class: "hd", fill: "url(#pinG)" }), hl = sv("circle", { class: "hl" });
   const num = sv("text", { class: "num" }); num.textContent = pad2(i + 1);
   g.append(hit, sh, ring, hd, hl, num); svg.append(g);
-  g.addEventListener("click", () => openPlace(i, g));
-  g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPlace(i, g); } });
+  g.addEventListener("click", () => focusCity(i));
+  g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focusCity(i); } });
   pinEls.push({ g, hit, sh, ring, hd, hl, num });
   if (!leadEls[s.city] && LBL_FAR[s.city]) { const ld = sv("path", { class: "lead", "aria-hidden": "true" }); svg.insertBefore(ld, svg.querySelector(".pin")); leadEls[s.city] = ld; }
   if (!lblEls[s.city]) { const t = sv("text", { class: "plbl" }); t.textContent = placeById[s.city].name; svg.append(t); lblEls[s.city] = t; }
@@ -388,7 +388,7 @@ function layoutMap(z) {
   let d = `M${P[0].x} ${P[0].y}`;
   for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y); d += ` Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; }
   stringPath.setAttribute("d", d);
-  const R = curRegion !== "all" && regions[curRegion]; let dl = "";
+  const R = focusBox || (curRegion !== "all" && regions[curRegion]); let dl = "";
   if (R) { const inR = q => q.x >= R[0] && q.x <= R[0] + R[2] && q.y >= R[1] && q.y <= R[1] + R[3];
     for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i]; if (!inR(a) || !inR(b)) continue; const L = Math.hypot(b.x - a.x, b.y - a.y);
       dl += `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; } }
@@ -431,14 +431,22 @@ function animVB(to, far) { const run = ++vbRun, from = vb.slice(), t0 = performa
     if (k < 1) requestAnimationFrame(st); else { farMode = far; applyVB(vb); svg.classList.remove("lbl-out"); } };
   requestAnimationFrame(st); }
 applyVB(vb);
-function setRegion(key) { if (!regions[key]) return; MO.finishString && MO.finishString(); curRegion = key;
+function setRegion(key) { if (!regions[key]) return; MO.finishString && MO.finishString(); curRegion = key; focusBox = null;
   $$("#zoom button").forEach(b => b.classList.toggle("on", b.dataset.z === key)); svg.classList.toggle("zoomed", key !== "all");
   animVB(regions[key], key === "all"); }
 // the region a city sits in (its tab), or the full map
 const regionOf = id => { const p = placeById[id], [x, y] = proj(p.lon, p.lat);
   return ["yrd", "prd", "ne"].find(k => { const R = regions[k]; return x >= R[0] && x <= R[0] + R[2] && y >= R[1] && y <= R[1] + R[3]; }) || "all"; };
 $("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setRegion(b.dataset.z); });
-S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => { openPlace(i, b); const k = regionOf(s.city); if (k !== curRegion) setRegion(k); ping(i); }; $("#chips").append(b); });
+S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => focusCity(i); $("#chips").append(b); });
+// a pin and a list row do exactly the same: the card shows, the row is selected, the map glides to centre that city
+// at one fixed zoom (even when it is already in view), and its pin pulses once
+function focusCity(i) { const s = S[i]; if (!s) return; openPlace(i); MO.finishString && MO.finishString();
+  const p = placeById[s.city], [cx, cy] = proj(p.lon, p.lat), side = regions.yrd[2];
+  const x = Math.max(0, Math.min(M.w - side, cx - side / 2)), y = Math.max(0, Math.min(M.h - side, cy - side / 2));
+  curRegion = regionOf(s.city); focusBox = [x, y, side, side];
+  $$("#zoom button").forEach(b => b.classList.toggle("on", curRegion !== "all" && b.dataset.z === curRegion));
+  svg.classList.add("zoomed"); animVB(focusBox, false); ping(i); }
 const ping = i => { const g = pinEls[i] && pinEls[i].g; if (!g || reduced) return; g.classList.remove("ping"); void g.getBoundingClientRect(); g.classList.add("ping"); setTimeout(() => g.classList.remove("ping"), 1300); };
 
 let cur = 0; const pc = $(".pola-card");
