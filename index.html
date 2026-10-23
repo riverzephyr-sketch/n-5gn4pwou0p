@@ -9,16 +9,15 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%235a0f17%22/%3E%3Ctext x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22%23efe9df%22 font-family=%22serif%22%3E4%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="fonts/BodoniModa.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/tag-short.webp" as="image">
-<link rel="preload" href="photos/sunset-sit.webp" as="image">
 <script>(function(d){try{
   /* loader (first visit of a session only): the homepage print develops on the paper, then settles into the hero */
-  if(location.hash||sessionStorage.getItem("ld1461b"))return; sessionStorage.setItem("ld1461b","1");
+  if(location.hash||sessionStorage.getItem("ld1461"))return; sessionStorage.setItem("ld1461","1");
   d.classList.add("ld","ld-show"); if(history.scrollRestoration)history.scrollRestoration="manual";
   window.LOADER=new Promise(function(r){window.__ldDone=r});
-  window.__ldKill=setTimeout(function(){d.classList.remove("ld","ld-show");window.__ldDone()},4500);
+  window.__ldKill=setTimeout(function(){d.classList.remove("ld","ld-show");window.__ldDone()},4500); // safety net if app.js never runs
 }catch(e){}})(document.documentElement)</script>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=53">
+<link rel="stylesheet" href="style.css?v=54">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -28,7 +27,7 @@
 <header class="hero paper" id="hero">
   <span class="meta tl" id="heroVol"></span>
   <div class="hang">
-    <figure class="print hero-print" id="heroPrint"><img src="photos/sunset-sit.webp" width="934" height="1400" alt="" fetchpriority="high" decoding="async"></figure>
+    <figure class="print hero-print" id="heroPrint"></figure>
     <div class="tag obj" id="tag">
       <img src="assets/tag-short.webp" width="660" height="1363" alt="" fetchpriority="high">
       <i class="light" aria-hidden="true"></i>
@@ -191,9 +190,9 @@
   </div>
 </div>
 
-<script src="content.js?v=53"></script>
-<script src="map-data.js?v=53"></script>
-<script src="photos/sizes.js?v=53"></script>
-<script src="app.js?v=53"></script>
+<script src="content.js?v=54"></script>
+<script src="map-data.js?v=54"></script>
+<script src="photos/sizes.js?v=54"></script>
+<script src="app.js?v=54"></script>
 </body>
 </html>

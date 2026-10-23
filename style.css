@@ -912,8 +912,8 @@ button,[role=button],.hcard{touch-action:manipulation}
 /* =====================================================================
    MOTION (branch motion): transform + opacity only; all of it off under prefers-reduced-motion
    ===================================================================== */
-/* hero: the tag can wait a moment for its entrance; the print never does */
-.motion-pending .tag{opacity:0}
+/* hero: until the motion runs, the tag and the print wait (the existing 2.5s safety net shows them if GSAP never arrives) */
+.motion-pending .tag,.motion-pending .hero-print{opacity:0}
 /* map: labels and leaders step out of the way while the map glides to another region */
 #mapSvg .plbl,#mapSvg .lead{transition:opacity .22s ease-out}
 #mapSvg.lbl-out .plbl,#mapSvg.lbl-out .lead{opacity:0;transition-duration:.15s}
@@ -1062,10 +1062,8 @@ button,[role=button],.hcard{touch-action:manipulation}
 html.ld-show #ld{display:block;position:fixed;inset:0;z-index:7;background:var(--cream) url(assets/paper-cream.webp) 0 0/460px auto repeat;transition:opacity .85s ease}
 html.ld{overflow:hidden}
 html.ld #heroPrint{z-index:8;opacity:1!important;visibility:visible!important}
-html.ld .tag, html.ld-fly .tag, html.tag-wait .tag{opacity:0;visibility:hidden}
-html.ld #heroVol,html.ld #heroSub,html.ld .mini,html.ld .scroll-hint{opacity:0}
+html.ld #heroVol,html.ld #heroSub,html.ld .mini{opacity:0}
 html.ld-show #heroVol,html.ld-show #heroSub,html.ld-show .mini{transition:opacity .9s ease .1s}
-html.ld-show .scroll-hint{opacity:0}
 html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 #heroPrint .ld-dev{position:absolute;left:calc(9 * var(--u));right:calc(9 * var(--u));top:calc(9 * var(--u));aspect-ratio:4/5;overflow:hidden;pointer-events:none}
 #heroPrint .ld-dev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 72%;filter:sepia(.55) saturate(.5) contrast(.55) brightness(1.3)}
@@ -1079,13 +1077,13 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
    so the composition scales as one and stays centred. Desktop (≥900px) untouched.
    ===================================================================== */
 @media (max-width:899px){
-  .hero{--hfit:100svh;height:var(--hfit);min-height:0;padding:46px 28px calc(96px + env(safe-area-inset-bottom));overflow:hidden}
-  .hero{--u:min(1px, calc(100vw / 393), calc((var(--hfit) - 214px - env(safe-area-inset-bottom)) / 680))}
+  .hero{--hfit:100vh;min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  @supports (height:100svh){.hero{--hfit:100svh;min-height:100svh}}
+  .hero{--u:min(1px, calc(100vw / 393), calc((var(--hfit) - 118px - env(safe-area-inset-bottom)) / 680))}
   .hang{height:calc(680 * var(--u));margin-left:calc(-28px + (100vw - 393 * var(--u)) / 2)}
   .tag{top:calc(-64 * var(--u))}
-  .hero-print{top:calc(296 * var(--u))}
-  .hero-sub{position:absolute;left:28px;right:122px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:6;margin:0;max-width:none;font-size:16px;line-height:1.45}
-  .scroll-hint{bottom:calc(16px + env(safe-area-inset-bottom))}
+  .hero-print{top:calc(320 * var(--u))}
+  .hero-sub{margin-left:calc((100vw - 393 * var(--u)) / 2)}
 }
 
 /* =====================================================================
@@ -1151,11 +1149,4 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 .pair{margin-top:44px}
 .sx-polaris{margin-top:84px}
 @media (min-width:1000px){.book{margin:0}.book-t{font-size:56px}.sx-archive .book .silhouette{margin:24px 0 0}}
-
-/* first screen: a thin line and a small serif word, gone once the page moves */
-.scroll-hint{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));z-index:6;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;font-family:var(--zh);font-weight:300;font-size:10px;letter-spacing:.46em;color:rgba(27,23,20,.42);transition:opacity .7s ease}
-.scroll-hint i{display:block;width:1px;height:22px;background:linear-gradient(to bottom,rgba(27,23,20,0),rgba(27,23,20,.5));transform-origin:top center;animation:hintLine 2.4s ease-in-out infinite}
-.scroll-hint.gone{opacity:0}
-@keyframes hintLine{0%{transform:scaleY(.3);opacity:.2}55%{transform:scaleY(1);opacity:.75}100%{transform:scaleY(.3);opacity:.2}}
-@media (prefers-reduced-motion:reduce){.scroll-hint i{animation:none;opacity:.45}}
 

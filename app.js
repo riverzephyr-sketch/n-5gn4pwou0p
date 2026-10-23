@@ -69,15 +69,8 @@ const dms = (v, pos, neg) => { const a = Math.abs(v), d = Math.floor(a), m = Mat
 const geo = p => p && p.lat != null ? `${dms(p.lat, "N", "S")} · ${dms(p.lon, "E", "W")}` : "";
 const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.photo] : []);
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
-if (H.print && !$("#heroPrint img")) $("#heroPrint").innerHTML = img(H.print, "", true); else if (!H.print) $("#heroPrint").remove();
+if (H.print) $("#heroPrint").innerHTML = img(H.print, "", true); else $("#heroPrint").remove();
 $("#heroVol").textContent = H.vol || "";
-/* the first screen is the visible window, not the full phone (WeChat's bars are inside 100svh) */
-function fitHero() {
-  const hero = $("#hero"); if (!hero || innerWidth >= 900) return;
-  const h = Math.round((window.visualViewport && visualViewport.height) || innerHeight);
-  if (h > 200) hero.style.setProperty("--hfit", h + "px");
-}
-fitHero(); addEventListener("resize", fitHero); if (window.visualViewport) visualViewport.addEventListener("resize", fitHero);
 
 /* ---------- the page always opens at its top (WeChat / WebKit may restore an old scroll offset on reopen) ---------- */
 if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
@@ -230,11 +223,6 @@ mini.addEventListener("click", toggle);
 setMini();
 // the player is visible from the first screen on
 requestAnimationFrame(() => mini.classList.add("show"));
-// a quiet line at the foot of the first screen; it leaves once the page moves
-{ const hint = el("p", "scroll-hint", `<i></i><span>下滑</span>`);
-  $("#hero").appendChild(hint);
-  const hideHint = () => { if (scrollY > 28) { hint.classList.add("gone"); removeEventListener("scroll", hideHint); } };
-  addEventListener("scroll", hideHint, { passive: true }); }
 // keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
 { const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/, CTRL = "button:not(#mini),a[href],input,[role=button],#envelope";
   const hero = $("#hero");
