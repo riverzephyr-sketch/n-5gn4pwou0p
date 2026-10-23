@@ -998,3 +998,63 @@ button,[role=button],.hcard{touch-action:manipulation}
 .vm-print .vm-sm{font-size:1.9px;letter-spacing:.42px}
 .vm-hole{position:absolute;left:50%;top:50%;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;z-index:3;background:#e3d9c9;box-shadow:inset 0 1px 2px rgba(60,35,20,.45)}
 @media (prefers-reduced-motion:reduce){.vm-disc{animation:none}}
+
+/* =====================================================================
+   DESKTOP · EDITORIAL (branch desktop): on a wide screen each chapter is a centred composition,
+   not a stretched phone column. Everything here sits inside min-width queries, so the phone is untouched.
+   ===================================================================== */
+@media (min-width:900px){
+  /* the Marriott note: a card, not a 640px banner */
+  .hotel>.then{max-width:420px}
+}
+@media (min-width:1000px){
+  /* 江湖: the chapter title sits beside the slip (third column), never under the fold */
+  .jianghu{grid-template-columns:1fr 450px 1fr;column-gap:0}
+  .jianghu .prov{grid-row:1}
+  .jianghu .slip-wrap{grid-row:2;align-self:center}
+  .jianghu .lk-jianghu{position:relative;right:auto;bottom:auto;grid-column:3;grid-row:2;align-self:end;justify-self:start;margin:0 0 150px clamp(56px,6vw,110px);text-align:left}
+
+  /* 重庆 · 初见: words on the left, the two key cards and the note on the right */
+  .hotel{display:grid;grid-template-columns:minmax(0,500px) minmax(0,440px);column-gap:clamp(64px,8vw,140px);justify-content:center;align-content:start;padding-left:64px;padding-right:64px}
+  .hotel>*{grid-column:1;max-width:none;margin-left:0;margin-right:0}
+  .hotel>.hotels{grid-column:2;grid-row:1/4;align-self:end;margin-top:0;padding-bottom:6px}
+  .hotel>.then{grid-column:2;grid-row:4/6;align-self:start;margin:64px 0 0 6px;max-width:420px}
+  .hotels{gap:28px}.hcard{max-width:none}
+
+  /* rolls: the strip and its captions as one centred pair */
+  .chapters>*{max-width:1040px}
+  .strip-win{flex:0 1 760px}
+  .canister{width:88px;height:154px}.can-big{font-size:27px}.can-small{font-size:7.5px}
+  .vroll{grid-template-columns:300px minmax(0,420px);gap:0 80px;justify-content:center}
+  .yr:nth-child(even) .vroll{grid-template-columns:minmax(0,420px) 300px}
+  .cp .tx{max-width:24em}
+
+  /* the places: the map and its controls on the left, the chosen place beside it (it stays in view while you pick) */
+  .map-sec{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);column-gap:clamp(56px,6vw,110px);align-items:start;padding-left:max(64px,calc((100% - 1120px) / 2));padding-right:max(64px,calc((100% - 1120px) / 2))}
+  .map-sec>*{grid-column:1;max-width:none;margin-left:0;margin-right:0}
+  .map-sec>.map-sheet{margin:56px 0 0;max-width:none}
+  .map-sec>.story{grid-column:2;grid-row:2/7;position:sticky;top:72px;margin-top:56px;max-width:none}
+  .story.tabs .st{display:block}
+  .story .st-ph{justify-content:flex-start !important}
+  .story .t-std .st-f{width:80%}.story .t-std.tall .st-f{width:58%}.story .t-detail .st-f{width:60%}.story .t-hero .st-f{width:100%}
+  .story .st-pair .st-f1{width:68%}.story .st-duo .st-f1{width:62%}
+  .story .st-tx,.story .st:nth-child(even) .st-tx{margin:24px 0 0;max-width:none}
+  .story .t-hero .st-tx h3 i{font-size:44px}
+  .story .t-detail .st-tx{max-width:none}
+
+  /* the private page: one centred column of rows — the archive, the record beside its lyric, then the letter */
+  .secret-in{max-width:1120px;display:block;padding:140px 64px 0 !important}
+  .secret .meta.tl{left:64px;top:96px}
+  .sx-archive{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);column-gap:88px;align-items:center;margin-top:56px}
+  .sx-archive .silhouette{margin:0}
+  .sx-archive .pair{margin:0;max-width:none}
+  .sx-polaris{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:88px;align-items:center;margin-top:140px}
+  .sx-polaris .lk-polaris{grid-column:1/-1}
+  .sx-polaris .vm-disc-wrap{grid-column:1;grid-row:2/4;width:min(100%,460px);margin:56px auto 0}
+  .sx-polaris .lyrics{grid-column:2;grid-row:2;margin-top:56px;max-width:30em}
+  .lyrics h4{font-size:12px;margin-bottom:22px}
+  .lyrics .ln{margin-bottom:14px}
+  .lyrics .jp{font-size:15px}.lyrics .cn{font-size:12.5px}
+  .sx-polaris .pola.undeveloped{grid-column:2;grid-row:3;width:200px;margin:36px 0 0 6px}
+  .letter-end{max-width:720px;margin:150px auto 0;padding:80px 88px calc(20vh + 40px)}
+}
