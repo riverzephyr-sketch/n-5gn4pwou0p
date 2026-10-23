@@ -148,9 +148,10 @@ img{display:block;max-width:100%}
 .key-n{position:relative;font-family:var(--zh);font-size:16px;letter-spacing:.14em;line-height:1.2}
 .key-rule{display:block;width:18px;height:1px;background:currentColor;opacity:.4;margin:9px 0 7px}
 .hcard .en{font-family:var(--lat);font-style:italic;font-size:10.5px;opacity:.7;line-height:1}
-.key-logo{display:block;height:26px;background:currentColor;opacity:.78;-webkit-mask:var(--logo) left bottom/contain no-repeat;mask:var(--logo) left bottom/contain no-repeat}
-.wrong .key-logo{--logo:url(assets/logo-jw-marriott.svg);width:75px}
-.right .key-logo{--logo:url(assets/logo-marriott.svg);width:34px;height:27px;opacity:.85}
+.key-logo{position:absolute;right:12px;bottom:12px;display:block;height:17px;background:currentColor;opacity:.72;-webkit-mask:var(--logo) right bottom/contain no-repeat;mask:var(--logo) right bottom/contain no-repeat}
+.wrong .key-logo{--logo:url(assets/logo-jw-marriott.svg);width:49px}
+.right .key-logo{--logo:url(assets/logo-marriott.svg);width:22px;height:18px;opacity:.8}
+@media (min-width:768px){.key-logo{right:18px;bottom:18px;height:22px}.wrong .key-logo{width:63px}.right .key-logo{width:28px;height:23px}}
 .mark{position:absolute;pointer-events:none}
 .mark svg{width:100%;height:100%;overflow:visible}
 .mark path,.mark ellipse{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s cubic-bezier(.6,0,.3,1)}
