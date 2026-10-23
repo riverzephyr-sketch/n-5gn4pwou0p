@@ -17,7 +17,7 @@
   window.__ldKill=setTimeout(function(){d.classList.remove("ld","ld-show");window.__ldDone()},4500); // safety net if app.js never runs
 }catch(e){}})(document.documentElement)</script>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=47">
+<link rel="stylesheet" href="style.css?v=48">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -166,11 +166,18 @@
     <span class="meta tl">2026.10.31</span>
     <div class="lk lk-secret" data-lk="secret"></div>
     <div class="sx-archive">
-      <figure class="silhouette" id="silhouette"></figure>
+      <div class="book" id="cover">
+        <h3 class="book-t" id="coverT"></h3>
+        <p class="book-a" id="coverA"></p>
+        <figure class="silhouette" id="silhouette"></figure>
+        <p class="book-q" id="coverQ"></p>
+        <p class="book-by" id="coverBy"></p>
+        <p class="book-i" id="coverI"></p>
+      </div>
       <div class="pair" id="pair"></div>
     </div>
     <div class="sx-polaris">
-      <div class="lk lk-polaris" data-lk="polaris"></div>
+      <div class="reel-notes" id="reelNotes"></div>
       <div class="vm-disc-wrap" id="record"></div>
       <div class="lyrics" id="lyrics"></div>
       <figure class="pola undeveloped" id="weddingPola"></figure>
@@ -183,9 +190,9 @@
   </div>
 </div>
 
-<script src="content.js?v=46"></script>
+<script src="content.js?v=48"></script>
 <script src="map-data.js?v=46"></script>
-<script src="photos/sizes.js?v=46"></script>
-<script src="app.js?v=47"></script>
+<script src="photos/sizes.js?v=48"></script>
+<script src="app.js?v=48"></script>
 </body>
 </html>

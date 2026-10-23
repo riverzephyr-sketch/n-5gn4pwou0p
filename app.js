@@ -50,7 +50,7 @@ $$("[data-lk]").forEach(e => { const t = C.titles[e.dataset.lk]; if (!t) return;
   e.insertAdjacentHTML("beforeend", `${lines(t.cn, "c")}<span class="en">${lines(t.en, "e")}</span>`); });
 // English + numerals are the display layer; the Chinese title sits under it, smaller and lighter
 // the ending keeps its original lockup ("下一章 / NEXT / chapter")
-const OLD_LK = { finale: 1, polaris: 1 };   // polaris: Chinese only, no English display line
+const OLD_LK = { finale: 1 };
 const CHAPTER = { jianghu: 1, hotel: 2, chapters: 3, map: 4 };
 $$("[data-lk]").forEach(e => { const k = e.dataset.lk, n = CHAPTER[k];
   if (n) e.insertAdjacentHTML("afterbegin", `<span class="kick">Chapter ${pad2(n)}</span>`);
@@ -358,7 +358,7 @@ for (let lat = 0; lat <= 50; lat += 5) { const [, y] = proj(0, lat); gr += `M0 $
 svg.append(sv("path", { d: gr, class: "grat" }), sv("path", { d: M.land, class: "land" }));
 const LBL = { hangzhou: [-9, 4, "end"], jiaxing: [9, 9, "start"], shanghai: [9, -2, "start"], shenzhen: [9, 8, "start"], dongguan: [-9, -2, "end"],
   chongqing: [9, 10, "start"], chengdu: [-9, -3, "end"], wuning: [9, 3, "start"], dali: [-10, 14, "end"], tokyo: [-9, -6, "end"], fukuoka: [-9, 10, "end"], seoul: [-9, -4, "end"], beijing: [9, 3, "start"], kk: [9, 3, "start"], krabi: [9, 3, "start"] };
-let farMode = true;
+let farMode = true, curRegion = "all";
 const LBL_FAR = { hangzhou: [-13, -13, "end"], shanghai: [7, -17, "start"], jiaxing: [21, 17, "start"], wuning: [0, 21, "middle"] };
 const leadEls = {};
 const seen = {};
@@ -366,7 +366,10 @@ const pos = S.map(s => { const p = placeById[s.city]; const [x, y] = proj(p.lon,
 const stringPath = sv("path", { class: "string draw" });
 const promisePath = sv("path", { class: "promise" });
 const promiseLbl = sv("text", { class: "promise-lbl", "text-anchor": "middle" }); promiseLbl.textContent = C.promise ? C.promise.label : "";
-svg.append(stringPath, promisePath, promiseLbl);
+// zoomed into a region, only the legs of the route that start and end inside it are drawn (the others would cross the
+// whole frame as long straight lines to cities off the edge)
+const stringLocal = sv("path", { class: "string-local", "aria-hidden": "true" });
+svg.append(stringPath, stringLocal, promisePath, promiseLbl);
 const pinEls = [], lblEls = {};
 S.forEach((s, i) => {
   const g = sv("g", { class: "pin" + (s.highlight ? " hi" : ""), tabindex: 0, role: "button", "aria-label": `${pad2(i + 1)} ${placeById[s.city].name}` });
@@ -385,8 +388,13 @@ function layoutMap(z) {
   let d = `M${P[0].x} ${P[0].y}`;
   for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y); d += ` Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; }
   stringPath.setAttribute("d", d);
+  const R = curRegion !== "all" && regions[curRegion]; let dl = "";
+  if (R) { const inR = q => q.x >= R[0] && q.x <= R[0] + R[2] && q.y >= R[1] && q.y <= R[1] + R[3];
+    for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i]; if (!inR(a) || !inR(b)) continue; const L = Math.hypot(b.x - a.x, b.y - a.y);
+      dl += `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; } }
+  stringLocal.setAttribute("d", dl);
   // the red string keeps its hairline weight on screen when the map zooms in (it used to thicken with the zoom)
-  const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
+  const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; stringLocal.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
   if (C.promise) { const a = P[C.promise.from - 1], b = P[C.promise.to - 1], r = 34 * z;
     promisePath.setAttribute("d", `M${a.x} ${a.y} C ${a.x - r * 1.6} ${a.y + r * .9}, ${a.x - r * 1.4} ${a.y - r * 1.6}, ${b.x} ${b.y}`);
     promiseLbl.setAttribute("x", a.x - r * 1.3); promiseLbl.setAttribute("y", a.y - r * .2); promiseLbl.setAttribute("font-size", 11 * z); }
@@ -423,8 +431,15 @@ function animVB(to, far) { const run = ++vbRun, from = vb.slice(), t0 = performa
     if (k < 1) requestAnimationFrame(st); else { farMode = far; applyVB(vb); svg.classList.remove("lbl-out"); } };
   requestAnimationFrame(st); }
 applyVB(vb);
-$("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; MO.finishString && MO.finishString(); $("#zoom .on").classList.remove("on"); b.classList.add("on"); animVB(regions[b.dataset.z], b.dataset.z === "all"); });
-S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => openPlace(i, b); $("#chips").append(b); });
+function setRegion(key) { if (!regions[key]) return; MO.finishString && MO.finishString(); curRegion = key;
+  $$("#zoom button").forEach(b => b.classList.toggle("on", b.dataset.z === key)); svg.classList.toggle("zoomed", key !== "all");
+  animVB(regions[key], key === "all"); }
+// the region a city sits in (its tab), or the full map
+const regionOf = id => { const p = placeById[id], [x, y] = proj(p.lon, p.lat);
+  return ["yrd", "prd", "ne"].find(k => { const R = regions[k]; return x >= R[0] && x <= R[0] + R[2] && y >= R[1] && y <= R[1] + R[3]; }) || "all"; };
+$("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setRegion(b.dataset.z); });
+S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => { openPlace(i, b); const k = regionOf(s.city); if (k !== curRegion) setRegion(k); ping(i); }; $("#chips").append(b); });
+const ping = i => { const g = pinEls[i] && pinEls[i].g; if (!g || reduced) return; g.classList.remove("ping"); void g.getBoundingClientRect(); g.classList.add("ping"); setTimeout(() => g.classList.remove("ping"), 1300); };
 
 let cur = 0; const pc = $(".pola-card");
 /* ---------- TRAVEL: the map is the navigation layer of a photo story ---------- */
@@ -446,20 +461,31 @@ function openPlace(i, from) { const st = $$("#story .st"); if (!st[i]) return;
 // the story itself: every stop of the route, in order, in three tiers.
 // each photo appears once on the site: a photo already told in the rolls (or the hero) is not repeated here,
 // that stop is set in type instead (city in caps, coordinates, date, its own words).
+// the place card: only the city (name + coordinates) and every photo we have of it, laid out as one editorial page —
+// big and small prints, a little off the grid. a paragraph of the city's own words can follow later (places[].copy).
+const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) => { if (!src || got.has(src) || /hangzhou-(ears|eyes)/.test(src)) return; got.add(src); out.push({ src, date }); };
+  S.forEach(s => { if (s.city !== id) return; (s.scans && s.scans.length ? s.scans : stopPhotos(s)).forEach((src, k) => add(src, (s.photoNotes && s.photoNotes[k]) || s.note || "")); });
+  C.chapters.forEach(c => c.items.forEach(m => { if (m.city === id) [m.photo, ...(m.scans || [])].forEach(src => add(src, isTodo(m.date) ? c.year : m.date)); }));
+  (placeById[id].extra || []).forEach(src => add(src, ""));
+  return out; };
+// collage rhythm: rows of one or two prints; [width %, left %, drop % (of the width), tilt°]
+const COL_ROWS = [[[60, 0, 0, -.8], [34, 5, 18, 1.3]], [[40, 7, 9, 1], [47, 5, 0, -.6]], [[72, 20, 0, .5]], [[33, 0, 14, -1.2], [57, 9, 0, .7]]];
+const COL_ONE = [[[84, 8, 0, -.5]]], COL_LAST = [[68, 15, 0, .6]];
+function collageHTML(list, gid, name) {
+  const rows = []; let k = 0, r = 0;
+  if (list.length === 1) rows.push(COL_ONE[0].map(t => [t, list[0], 0]));
+  else while (k < list.length) { let tpl = COL_ROWS[r % COL_ROWS.length]; if (list.length - k === 1 && tpl.length > 1) tpl = COL_LAST;
+    rows.push(tpl.map((t, j) => [t, list[k + j], k + j]).filter(x => x[1])); k += tpl.length; r++; }
+  return rows.map(row => `<div class="cl-row">${row.map(([[w, ml, mt, rot], ph, vi]) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], tall = ih / iw > 1.6;
+    return `<figure class="cl-f" style="width:${tall ? w * .62 : w}%;margin-left:${ml}%;margin-top:${mt}%;--r:${rot}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${img(ph.src, name)}</figure>`; }).join("")}</div>`).join("");
+}
 (() => { const st = $("#story"); if (!st) return;
-  const last = S.length - 1;
-  S.forEach((s, i) => { const p = placeById[s.city], all = s.scans && s.scans.length ? s.scans : stopPhotos(s);
-    const own = all.map((src, k) => ({ src, k })).filter(o => !USED.has(o.src));
-    const mem = isTodo(s.memory) ? "" : s.memory;
-    const tier = (s.highlight || i === last) ? "hero" : (own.length || mem || s.note) ? "std" : "detail";
-    const e = el("article", `st t-${tier}${own.length ? " has-ph" : " type-only"}${s.tall ? " tall" : ""}${s.highlight ? " hi" : ""}`);
-    if (own.length) { const ph = el("div", "st-ph");
-      own.forEach(({ src, k }) => { const f = el("div", "st-f st-f" + (k + 1) + (s.scans ? " raw" : ""), img(src, `${p.name}${s.note ? " · " + s.note : ""}`));
-        if (firstOf[i] != null) { f.dataset.vg = "route"; f.dataset.vi = firstOf[i] + k; f.setAttribute("role", "button"); f.tabIndex = 0; f.setAttribute("aria-label", `${p.name} · 放大`); }
-        ph.append(f); });
-      e.append(ph); }
-    e.append(el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
-      (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
+  S.forEach((s, i) => { const p = placeById[s.city], list = cityPhotos(s.city), gid = "city-" + s.city;
+    GROUPS[gid] = list.map(ph => ({ src: ph.src, place: p.name, date: ph.date }));
+    const e = el("article", "st city" + (list.length ? "" : " type-only"));
+    e.innerHTML = `<header class="city-h"><h3><span class="cn">${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span></header>` +
+      (list.length ? `<div class="collage">${collageHTML(list, gid, p.name)}</div>` : "") +
+      (p.copy && !isTodo(p.copy) ? `<p class="city-copy">${nobr(p.copy)}</p>` : "");
     e.id = "st" + i; st.append(e); });
   st.classList.add("tabs"); openPlace(0);
 })();
@@ -530,7 +556,9 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   y.innerHTML = `<div class="yr-head"><div class="yr-num${c.year.length > 4 ? " long" : ""}">${esc(c.year).replace(/[–-]/, '<span class="dash">–</span>')}</div>
     <div class="yr-t"><small>Roll ${pad2(ci + 1)}</small>${txt(c.title)}</div></div>`;
   const gid = "roll" + ci, G = GROUPS[gid] = [];
-  const add = (src, m) => { G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title, scene: m.scene }); return G.length - 1; };
+  // every photo of a roll opens full-screen with its date · place and one line of its story (a placeholder until written)
+  const add = (src, m) => { const own = !isTodo(m.text) && m.text; G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title, scene: m.scene,
+    full: true, caption: own || "占位文案：这张照片的故事，之后写在这里。", capPH: !own }); return G.length - 1; };
   const tapPhoto = (box, src, m) => { if (!src) return box; const k = add(src, m); box.dataset.vg = gid; box.dataset.vi = k;
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
     if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
@@ -569,7 +597,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   if (L === "feature") { const fm = c.items.find(m => m.feature && m.photo);
     if (fm) { const S0 = SC[fm.scene] || {}; const f = el("figure", "feature");
       const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = S0.origin || "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
-      f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span><span class="t">${esc(fm.title)}</span>${isTodo(fm.text) || !fm.text ? "" : `<p class="tx">${esc(fm.text)}</p>`}`)); y.append(f); f._m = fm; y._feature = ph; } }
+      f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span>`)); y.append(f); f._m = fm; y._feature = ph; } }
   // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
   // the words sit in their own column beside it, each one level with its frame
   const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
@@ -584,7 +612,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
       fr.append(ph); }
     fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
     vs.append(fr);
-    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), m.milestone ? `<span class="d">${esc(m.date)}</span><span class="t">${nobr(m.title)}</span>${m.text ? `<span class="tx">${nobr(m.text)}</span>` : ""}` : capHTML(m)));
+    const d = txt(m.date); caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), d ? `<span class="d">${d}</span>` : ""));   // the date only; the words are in the photo
   });
   vr.append(vs, caps); y.append(vr); list.append(y);
 });
@@ -672,6 +700,15 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
   if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);
   else seen = true;
   new MutationObserver(set).observe($("#secret"), { attributes: true, attributeFilter: ["class"] }); document.addEventListener("visibilitychange", set); })();
+// above the reel: Aimer's note on 「ポラリス」, verbatim; each line is a few phrases that only decide where a narrow screen may wrap
+if (F.reelNotes && $("#reelNotes")) { let lang = "ja";
+  $("#reelNotes").innerHTML = F.reelNotes.map((ln, i) => { if (!ln) return '<i class="rn-gap"></i>';
+    const t = ln.flat().join(""); if (/[大家无独正因]/.test(t[0])) lang = "zh-CN"; const cls = i < 2 ? "rn-h" : /^\(/.test(t) ? "rn-src" : "rn-l";
+    return `<p class="${cls}" lang="${lang}">${ln.flat().map(ph => `<span>${esc(ph)}</span>`).join("")}</p>`; }).join(""); }
+// the private page opens on a cover: the title, the silhouette of film, one line, a small imprint
+if (F.cover && $("#cover")) { const cv = F.cover;
+  $("#coverT").innerHTML = cv.title.map(esc).join("<br>"); $("#coverA").textContent = cv.author || "";
+  $("#coverQ").textContent = cv.quote ? "“" + cv.quote.replace(/ (\S+) (\S+) (\S+)$/, "\u00a0$1\u00a0$2\u00a0$3").replace(/^\u00a0/, " ") + "”" : "";   $("#coverBy").textContent = cv.by || ""; $("#coverI").textContent = cv.imprint || ""; }   // the last words stay together (no one-word last line)
 const STAR = '<svg viewBox="0 0 40 40"><path d="M20 2 L22.2 17.8 L38 20 L22.2 22.2 L20 38 L17.8 22.2 L2 20 L17.8 17.8 Z"/></svg>';
 const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 4V9M20 31V36M4 20H9M31 20H36M8.7 8.7L12.2 12.2M27.8 27.8L31.3 31.3M31.3 8.7L27.8 12.2M12.2 27.8L8.7 31.3"/></svg>';
 if (F.rings && $("#rings")) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
@@ -684,7 +721,8 @@ if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
 function unlock() {
   const openPage = () => { const s = $("#secret"); s.classList.add("open"); s.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
-    s.scrollTop = 0; s.focus({ preventScroll: true }); s.classList.add("dev"); };
+    s.scrollTop = 0; s.focus({ preventScroll: true }); s.classList.add("dev");
+    if (window.ScrollTrigger) requestAnimationFrame(() => { try { ScrollTrigger.refresh(); } catch (e) {} }); };
   $("#envelope").classList.add("open");
   if (MO.sealTL) (() => { try { MO.sealTL(openPage); } catch (e) { motionOff(); openPage(); } })(); else setTimeout(openPage, 300);
 }
@@ -728,7 +766,11 @@ function viewerDOM() {
   v.addEventListener("click", e => { if (!("ontouchstart" in window)) closeViewer(); });
   return v;
 }
-function fitRect(src) { const [w, h] = SIZES[src] || [1200, 1600], vw = innerWidth, vh = innerHeight, k = Math.min(vw * .9 / w, vh * .7 / h);
+function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], vw = innerWidth, vh = innerHeight;
+  if (item.full && !(item.scene && SCN[item.scene])) {   // full-bleed: an upright photo fills the screen; a landscape one spans the width
+    const k = w / h > 1.05 ? vw / w : Math.max(vw / w, vh / h), fw = w * k, fh = h * k;
+    return { left: (vw - fw) / 2, top: Math.min(0, (vh - fh) / 2) + (fh < vh ? (vh - fh) / 2 - vh * .08 : 0), width: fw, height: fh, cover: 1 }; }
+  const k = Math.min(vw * .9 / w, vh * .7 / h);
   const fw = w * k, fh = h * k; return { left: (vw - fw) / 2, top: (vh - fh) / 2 - vh * .02, width: fw, height: fh, cover: Math.max(vw / fw, vh / fh) }; }
 function flipFrom(o, f) { const s = Math.max(o.width / f.width, o.height / f.height);
   return `translate(${o.left + o.width / 2 - (f.left + f.width / 2)}px, ${o.top + o.height / 2 - (f.top + f.height / 2)}px) scale(${s})`; }
@@ -738,7 +780,10 @@ function fillViewer(item, f) { const v = V.el, im = v.querySelector(".v-img");
   v.querySelector(".v-count").textContent = V.g.length > 1 ? `${V.i + 1} / ${V.g.length}` : "";
   v.querySelector(".v-cap").textContent = item.caption || "";
   const S = item.scene && SCN[item.scene]; v.classList.remove("scene", "scene-run");
-  v.querySelector(".v-l1").textContent = S ? S.lines[0] || "" : ""; v.querySelector(".v-l2").textContent = S ? S.lines[1] || "" : "";
+  const full = !!item.full && !S; v.classList.toggle("full", full); v.classList.toggle("cap-ph", full && !!item.capPH);
+  if (full) v.querySelector(".v-cap").textContent = "";
+  v.querySelector(".v-l1").textContent = S ? S.lines[0] || "" : full ? [item.date, item.place].filter(Boolean).join(" · ") : "";
+  v.querySelector(".v-l2").textContent = S ? S.lines[1] || "" : full ? item.caption || "" : "";
   return S; }
 function runScene(S, f) { const v = V.el, im = v.querySelector(".v-img"); v.classList.add("scene");
   if (reduced) { v.classList.add("scene-run"); return; }
@@ -746,25 +791,25 @@ function runScene(S, f) { const v = V.el, im = v.querySelector(".v-img"); v.clas
   requestAnimationFrame(() => { v.classList.add("scene-run"); im.style.transition = "transform 7s cubic-bezier(.35,0,.2,1)"; im.style.transform = `scale(${(f.cover * (S.zoom || 1.4)).toFixed(3)})`; }); }
 function openViewer(gid, i, box) {
   const g = GROUPS[gid]; if (!g || !g[i] || V.busy) return; const v = viewerDOM(), im = v.querySelector(".v-img");
-  V.g = g; V.i = +i; V.from = box; V.gid = gid; const item = g[V.i], f = fitRect(item.src), S = fillViewer(item, f);
+  V.g = g; V.i = +i; V.from = box; V.gid = gid; const item = g[V.i], f = fitRect(item), S = fillViewer(item, f);
   const o = (box.querySelector("img") || box).getBoundingClientRect();
   im.style.transition = "none"; im.style.transform = reduced ? "none" : flipFrom(o, f); im.style.opacity = reduced ? "1" : ".4";
   v.classList.add("open"); document.body.style.overflow = "hidden"; V.lastFocus = document.activeElement;
-  requestAnimationFrame(() => requestAnimationFrame(() => { im.style.transition = "transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s"; im.style.transform = "none"; im.style.opacity = "1"; v.classList.add("in");
+  requestAnimationFrame(() => requestAnimationFrame(() => { im.style.transition = "transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s"; im.style.transform = "none"; im.style.opacity = "1"; v.classList.add("in", "full-in");
     v.focus({ preventScroll: true }); }));
   if (S) setTimeout(() => { if (V.g === g && V.i === +i && v.classList.contains("open")) runScene(S, f); }, reduced ? 0 : 650);
 }
 function step(d) { if (!V.g || V.g.length < 2) return; const v = V.el, im = v.querySelector(".v-img");
-  V.i = (V.i + d + V.g.length) % V.g.length; const item = V.g[V.i], f = fitRect(item.src);
+  V.i = (V.i + d + V.g.length) % V.g.length; const item = V.g[V.i], f = fitRect(item);
   im.style.transition = "opacity .2s, transform .2s"; im.style.opacity = "0"; im.style.transform = `translateX(${-d * 40}px)`;
   setTimeout(() => { const S = fillViewer(item, f); im.style.transition = "none"; im.style.transform = `translateX(${d * 40}px)`;
     requestAnimationFrame(() => requestAnimationFrame(() => { im.style.transition = "opacity .3s, transform .35s cubic-bezier(.2,.8,.2,1)"; im.style.opacity = "1"; im.style.transform = "none"; }));
     V.from = document.querySelector(`[data-vg="${V.gid}"][data-vi="${V.i}"]`) || V.from;
     if (S) setTimeout(() => runScene(S, f), 450); }, 200); }
 function closeViewer() { const v = V.el; if (!v || !v.classList.contains("open") || V.busy) return; V.busy = true;
-  const im = v.querySelector(".v-img"), item = V.g[V.i], f = fitRect(item.src), box = V.from && V.from.isConnected ? (V.from.querySelector("img") || V.from) : null;
+  const im = v.querySelector(".v-img"), item = V.g[V.i], f = fitRect(item), box = V.from && V.from.isConnected ? (V.from.querySelector("img") || V.from) : null;
   const o = box && box.getBoundingClientRect(), onScreen = o && o.bottom > 0 && o.top < innerHeight;
-  v.classList.remove("in", "scene-run");
+  v.classList.remove("in", "scene-run", "full-in");
   im.style.transition = "transform .45s cubic-bezier(.4,0,.2,1), opacity .45s";
   im.style.transform = onScreen && !reduced ? flipFrom(o, f) : "scale(.96)"; im.style.opacity = onScreen ? ".6" : "0";
   setTimeout(() => { v.classList.remove("open", "scene"); im.removeAttribute("src"); document.body.style.overflow = ""; V.busy = false;
@@ -851,6 +896,13 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
       yrs.forEach((s, i) => ytl.fromTo(s, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power1.out" }, i * .8).to(s, { autoAlpha: 0, duration: .4, ease: "power1.in" }, i * .8 + .5));
       ytl.to(lk, { autoAlpha: 1, duration: 1, ease: "power1.out" }, yrs.length * .8 + .1);
     }
+    /* the private page: its blocks flow into one another as it scrolls (scroll-linked; transform + opacity only) */
+    if (!reduce) { const sx = $("#secret");
+      ["#cover", "#pair", "#reelNotes", "#record", "#lyrics", "#weddingPola", "#secret .letter-card"].forEach(sel => { const e = $(sel); if (!e) return;
+        gsap.fromTo(e, { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, ease: "none", scrollTrigger: { trigger: e, scroller: sx, start: "top 97%", end: "top 64%", scrub: .5 } }); });
+      // the film silhouette drifts a little inside its cover, the pair of prints a little against it
+      if ($("#silhouette img")) gsap.fromTo("#silhouette img", { y: 16 }, { y: -16, ease: "none", scrollTrigger: { trigger: "#cover", scroller: sx, start: "top bottom", end: "bottom top", scrub: .5 } });
+      $$("#pair .scan").forEach((e, k) => gsap.fromTo(e, { yPercent: k ? 10 : 4 }, { yPercent: k ? -6 : -2, ease: "none", scrollTrigger: { trigger: "#pair", scroller: sx, start: "top bottom", end: "bottom top", scrub: .5 } })); }
     /* the keypad: its keys come up softly, row by row, the first time it reaches the screen */
     if (!reduce) gsap.fromTo("#pad button", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5, ease: "power2.out", stagger: .035, clearProps: "transform,opacity,visibility",
       scrollTrigger: { trigger: "#pad", start: "top 92%", once: true } });

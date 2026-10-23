@@ -1090,3 +1090,64 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
   .hero-print{top:calc(320 * var(--u))}
   .hero-sub{margin-left:calc((100vw - 393 * var(--u)) / 2)}
 }
+
+/* =====================================================================
+   DRAFT 2
+   ===================================================================== */
+/* map: zoomed into a region, only the legs inside it; the full route comes back on 全图 */
+#mapSvg .string{transition:opacity .25s ease}
+#mapSvg .string-local{fill:none;stroke:var(--wine);stroke-linecap:round;opacity:0;transition:opacity .35s ease}
+#mapSvg.zoomed .string-local{opacity:.85;transition-delay:.55s}
+#mapSvg.zoomed .string,#mapSvg.zoomed .promise,#mapSvg.zoomed .promise-lbl{opacity:0 !important}
+#mapSvg .pin .ring{transform-box:fill-box;transform-origin:50% 50%}
+#mapSvg .pin.ping .ring{animation:pinPing 1.2s cubic-bezier(.2,.7,.3,1)}
+@keyframes pinPing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+
+/* map: the place card = the city, its coordinates, all its photos as one scattered page */
+.story .city-h h3{display:flex;flex-direction:row;align-items:baseline;gap:12px;margin:0;font-weight:400}
+.story .city-h .cn{font-size:22px;letter-spacing:.26em;color:var(--ink);font-weight:400}
+.story .city-h h3 i{order:0;font-family:var(--lat);font-style:italic;font-size:16px;letter-spacing:.02em;text-transform:none;color:var(--mute)}
+.story .city-h .st-geo{display:block;margin-top:8px;font-size:11px}
+.collage{margin-top:28px;padding-bottom:24px}
+.cl-row{display:flex;align-items:flex-start}
+.cl-row+.cl-row{margin-top:16px}
+.cl-f{position:relative;flex:none;margin:0;background:#f4efe6 url(assets/paper-cream.webp) center/300%;padding:5px;box-shadow:var(--bs-print);transform:rotate(var(--r,0deg));cursor:pointer}
+.cl-f img{width:100%;height:auto}
+.city-copy{margin-top:22px;font-size:14px;line-height:1.9;color:var(--ink2);max-width:24em}
+@media (min-width:1000px){.map-sec>.story{position:relative;top:auto}}
+
+/* rolls: the full-screen photo — date · place small, one line of its story at the foot */
+.viewer.full .v-img{border:0;box-shadow:none}
+.viewer.full .v-place,.viewer.full .v-date,.viewer.full .v-cap{display:none}
+.viewer.full .v-shade{background:linear-gradient(180deg,rgba(10,6,6,.28),transparent 18%,transparent 52%,rgba(10,6,6,.8))}
+.viewer.full.full-in .v-shade{opacity:1;transition:opacity .6s .15s}
+.viewer.full .v-lines{left:26px;right:26px;bottom:calc(58px + env(safe-area-inset-bottom))}
+.viewer.full .v-l2{font-size:15px;line-height:1.8;letter-spacing:.08em;text-wrap:pretty}
+.viewer.full.full-in .v-l1{opacity:1;transform:none;transition:opacity .6s .35s,transform .6s .35s}
+.viewer.full.full-in .v-l2{opacity:1;transform:none;transition:opacity .7s .5s,transform .7s .5s}
+.viewer.full.cap-ph .v-l2{color:rgba(236,230,220,.5);font-size:13px}
+@media (prefers-reduced-motion:reduce){.viewer.full.full-in .v-l1,.viewer.full.full-in .v-l2,.viewer.full.full-in .v-shade{transition:opacity .2s}}
+
+/* the reel: Aimer's note on 「ポラリス」 above it (no title) */
+.reel-notes{margin:0 auto;max-width:23em;text-align:center;color:var(--ink2)}
+.reel-notes p{margin:0}
+.reel-notes p span{display:inline-block}
+.rn-h{font-size:11.5px;line-height:2;letter-spacing:.22em;color:var(--wine)}
+.rn-l{font-size:12.5px;line-height:2;letter-spacing:.05em}
+.rn-l[lang="zh-CN"]{font-size:12px;color:var(--mute)}
+.rn-gap{display:block;height:16px}
+.rn-src{margin-top:2px;font-size:10.5px;letter-spacing:.08em;color:var(--mute);font-family:var(--lat)}
+.sx-polaris .vm-disc-wrap{margin-top:44px}
+@media (min-width:1000px){.sx-polaris .reel-notes{grid-column:1/-1;max-width:34em}.rn-l{font-size:14px}.rn-l[lang="zh-CN"]{font-size:13px}.rn-h{font-size:12.5px}}
+
+/* the private page opens on a cover: title, the film silhouette, one line, a small imprint */
+.book{position:relative;margin:52px -12px 0;padding:34px 18px 24px;background:#f7f2e9 url(assets/paper-cream.webp) center/220%;box-shadow:var(--bs-print);text-align:center}
+.book-t{font-family:var(--lat);font-weight:400;font-size:42px;line-height:.96;letter-spacing:.01em;color:var(--ink)}
+.book-a{margin-top:12px;font-family:var(--lat);font-style:italic;font-size:15px;color:var(--wine)}
+.book .silhouette{margin:20px -6px 0;filter:none}
+.book-q{margin:16px auto 0;max-width:17em;text-wrap:balance;font-family:var(--lat);font-style:italic;font-size:13.5px;line-height:1.5;color:var(--wine)}
+.book-by{margin-top:6px;font-family:var(--lat);font-size:10px;letter-spacing:.24em;color:var(--ink2)}
+.book-i{margin-top:24px;font-family:var(--lat);font-size:8.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
+.pair{margin-top:44px}
+.sx-polaris{margin-top:84px}
+@media (min-width:1000px){.book{margin:0}.book-t{font-size:56px}.sx-archive .book .silhouette{margin:24px 0 0}}

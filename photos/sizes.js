@@ -75,6 +75,10 @@ window.PHOTO_SIZES = {
 360,
 360
 ],
+"photos/silhouette-film.webp": [
+1400,
+1072
+],
 "photos/silhouette.webp": [
 1200,
 953

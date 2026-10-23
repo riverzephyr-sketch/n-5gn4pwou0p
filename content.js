@@ -73,22 +73,24 @@ window.CONTENT = {
   },
 
   // 一起去过的城市（只写坐标，每个城市一次）
+  // copy：地图上点开城市后，照片下面的一段文字（空着就不显示）
+  // extra：这个城市额外的照片（不在胶卷里的），会一起拼进城市页
   places: [
-    { id: "chongqing", name: "重庆", en: "Chongqing", country: "中国", lat: 29.563, lon: 106.551 },
-    { id: "beijing",   name: "北京", en: "Beijing",   country: "中国", lat: 39.904, lon: 116.407 },
-    { id: "chengdu",   name: "成都", en: "Chengdu",   country: "中国", lat: 30.573, lon: 104.066 },
-    { id: "dongguan",  name: "东莞", en: "Dongguan",  country: "中国", lat: 23.021, lon: 113.752 },
-    { id: "dali",      name: "大理", en: "Dali",      country: "中国", lat: 25.606, lon: 100.267 },
-    { id: "hangzhou",  name: "杭州", en: "Hangzhou",  country: "中国", lat: 30.274, lon: 120.155, home: "我们的家" },
-    { id: "shanghai",  name: "上海", en: "Shanghai",  country: "中国", lat: 31.230, lon: 121.474 },
-    { id: "fukuoka",   name: "福冈", en: "Fukuoka",   country: "日本", lat: 33.590, lon: 130.402 },
-    { id: "wuning",    name: "武宁西海", en: "Wuning · Xihai", country: "中国", lat: 29.18, lon: 115.30 },
-    { id: "krabi",     name: "甲米", en: "Krabi",     country: "泰国", lat: 8.086, lon: 98.906 },
-    { id: "jiaxing",   name: "嘉兴", en: "Jiaxing",   country: "中国", lat: 30.746, lon: 120.755 },
-    { id: "shenzhen",  name: "深圳", en: "Shenzhen",  country: "中国", lat: 22.543, lon: 114.058 },
-    { id: "seoul",     name: "首尔", en: "Seoul",     country: "韩国", lat: 37.566, lon: 126.978 },
-    { id: "tokyo",     name: "东京", en: "Tokyo",     country: "日本", lat: 35.676, lon: 139.650 },
-    { id: "kk",        name: "亚庇", en: "Kota Kinabalu", country: "马来西亚", lat: 5.980, lon: 116.074 },
+    { id: "chongqing", name: "重庆", en: "Chongqing", country: "中国", lat: 29.563, lon: 106.551, copy: "" },
+    { id: "beijing",   name: "北京", en: "Beijing",   country: "中国", lat: 39.904, lon: 116.407, copy: "" },
+    { id: "chengdu",   name: "成都", en: "Chengdu",   country: "中国", lat: 30.573, lon: 104.066, copy: "" },
+    { id: "dongguan",  name: "东莞", en: "Dongguan",  country: "中国", lat: 23.021, lon: 113.752, copy: "" },
+    { id: "dali",      name: "大理", en: "Dali",      country: "中国", lat: 25.606, lon: 100.267, copy: "" },
+    { id: "hangzhou",  name: "杭州", en: "Hangzhou",  country: "中国", lat: 30.274, lon: 120.155, home: "我们的家", copy: "" },
+    { id: "shanghai",  name: "上海", en: "Shanghai",  country: "中国", lat: 31.230, lon: 121.474, copy: "" },
+    { id: "fukuoka",   name: "福冈", en: "Fukuoka",   country: "日本", lat: 33.590, lon: 130.402, copy: "" },
+    { id: "wuning",    name: "武宁西海", en: "Wuning · Xihai", country: "中国", lat: 29.18, lon: 115.30, copy: "" },
+    { id: "krabi",     name: "甲米", en: "Krabi",     country: "泰国", lat: 8.086, lon: 98.906, copy: "" },
+    { id: "jiaxing",   name: "嘉兴", en: "Jiaxing",   country: "中国", lat: 30.746, lon: 120.755, copy: "" },
+    { id: "shenzhen",  name: "深圳", en: "Shenzhen",  country: "中国", lat: 22.543, lon: 114.058, copy: "" },
+    { id: "seoul",     name: "首尔", en: "Seoul",     country: "韩国", lat: 37.566, lon: 126.978, copy: "" },
+    { id: "tokyo",     name: "东京", en: "Tokyo",     country: "日本", lat: 35.676, lon: 139.650, copy: "" },
+    { id: "kk",        name: "亚庇", en: "Kota Kinabalu", country: "马来西亚", lat: 5.980, lon: 116.074, copy: "", extra: ["photos/sunset-sit.webp"] },
   ],
 
   // 旅行路线 —— 按真实顺序（红线、图钉编号、「上一站 / 下一站」都按这个顺序）
@@ -119,45 +121,47 @@ window.CONTENT = {
   promise: { from: 5, to: 15, label: "约定" },
 
   // 四个年份章节（每一卷胶卷），每个年份可以放任意多条
+  // city（可选）：这张照片属于哪个城市（places 里的 id）——地图上点城市，会把这个城市的所有照片拼在一页
+  // text：点开照片后底部的那一句话（所有故事文字都放在这里；空着就显示「占位文案」）
   // crop（可选）：照片在胶卷里的取景；pos = 取景中心，zoom = 放大，ratio = 画幅（只用两种："3/2" 横幅通栏，"4/5" 竖幅；highlight 的竖幅通栏，其余 64% 宽）。点开仍是完整照片
   // 没有日期、标题、文字的那张，会自动接在上一条后面，算同一件事
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
     { year: "2023", layout: "feature", title: "待填写", items: [
-      { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
-      { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp" },   // 胡同
-      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali" },
-      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, scene: "fridge", feature: true },
-      { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp" },
+      { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp", city: "chongqing" },
+      { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp", city: "beijing" },   // 胡同
+      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali", city: "dali" },
+      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, scene: "fridge", feature: true, city: "chongqing" },
+      { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp", city: "chongqing" },
       { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
       { title: "待填写", date: "待填写", text: "待填写", photo: null },
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
-      { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp" },   // 水母灯
-      { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true },
-      { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp" },
-      { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp" },
-      { title: "重庆", date: "2024.07", text: "我马上就要去杭州上班了", photo: "photos/m5.webp" },   // 2024.07.14
-      { title: "杭州", date: "2024.08", text: "", photo: "photos/m6.webp" },   // 镜子自拍
-      { title: "杭州", date: "2024.09", text: "", photo: "photos/m7.webp" },   // 车后座自拍
+      { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp", city: "chongqing" },   // 水母灯
+      { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true, city: "chongqing" },
+      { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp", city: "chongqing" },
+      { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp", city: "chongqing" },
+      { title: "重庆", date: "2024.07", text: "我马上就要去杭州上班了", photo: "photos/m5.webp", city: "chongqing" },   // 2024.07.14
+      { title: "杭州", date: "2024.08", text: "", photo: "photos/m6.webp", city: "hangzhou" },   // 镜子自拍
+      { title: "杭州", date: "2024.09", text: "", photo: "photos/m7.webp", city: "hangzhou" },   // 车后座自拍
       { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
-      { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp" },   // 夜里自拍
+      { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp", city: "hangzhou" },   // 夜里自拍
     ]},
     { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
-      { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp" },   // 贴脸自拍
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
-      { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" } },   // 烛光、粉玫瑰，镜子自拍
-      { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp" },   // 网吧，他戴着耳机
-      { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/fukuoka-ship.webp" },   // 2025.04.05 船上合照，海面
-      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
+      { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp", city: "hangzhou" },   // 贴脸自拍
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp", city: "hangzhou" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
+      { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" }, city: "hangzhou" },   // 烛光、粉玫瑰，镜子自拍
+      { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp", city: "hangzhou" },   // 网吧，他戴着耳机
+      { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/fukuoka-ship.webp", city: "fukuoka" },   // 2025.04.05 船上合照，海面
+      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" }, city: "krabi" },
     ]},
     { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
-      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
-      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m2.webp", crop: { pos: "50% 50%", zoom: 1, ratio: "2/1" } },   // 洱海边的午饭（同一趟求婚旅行）
-      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.webp", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" } },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" } },
+      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" }, city: "tokyo" },
+      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" }, city: "dali" },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m2.webp", crop: { pos: "50% 50%", zoom: 1, ratio: "2/1" }, city: "dali" },   // 洱海边的午饭（同一趟求婚旅行）
+      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.webp", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" }, city: "kk" },
+      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" }, city: "kk" },
     ]},
   ],
 
@@ -219,13 +223,34 @@ window.CONTENT = {
     ],
     // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.webp）里抠出来的轮廓，里面填满我们的照片
     // （photos/silhouette.webp，加了新照片后运行 python3 tools/make_silhouette.py 重新生成）
-    silhouette: "photos/silhouette.webp",
+    silhouette: "photos/silhouette-film.webp",   // 胶片条版本（/workspace/anniversary/tools/make_silhouette_film.py 生成）
     silhouetteCaption: "",   // 剪影下不放文字
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
     wedding: { label: "婚礼", date: "", status: "待解锁", photo: null },   // 隐藏页不显示日期
     // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
     record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
       "photos/m12.webp", "photos/fukuoka-torii.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
+    // 唱片上方的一段文字（原文照录；每一行拆成几段，只用来决定手机上在哪里换行，拼起来就是原文）
+    reelNotes: [
+      [["「blanc」収録"]],
+      [["4　ポラリス"]],
+      null,
+      [["みんなが旅人。"]],
+      [["戻ることはできない道、"], ["前へ進めば傷つくこともある。"]],
+      [["こころの奥に不安も孤独も、"], ["必ずある、"], ["一人ぼっちの旅。"]],
+      [["そんな道だからこそ"], ["誰かが誰かのポラリスに"], ["なれたらいいのにって。"]],
+      [["書いた曲。"]],
+      null,
+      [["大家都是行者。"]],
+      [["无法回头，"], ["而继续前进的话有时又会受伤。"]],
+      [["独自一人的旅途，"], ["内心深处必然有不安，"], ["有孤独。"]],
+      [["正因为是这样的一条路，"], ["如果谁能够成为谁的"], ["北极星的话就好了。"]],
+      [["因而写下了这首歌。"]],
+      null,
+      [["(转自 twitter@Aimer&staff)"]],
+    ],
+    // 剪影的「封面」：上面的大标题、下面的一句话和小字（占位，可改）
+    cover: { title: ["1461 DAYS", "WITH YOU"], author: "Follow & Helios", quote: "I would choose you in every version of my life.", by: "— Helios", imprint: "2022.10.30 – 2026.10.30 · Vol. 04" },
     closing: "I would choose you in every version of my life.",
     heartLine: "Four years down. A lifetime of little adventures to go.",
   },
