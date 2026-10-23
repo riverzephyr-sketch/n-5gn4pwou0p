@@ -227,7 +227,7 @@ $("#hLabel").textContent = "( " + HT.label + " )"; $("#scoreLab").textContent = 
 // two hotel key cards, type only: the wrong one gets a fine red strike, the right one is the wine-red card
 const card = (o, kind) => {
   const b = el("button", `hcard key ${kind}`);
-  b.innerHTML = `<span class="key-n"><span class="nm">${esc(o.name)}</span></span><i class="key-rule"></i><span class="en">${esc(o.en)}</span>`;
+  b.innerHTML = `<span class="key-n"><span class="nm">${esc(o.name)}</span></span><i class="key-rule"></i><i class="key-logo" role="img" aria-label="${esc(o.en)}"></i>`;
   return b;
 };
 const wrongC = card(HT.wrong, "wrong"), rightC = card(HT.right, "right");
