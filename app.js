@@ -606,7 +606,8 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
-      const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
+      // every frame is cut to its photo's own proportions (portrait stays portrait, a wide shot stays wide): nothing is cropped
+      const [pw, phh] = SIZES[m.photo] || [4, 5]; ph.style.aspectRatio = `${pw} / ${phh}`; if (pw > phh) fr.classList.add("land");
       const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
       if (im && m.crop && m.crop.fit === "contain") { ph.classList.add("fit"); im.style.objectFit = "contain"; }   // letterbox (e.g. a phone screenshot) instead of cropping
       fr.append(ph); }
