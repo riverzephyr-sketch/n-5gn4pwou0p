@@ -50,7 +50,7 @@ $$("[data-lk]").forEach(e => { const t = C.titles[e.dataset.lk]; if (!t) return;
   e.insertAdjacentHTML("beforeend", `${lines(t.cn, "c")}<span class="en">${lines(t.en, "e")}</span>`); });
 // English + numerals are the display layer; the Chinese title sits under it, smaller and lighter
 // the ending keeps its original lockup ("下一章 / NEXT / chapter")
-const OLD_LK = { finale: 1 };
+const OLD_LK = { finale: 1, polaris: 1 };   // polaris: Chinese only, no English display line
 const CHAPTER = { jianghu: 1, hotel: 2, chapters: 3, map: 4 };
 $$("[data-lk]").forEach(e => { const k = e.dataset.lk, n = CHAPTER[k];
   if (n) e.insertAdjacentHTML("afterbegin", `<span class="kick">Chapter ${pad2(n)}</span>`);
@@ -594,9 +594,9 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
 // Aimer《Polaris》: one record, a ring of our photos round its rim, turning slowly (transform only).
 // no words on it but the label; it turns only while the private page is open and the record is on screen; reduced motion: still.
 (() => { const host = $("#record"), list = (F.record || []).filter(Boolean), N = list.length; if (!host || !N) return;
-  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Astin í sumar">
+  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Ástin í sumar">
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
-    <div class="vm-label"><b class="vm-song">Astin í sumar</b><i class="vm-hole"></i></div></div>`;
+    <div class="vm-label"><b class="vm-song">Ástin í sumar</b><span class="vm-title">Side A</span><i class="vm-hole"></i></div></div>`;
   const disc = host.firstElementChild; let seen = false;
   const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
   if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);

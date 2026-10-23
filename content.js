@@ -31,7 +31,7 @@ window.CONTENT = {
     map:      { cn: ["我们走过的", "地方"], en: ["The places", "we became us"] },
     finale:   { cn: ["下一章"], en: ["Next", "chapter"] },
     secret:   { cn: ["下一章"], en: ["Next", "chapter"] },
-    polaris:  { cn: ["北极星"], en: ["Polaris"] },
+    polaris:  { cn: ["北极星"], en: [] },   // 只留中文
   },
 
   // 序章：江湖（网游 CP 奔现）
