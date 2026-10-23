@@ -43,7 +43,7 @@ window.CONTENT = {
     quiet: "我也喜欢",            // 朋友圈里的第一句话
     quietSong: "Aimer · Ref:rain", // 那条朋友圈分享的歌
     himWechat: "Follow",          // 他的微信名（分享歌的人）
-    meWechat: "helios",           // 我的微信名（留言的人）
+    meWechat: "Helios",           // 我的微信名（留言的人）
     from: "北京", to: "重庆",
     // 江湖页四周散落的 Aimer 歌名（小字；Polaris 用酒红色）
     aimerTitles: ["StarRingChild", "Brave Shine", "六等星の夜", "茜さす", "カタオモイ", "Polaris", "残響散歌"],

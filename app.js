@@ -91,7 +91,7 @@ const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 let fresh = true;
 let playing = false, ctx = null, gain = null, fadeT = null;
 function setMini() { const t = $("#miniTxt");
-  if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`; else t.textContent = songName; mini.classList.toggle("on", playing); const cv = $("#jhCover"); if (cv) cv.classList.toggle("on", playing); }
+  if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`; else t.textContent = songName; mini.classList.toggle("on", playing); }
 function fadeTo(v, dur, done) {
   clearInterval(fadeT);
   if (gain) { const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
@@ -117,7 +117,6 @@ let miniT = 0; const peek = () => { mini.classList.add("open"); clearTimeout(min
 const toggle = () => { playing ? pause() : play(); peek(); };
 mini.addEventListener("click", toggle);
 // 江湖: the cover of the song he shared is a quiet play / pause for the music on this page
-$("#jhCover").addEventListener("click", () => { playing ? pause() : play(); peek(); });
 setMini();
 // the player is visible from the first screen on
 requestAnimationFrame(() => mini.classList.add("show"));
