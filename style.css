@@ -212,8 +212,6 @@ img{display:block;max-width:100%}
 .chapters .ph img{width:100%;height:100%;object-fit:cover}
 .chapters .ph.empty{display:none}
 [data-vg]{cursor:zoom-in}
-.cue-mark{position:absolute;right:8px;bottom:6px;font-family:var(--lat);font-size:12px;letter-spacing:.2em;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5);pointer-events:none}
-.cue-mark::after{content:"…"}
 /* a dark print: thin cream border, real shadow */
 .dprint,.chapters .ev-ph .ph{border:5px solid #e9e2d6;box-shadow:var(--bs-print-d)}
 /* the roll photos sit in their negative strip: thin film base, sprocket holes down both sides, edge print */
@@ -237,7 +235,6 @@ img{display:block;max-width:100%}
 .cp .d,.ev-h .d{font-family:var(--lat);font-size:10px;letter-spacing:.2em;color:var(--chalk3)}
 .cp .t,.ev-h .t{font-size:13.5px;letter-spacing:.12em;color:var(--chalk);line-height:1.5}
 .cp .tx,.ev-h .tx{font-size:12px;color:var(--chalk2)}
-.lay-feature .vfr.hi{display:none}
 .events{display:flex;flex-direction:column;gap:96px}
 .ev-h{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
 .ev.ms .ev-h{padding:26px 0;border-top:1px solid rgba(236,230,220,.14);border-bottom:1px solid rgba(236,230,220,.14)}
@@ -432,14 +429,13 @@ img{display:block;max-width:100%}
 .sig{margin-top:10px}.sig .script{font-size:40px;line-height:1;color:var(--wine)}
 .letter-end{padding-bottom:30vh}
 
-/* ============ photo viewer (every photo; 大理 scene on top) ============ */
+/* ============ photo viewer (every photo, the same) ============ */
 .viewer{position:fixed;inset:0;z-index:190;visibility:hidden;pointer-events:none}
 .viewer.open{visibility:visible;pointer-events:auto}
 .viewer:focus{outline:none}
 .v-bg{position:absolute;inset:0;background:var(--night) url(assets/night-field.webp) 0 0/460px;opacity:0;transition:opacity .4s}
 .viewer.in .v-bg{opacity:.98}
 .v-img{position:absolute;object-fit:cover;border:5px solid #e9e2d6;box-shadow:var(--bs-print-d);will-change:transform}
-.viewer.scene .v-img{border-color:transparent;box-shadow:none}
 .v-shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(10,6,6,.8));opacity:0;pointer-events:none}
 .v-place,.v-date,.v-count{position:absolute;font-family:var(--lat);font-size:10px;letter-spacing:.24em;color:var(--chalk2);opacity:0;transition:opacity .4s .2s}
 .v-place{left:24px;top:calc(22px + env(safe-area-inset-top));font-family:var(--zh);font-size:12px;color:var(--chalk)}
@@ -451,10 +447,6 @@ img{display:block;max-width:100%}
 .v-lines{position:absolute;left:28px;right:28px;bottom:calc(64px + env(safe-area-inset-bottom));color:var(--chalk)}
 .v-l1{font-family:var(--lat);font-size:11px;letter-spacing:.26em;color:var(--chalk2);opacity:0;transform:translateY(8px)}
 .v-l2{margin-top:12px;font-size:17px;line-height:1.7;letter-spacing:.1em;opacity:0;transform:translateY(8px)}
-.viewer.scene-run .v-shade{opacity:1;transition:opacity 2.4s 3.2s}
-.viewer.scene-run .v-l1{opacity:1;transform:none;transition:opacity 1.4s 4.4s,transform 1.4s 4.4s}
-.viewer.scene-run .v-l2{opacity:1;transform:none;transition:opacity 1.6s 5.4s,transform 1.6s 5.4s}
-.viewer.scene-run .v-place,.viewer.scene-run .v-date,.viewer.scene-run .v-count,.viewer.scene-run .v-cap{opacity:0;transition:opacity 1s 1s}
 .v-x{position:absolute;right:calc(8px + env(safe-area-inset-right));top:calc(8px + env(safe-area-inset-top));color:var(--chalk);opacity:0;transition:opacity .3s}
 .viewer.in .v-x{opacity:1}
 
@@ -689,7 +681,6 @@ img{display:block;max-width:100%}
 .vfr .ph{aspect-ratio:4/5;border:0;box-shadow:none;transform:none !important;order:0}
 .vfr.land .ph{aspect-ratio:3/2}
 .vfr .fno{position:absolute;left:-17px;bottom:3px;font-family:var(--lat);font-size:6px;letter-spacing:.1em;color:rgba(214,170,120,.6);writing-mode:vertical-rl;transform:rotate(180deg)}
-.vfr.hi .ph{box-shadow:0 0 0 1px rgba(201,84,90,.75)}
 .vfr .ph.scans2{aspect-ratio:auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;background:#17110f}
 .vfr .ph.scans2 .sc img{width:100%;height:auto;display:block}
 /* the milestone: a wine card in its own frame */
@@ -1159,7 +1150,3 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 .sx-polaris{margin-top:84px}
 @media (min-width:1000px){.book{margin:0}.book-t{font-size:56px}.sx-archive .book .silhouette{margin:24px 0 0}}
 
-/* a roll photo with a scene: no caption before the zoom — its date · place and its one line come once, after it */
-.viewer.sc-once .v-place,.viewer.sc-once .v-date,.viewer.sc-once .v-cap{display:none}
-.viewer.sc-once .v-l2{font-size:15px;line-height:1.8;letter-spacing:.08em;text-wrap:pretty}
-.viewer.sc-once.cap-ph .v-l2{color:rgba(236,230,220,.5);font-size:13px}

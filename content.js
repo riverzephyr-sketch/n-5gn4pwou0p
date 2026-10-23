@@ -104,7 +104,7 @@ window.CONTENT = {
     { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
-    { city: "dali",      photo: "photos/dali-first-shadows.webp", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
+    { city: "dali",      photo: "photos/dali-first-shadows.webp", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
     { city: "hangzhou",  photo: null, scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
     { city: "fukuoka",   photo: "photos/fukuoka-torii.webp", memory: "待填写" },   // 白色鸟居、夫妇岩，海边（替换原 m13）
@@ -131,7 +131,7 @@ window.CONTENT = {
     { year: "2023", layout: "feature", title: "待填写", items: [
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp", city: "chongqing" },
       { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp", city: "beijing" },   // 胡同
-      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", scene: "dali", city: "dali" },
+      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", city: "dali" },
       { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, feature: true, city: "chongqing" },
       { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp", city: "chongqing" },
       { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
@@ -180,11 +180,6 @@ window.CONTENT = {
   },
 
   // 最后的信封
-  // 点照片进入的「放大场景」（照片上的 scene: "dali" 对应这里）
-  // origin = 镜头推进的位置（横 竖 %），zoom = 最后放大倍数，lines = 最后出现的字（最多两行）
-  scenes: {
-    dali:   { photo: "photos/dali-first-shadows.webp", origin: "66% 44%", zoom: 1.45, lines: ["2023.05 · 大理", "「等求婚的时候，再来一次吧。」"] },
-  },
 
   finale: {
     // 结尾的歌：密码一对上就换成这首（不管之前在放什么）。把音频放进 audio/ 并在 src 填文件名即可；src 为空则不换歌

@@ -11,7 +11,6 @@ const MO = {}; // hooks shared with the motion block below
 const GROUPS = {};
 // photos already placed on the main page (hero + the four rolls). anything else reuses none of them.
 const USED = new Set([C.hero && C.hero.print, ...C.chapters.flatMap(c => c.items.flatMap(m => [m.photo, ...(m.scans || [])]))].filter(Boolean));
-const SCN = C.scenes || {}; // photo viewer groups: { id: [{ src, date, place, scene }] }
 const isTodo = s => !s || /待填写/.test(s);
 // no single-character last line: the last two characters (plus any closing punctuation) never split, e.g. 他的 / 生日
 const nobr = s => { s = String(s); const m = s.match(/[^\s。，、！？」』）.,!?]{2}[。，、！？」』）.,!?]*$/u); return m ? esc(s.slice(0, m.index)) + `<span class="nw">${esc(m[0])}</span>` : esc(s); };
@@ -487,7 +486,7 @@ let cur = 0; const pc = $(".pola-card");
 const ROUTE = GROUPS.route = [], firstOf = {};
 S.forEach((s, i) => { const p = placeById[s.city], srcs = s.scans && s.scans.length ? s.scans : stopPhotos(s), notes = s.photoNotes || [];
   srcs.forEach((src, k) => { if (k === 0) firstOf[i] = ROUTE.length;
-    ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "", scene: srcs.length === 1 || k === 0 ? s.scene : null }); }); });
+    ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "" }); }); });
 // a pin or a chip picks the place: only its card stays below the map, the others take no room. the first stop to begin with.
 // (the photos in the card still open the viewer.) a short fade on the switch, instant with reduced motion; the page never scrolls by itself.
 let curPlace = -1;
@@ -536,7 +535,7 @@ function openStop(i) {
   $("#sName").textContent = p.name; $("#sEn").textContent = p.en;
   pc.classList.toggle("scan-mode", !!(s.scans && s.scans.length));
   const gid = "stop" + cur, G = GROUPS[gid] = [], note0 = s.note || "";
-  const tapC = (box, src, k, date) => { G[k] = { src, place: p.name, date: date || note0, scene: k === 0 ? s.scene : null }; box.dataset.vg = gid; box.dataset.vi = k;
+  const tapC = (box, src, k, date) => { G[k] = { src, place: p.name, date: date || note0 }; box.dataset.vg = gid; box.dataset.vi = k;
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", p.name + " · 放大"); };
   if (s.scans && s.scans.length) { const sc = el("div", "scans"); sc.id = "sPhoto";
     s.scans.forEach((src, k) => { const f = el("figure", "scan", `<i class="tape top"></i>${img(src, `${p.name} · ${s.scansDate || ""}`)}`); tapC(f, src, k, s.scansDate); sc.append(f); });
@@ -545,8 +544,8 @@ function openStop(i) {
     const list = stopPhotos(s);
     const ph = photoBox(list[0], `photos/${s.city}.jpg`, false, p.name); ph.id = "sPhoto"; if (s.tall) ph.classList.add("tall");
     const notes = s.photoNotes || [], nt = null;
-    list.forEach((src, k) => { G[k] = { src, place: p.name, date: notes[k] || note0, scene: list.length === 1 ? s.scene : null }; });
-    if (list[0]) { tapC(ph, list[0], 0, notes[0]); if (s.scene && SCN[s.scene]) ph.insertAdjacentHTML("beforeend", '<span class="cue-mark" aria-hidden="true"></span>'); }
+    list.forEach((src, k) => { G[k] = { src, place: p.name, date: notes[k] || note0 }; });
+    if (list[0]) tapC(ph, list[0], 0, notes[0]);
     if (list.length > 1) ph.append(el("span", "ph-dots", list.map((_, j) => `<i class="${j ? "" : "on"}"></i>`).join("")));
     $("#sPhoto").replaceWith(ph);
   }
@@ -586,8 +585,6 @@ const list = $("#chapterList");
 const filmFrame = (ph, ci, year) => { const f = el("div", "neg"); f.append(ph);
   f.insertAdjacentHTML("beforeend", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(year)} &nbsp;▸ ${frameNo}</span>`); return f; };
 let frameNo = 1;
-const SC = C.scenes || {};
-const cue = '<span class="cue-mark" aria-hidden="true"></span>';
 // one group per roll for the photo viewer
 // items that are only placeholders (no photo, no words yet) stay out of the page unless showTodo
 const realItem = m => SHOW || m.milestone || m.photo || m.scans || !isTodo(m.title) || !isTodo(m.text);
@@ -597,11 +594,11 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     <div class="yr-t"><small>Roll ${pad2(ci + 1)}</small>${txt(c.title)}</div></div>`;
   const gid = "roll" + ci, G = GROUPS[gid] = [];
   // every photo of a roll opens full-screen with its date · place and one line of its story (a placeholder until written)
-  const add = (src, m) => { const own = !isTodo(m.text) && m.text; G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title, scene: m.scene,
+  const add = (src, m) => { const own = !isTodo(m.text) && m.text; G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title,
     full: true, caption: own || "占位文案：这张照片的故事，之后写在这里。", capPH: !own }); return G.length - 1; };
   const tapPhoto = (box, src, m) => { if (!src) return box; const k = add(src, m); box.dataset.vg = gid; box.dataset.vi = k;
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
-    if (m.scene && SC[m.scene]) box.insertAdjacentHTML("beforeend", cue); return box; };
+    return box; };
   const capHTML = m => { const d = txt(m.date), t = txt(m.title), x = isTodo(m.text) ? txt(m.text) : nobr(m.text);
     return (d ? `<span class="d">${d}</span>` : "") + (t ? `<span class="t">${t.split(" · ").map(w => `<span class="nw">${w}</span>`).join(" · ")}</span>` : "") + (x ? `<span class="tx">${x}</span>` : ""); };
   // every roll is a vertical strip of film (the original rolls); layout values in content.js are kept but no longer change the form
@@ -635,14 +632,14 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     cs.append(row); y.append(cs); if (caps.textContent.trim()) y.append(caps); list.append(y); return;
   }
   if (L === "feature") { const fm = c.items.find(m => m.feature && m.photo);
-    if (fm) { const S0 = SC[fm.scene] || {}; const f = el("figure", "feature");
-      const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = S0.origin || "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
+    if (fm) { const f = el("figure", "feature");
+      const ph = el("div", "ph dark", img(fm.photo, fm.title)); ph.querySelector("img").style.objectPosition = "50% 50%"; tapPhoto(ph, fm.photo, fm); G.pop(); // same photo also sits in the strip; one viewer entry is enough
       f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span>`)); y.append(f); f._m = fm; y._feature = ph; } }
   // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
   // the words sit in their own column beside it, each one level with its frame
   const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
   c.items.forEach(m => {
-    const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
+    const fr = el("div", "vfr");
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
@@ -788,7 +785,7 @@ $("#heart").addEventListener("click", e => {
   }
 });
 
-/* ---------- PHOTO VIEWER (one system for every photo; 大理 adds a scene on top) ----------
+/* ---------- PHOTO VIEWER (one system for every photo, no special ones) ----------
    Opens FLIP-style from the tapped photo (transform + opacity only). Tap or swipe down closes, swipe left/right moves through the roll. */
 const V = { el: null, g: null, i: 0, from: null, busy: false };
 function viewerDOM() {
@@ -811,7 +808,7 @@ addEventListener("resize", () => { const v = V.el; if (!v || !v.classList.contai
   Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px" }); });
 function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], box = V.el || document.documentElement;
   const vw = box.clientWidth || innerWidth, vh = box.clientHeight || innerHeight;   // the viewer's real box (not 100vw)
-  if (item.full && !(item.scene && SCN[item.scene])) return { left: 0, top: 0, width: vw, height: vh, cover: 1 };   // full-bleed: exactly the screen, cropped by object-fit
+  if (item.full) return { left: 0, top: 0, width: vw, height: vh, cover: 1 };   // full-bleed: exactly the screen, cropped by object-fit
   const k = Math.min(vw * .9 / w, vh * .7 / h);
   const fw = w * k, fh = h * k; return { left: (vw - fw) / 2, top: (vh - fh) / 2 - vh * .02, width: fw, height: fh, cover: Math.max(vw / fw, vh / fh) }; }
 function flipFrom(o, f) { const s = Math.max(o.width / f.width, o.height / f.height);
@@ -821,43 +818,33 @@ function fillViewer(item, f) { const v = V.el, im = v.querySelector(".v-img");
   v.querySelector(".v-place").textContent = item.place || ""; v.querySelector(".v-date").textContent = item.date || "";
   v.querySelector(".v-count").textContent = V.g.length > 1 ? `${V.i + 1} / ${V.g.length}` : "";
   v.querySelector(".v-cap").textContent = item.caption || "";
-  const S = item.scene && SCN[item.scene]; v.classList.remove("scene", "scene-run");
-  const full = !!item.full && !S; v.classList.toggle("full", full);
+  // a roll photo's words are said once, at the foot (date · place, then its one line)
+  const full = !!item.full; v.classList.toggle("full", full); v.classList.toggle("cap-ph", full && !!item.capPH);
   if (full) v.querySelector(".v-cap").textContent = "";
-  // a roll photo's words are said once, at the foot: with a scene (the slow zoom) they arrive after it, instead of the scene's own lines
-  const once = !!item.full && !!S; v.classList.toggle("sc-once", once); v.classList.toggle("cap-ph", (full || once) && !!item.capPH);
-  if (once) v.querySelector(".v-cap").textContent = "";
-  v.querySelector(".v-l1").textContent = (full || once) ? [item.date, item.place].filter(Boolean).join(" · ") : S ? S.lines[0] || "" : "";
-  v.querySelector(".v-l2").textContent = (full || once) ? item.caption || "" : S ? S.lines[1] || "" : "";
-  return S; }
-function runScene(S, f) { const v = V.el, im = v.querySelector(".v-img"); v.classList.add("scene");
-  if (reduced) { v.classList.add("scene-run"); return; }
-  im.style.transformOrigin = S.origin || "50% 50%";
-  requestAnimationFrame(() => { v.classList.add("scene-run"); im.style.transition = "transform 7s cubic-bezier(.35,0,.2,1)"; im.style.transform = `scale(${(f.cover * (S.zoom || 1.4)).toFixed(3)})`; }); }
+  v.querySelector(".v-l1").textContent = full ? [item.date, item.place].filter(Boolean).join(" · ") : "";
+  v.querySelector(".v-l2").textContent = full ? item.caption || "" : ""; }
 function openViewer(gid, i, box) {
   const g = GROUPS[gid]; if (!g || !g[i] || V.busy) return; const v = viewerDOM(), im = v.querySelector(".v-img");
-  V.g = g; V.i = +i; V.from = box; V.gid = gid; const item = g[V.i], f = fitRect(item), S = fillViewer(item, f);
+  V.g = g; V.i = +i; V.from = box; V.gid = gid; const item = g[V.i], f = fitRect(item); fillViewer(item, f);
   const o = (box.querySelector("img") || box).getBoundingClientRect();
   im.style.transition = "none"; im.style.transform = reduced ? "none" : flipFrom(o, f); im.style.opacity = reduced ? "1" : ".4";
   v.classList.add("open"); document.body.style.overflow = "hidden"; V.lastFocus = document.activeElement;
   requestAnimationFrame(() => requestAnimationFrame(() => { im.style.transition = "transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s"; im.style.transform = "none"; im.style.opacity = "1"; v.classList.add("in", "full-in");
     v.focus({ preventScroll: true }); }));
-  if (S) setTimeout(() => { if (V.g === g && V.i === +i && v.classList.contains("open")) runScene(S, f); }, reduced ? 0 : 650);
 }
 function step(d) { if (!V.g || V.g.length < 2) return; const v = V.el, im = v.querySelector(".v-img");
   V.i = (V.i + d + V.g.length) % V.g.length; const item = V.g[V.i], f = fitRect(item);
   im.style.transition = "opacity .2s, transform .2s"; im.style.opacity = "0"; im.style.transform = `translateX(${-d * 40}px)`;
-  setTimeout(() => { const S = fillViewer(item, f); im.style.transition = "none"; im.style.transform = `translateX(${d * 40}px)`;
+  setTimeout(() => { fillViewer(item, f); im.style.transition = "none"; im.style.transform = `translateX(${d * 40}px)`;
     requestAnimationFrame(() => requestAnimationFrame(() => { im.style.transition = "opacity .3s, transform .35s cubic-bezier(.2,.8,.2,1)"; im.style.opacity = "1"; im.style.transform = "none"; }));
-    V.from = document.querySelector(`[data-vg="${V.gid}"][data-vi="${V.i}"]`) || V.from;
-    if (S) setTimeout(() => runScene(S, f), 450); }, 200); }
+    V.from = document.querySelector(`[data-vg="${V.gid}"][data-vi="${V.i}"]`) || V.from; }, 200); }
 function closeViewer() { const v = V.el; if (!v || !v.classList.contains("open") || V.busy) return; V.busy = true;
   const im = v.querySelector(".v-img"), item = V.g[V.i], f = fitRect(item), box = V.from && V.from.isConnected ? (V.from.querySelector("img") || V.from) : null;
   const o = box && box.getBoundingClientRect(), onScreen = o && o.bottom > 0 && o.top < innerHeight;
-  v.classList.remove("in", "scene-run", "full-in");
+  v.classList.remove("in", "full-in");
   im.style.transition = "transform .45s cubic-bezier(.4,0,.2,1), opacity .45s";
   im.style.transform = onScreen && !reduced ? flipFrom(o, f) : "scale(.96)"; im.style.opacity = onScreen ? ".6" : "0";
-  setTimeout(() => { v.classList.remove("open", "scene"); im.removeAttribute("src"); document.body.style.overflow = ""; V.busy = false;
+  setTimeout(() => { v.classList.remove("open"); im.removeAttribute("src"); document.body.style.overflow = ""; V.busy = false;
     if (V.lastFocus && V.lastFocus.focus) V.lastFocus.focus({ preventScroll: true }); }, reduced ? 0 : 460); }
 document.addEventListener("click", e => { const b = e.target.closest("[data-vg]"); if (!b || (V.el && V.el.contains(b))) return; e.stopPropagation(); openViewer(b.dataset.vg, b.dataset.vi, b); }, true);
 document.addEventListener("keydown", e => { if (V.el && V.el.classList.contains("open")) { if (e.key === "Escape") { e.stopImmediatePropagation(); closeViewer(); } else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); return; }
