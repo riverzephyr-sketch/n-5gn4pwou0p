@@ -69,7 +69,7 @@ const dms = (v, pos, neg) => { const a = Math.abs(v), d = Math.floor(a), m = Mat
 const geo = p => p && p.lat != null ? `${dms(p.lat, "N", "S")} · ${dms(p.lon, "E", "W")}` : "";
 const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.photo] : []);
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
-if (H.print) $("#heroPrint").innerHTML = img(H.print, "", true); else $("#heroPrint").remove();
+if (H.print && !$("#heroPrint img")) $("#heroPrint").innerHTML = img(H.print, "", true); else if (!H.print) $("#heroPrint").remove();
 $("#heroVol").textContent = H.vol || "";
 
 /* ---------- the page always opens at its top (WeChat / WebKit may restore an old scroll offset on reopen) ---------- */
@@ -89,7 +89,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 4500);   // never longer than that, whatever happens
     if (!pr || !real || !ld) return end();
     scrollTo(0, 0);
-    const MIN = 1200, MAX = 3000, DEV = 1500;
+    const MIN = 1200, DEV = 1500;
     const m = (getComputedStyle(pr).transform.match(/matrix\(([^)]+)\)/) || [0, "1,0"])[1].split(",").map(Number);
     const ang = +(Math.atan2(m[1], m[0]) * 180 / Math.PI).toFixed(3);   // the hero's own tilt, read from its CSS
     pr.style.transform = "none"; const b = pr.getBoundingClientRect(); pr.style.transform = "";
@@ -103,7 +103,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     }
     const waitImg = el => !el ? 0 : el.complete ? (el.decode ? el.decode().catch(() => {}) : 0) : new Promise(r => { el.addEventListener("load", r, { once: true }); el.addEventListener("error", r, { once: true }); });
     const t0 = performance.now(); let ready = false;
-    Promise.race([Promise.all([document.fonts ? document.fonts.ready : 0, waitImg(real), waitImg($("#tag img"))]), new Promise(r => setTimeout(r, MAX))])
+    Promise.all([document.fonts ? document.fonts.ready : 0, waitImg(real), waitImg($("#tag img"))])
       .then(() => { ready = true; }, () => { ready = true; });
     if (reduced) {   // a plain crossfade: the print is already in its place, the paper lifts
       const go = () => { if (!ready || performance.now() - t0 < MIN) return setTimeout(go, 60); end(); };
@@ -112,6 +112,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     const clamp = v => Math.max(0, Math.min(1, v)), sm = (a, c, x) => { const t = clamp((x - a) / (c - a)); return t * t * (3 - 2 * t); };
     let p = 0, last = t0;
     const fly = () => { try {
+      if (ended) return;
       dev.remove(); pr.style.zIndex = 8; html.classList.add("ld-fly"); void pr.offsetWidth;
       pr.style.transform = `translate(0px,0px) rotate(${ang}deg)`;   // = its CSS rotate: the landing is the same pixels
       setTimeout(() => { ld.style.opacity = 0; html.classList.remove("ld"); }, 180);
@@ -119,7 +120,8 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
       setTimeout(end, 1150);
     } catch (e) { end(); } };
     const frame = now => { try {
-      p = Math.min(ready ? 1 : .72, p + Math.max(0, now - last) / DEV); last = now;   // holds half-developed until the page is ready
+      if (ended) return;
+      p = Math.min(ready ? 1 : .72, p + Math.max(0, now - last) / DEV); last = now;   // holds half-developed until the photo itself has loaded
       haze.style.opacity = (1 - sm(.02, .6, p)).toFixed(3);
       pale.style.opacity = (1 - sm(.32, 1, p)).toFixed(3);
       if (p < 1 || now - t0 < MIN) return requestAnimationFrame(frame);
@@ -142,6 +144,11 @@ tick(); setInterval(tick, 1000);
 /* ---------- MUSIC ---------- */
 const MU = C.music, mini = $("#mini");
 let audio = $("#song");
+const WX = /MicroMessenger/i.test(navigator.userAgent || "");
+audio.setAttribute("playsinline", "");
+audio.setAttribute("webkit-playsinline", "true");
+audio.preload = "auto";
+if (MU.src) audio.src = MU.src;
 let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
@@ -164,6 +171,7 @@ function fadeTo(v, dur, done) { clearInterval(fadeT); fadeEl(audio, gain, v, dur
 // one gain per <audio>, all on one context (created inside a tap)
 const GAINS = new Map();
 function graph(a) {
+  if (WX) return null;   // WeChat goes silent once the element is pulled into Web Audio
   if (!ctx && location.protocol.startsWith("http") && (window.AudioContext || window.webkitAudioContext)) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
   if (ctx && !GAINS.has(a)) { try { const src = ctx.createMediaElementSource(a), g = ctx.createGain(); g.gain.value = 0; src.connect(g).connect(ctx.destination); GAINS.set(a, g); } catch (e) { GAINS.set(a, null); } }
   return (ctx && GAINS.get(a)) || null;
@@ -173,12 +181,19 @@ function play() {
   if (!audio.src) audio.src = MU.src;
   gain = graph(audio);
   if (ctx && ctx.state === "suspended") ctx.resume();
-  if (!gain) audio.volume = 0;
+  const target = audio === $("#song") ? (MU.volume ?? .7) : (FM.volume ?? .7);
+  if (!gain) audio.volume = WX ? target : 0;   // a volume of 0 latches mute inside WeChat
   const p = audio.play();
   playing = true; audio.dataset.started = 1; document.body.classList.add("playing"); setMini();
-  fadeTo(audio === $("#song") ? (MU.volume ?? .7) : (FM.volume ?? .7), 2600);
+  if (!WX) fadeTo(target, 2600);
   delete audio.dataset.blocked; const me = audio;
-  if (p && p.catch) p.catch(() => { if (audio !== me) return; playing = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); setMini(); });
+  const fail = () => { if (audio !== me) return; playing = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); try { me.pause(); } catch (e) {} setMini(); };
+  if (p && p.catch) p.catch(fail);
+  const again = () => { if (audio !== me) return; me.play().then(() => { delete me.dataset.blocked; playing = true; document.body.classList.add("playing"); setMini(); }).catch(fail); };
+  if (WX && window.WeixinJSBridge && WeixinJSBridge.invoke) { try { WeixinJSBridge.invoke("getNetworkType", {}, again); } catch (e) {} }
+  else if (WX) document.addEventListener("WeixinJSBridgeReady", () => { try { WeixinJSBridge.invoke("getNetworkType", {}, again); } catch (e) {} }, { once: true });
+  const t0 = me.currentTime || 0;
+  setTimeout(() => { if (audio !== me || !playing) return; if (!me.paused && (me.currentTime > t0 + 0.02 || me.readyState >= 2)) return; fail(); }, 2200);
 }
 function pause() { playing = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
 // the ending's song: when the passcode is accepted the music always becomes Aimer「ポラリス」, whatever was on before (or nothing).
@@ -208,6 +223,11 @@ mini.addEventListener("click", toggle);
 setMini();
 // the player is visible from the first screen on
 requestAnimationFrame(() => mini.classList.add("show"));
+// a quiet line at the foot of the first screen; it leaves once the page moves
+{ const hint = el("p", "scroll-hint", `<i></i><span>下滑</span>`);
+  $("#hero").appendChild(hint);
+  const hideHint = () => { if (scrollY > 28) { hint.classList.add("gone"); removeEventListener("scroll", hideHint); } };
+  addEventListener("scroll", hideHint, { passive: true }); }
 // keep the chip off the words: if text, a photo or a button sits under its resting spot, it tucks into the edge
 { const MEDIA = /^(IMG|BUTTON|A|VIDEO|CANVAS|svg|INPUT)$/, CTRL = "button:not(#mini),a[href],input,[role=button],#envelope";
   const hero = $("#hero");
@@ -419,11 +439,7 @@ function layoutMap(z) {
   let d = `M${P[0].x} ${P[0].y}`;
   for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y); d += ` Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; }
   stringPath.setAttribute("d", d);
-  const R = focusBox || (curRegion !== "all" && regions[curRegion]); let dl = "";
-  if (R) { const inR = q => q.x >= R[0] && q.x <= R[0] + R[2] && q.y >= R[1] && q.y <= R[1] + R[3];
-    for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i]; if (!inR(a) || !inR(b)) continue; const L = Math.hypot(b.x - a.x, b.y - a.y);
-      dl += `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; } }
-  stringLocal.setAttribute("d", dl);
+  stringLocal.setAttribute("d", "");   // regional views keep the pins only; the whole route is drawn on 全图
   // the red string keeps its hairline weight on screen when the map zooms in (it used to thicken with the zoom)
   const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; stringLocal.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
   if (C.promise) { const a = P[C.promise.from - 1], b = P[C.promise.to - 1], r = 34 * z;
@@ -733,11 +749,18 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
   host.innerHTML = `<div class="vm-disc" role="img" aria-label="ポラリス" lang="ja">${print}
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
     <i class="vm-hole"></i></div>`;
-  const disc = host.firstElementChild; let seen = false;
-  const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
-  if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);
-  else seen = true;
-  new MutationObserver(set).observe($("#secret"), { attributes: true, attributeFilter: ["class"] }); document.addEventListener("visibilitychange", set); })();
+  const disc = host.firstElementChild; let seen = false, hold = 0;
+  const resetDisc = () => {
+    clearTimeout(hold); disc.classList.remove("spin");
+    disc.style.animation = "none"; void disc.offsetWidth; disc.style.animation = "";
+    const on = () => seen && $("#secret").classList.contains("open") && !document.hidden;
+    if (!on() || reduced) return;
+    hold = setTimeout(() => { if (on()) disc.classList.add("spin"); }, 1100);   // upright long enough to read ポラリス, then it turns
+  };
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { const now = e.isIntersecting; if (now === seen) return; seen = now; if (now) resetDisc(); else { clearTimeout(hold); disc.classList.remove("spin"); } }), { root: $("#secret"), threshold: .2 }).observe(host);
+  else { seen = true; resetDisc(); }
+  new MutationObserver(() => { if ($("#secret").classList.contains("open")) { if (seen) resetDisc(); } else { clearTimeout(hold); disc.classList.remove("spin"); } }).observe($("#secret"), { attributes: true, attributeFilter: ["class"] });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { clearTimeout(hold); disc.classList.remove("spin"); } else if (seen) resetDisc(); }); })();
 // above the reel: Aimer's note on 「ポラリス」, verbatim; each line is a few phrases that only decide where a narrow screen may wrap
 if (F.reelNotes && $("#reelNotes")) { let lang = "ja";
   $("#reelNotes").innerHTML = F.reelNotes.map((ln, i) => { if (!ln) return '<i class="rn-gap"></i>';
@@ -753,8 +776,9 @@ if (F.rings && $("#rings")) $("#rings").innerHTML = F.rings.map((r, i) => `<div 
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
 if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
 const W8 = F.wedding, wp = $("#weddingPola");
-if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
+if (W8 && (W8.photo || W8.label)) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
   wp.append(el("figcaption", "", [esc(W8.label), esc(W8.date), W8.status ? `<em>${esc(W8.status)}</em>` : ""].filter(Boolean).join(" · "))); }
+else if (wp) wp.remove();
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
 function unlock() {
@@ -858,8 +882,8 @@ const SP = { svgs: [] }; const spineSoon = () => {};
    Reduced motion → every moment jumps straight to its final state. */
 let mm = null;
 const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
-  document.documentElement.classList.remove("js-motion", "motion-pending"); try { tick(); } catch (e) {} };
-function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); return; } try {
+  document.documentElement.classList.remove("js-motion", "motion-pending", "tag-wait"); try { tick(); } catch (e) {} };
+function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); return; } try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
   document.documentElement.classList.add("js-motion");
   mm = gsap.matchMedia();
@@ -872,22 +896,22 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     if (!reduce && first) { MO.heroPending = true;
       const tagEl = $("#tag"), printEl = window.LOADER ? null : $("#heroPrint"); // [loader] the print arrives with the loader
       html.classList.remove("motion-pending"); gsap.set(digits, { y: 0, yPercent: 110 }); gsap.set(dates, { autoAlpha: 0, y: 12 }); // same frame: no flash
-      gsap.set(tagEl, { autoAlpha: 0, y: -34, rotation: -2.6 }); if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
+      gsap.set(tagEl, { autoAlpha: 0, y: -18, rotation: -2.2 }); if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
       MO.counting = true; $("#cDays").textContent = "0";
       const o = { v: 0 }, out = $("#cDays");
       // the tag falls a little way on its ribbon and settles (one move, no swinging); 1461 rises as it lands; the print follows
       const heroTL = gsap.timeline({ paused: true })
-        .to(tagEl, { autoAlpha: 1, duration: .35, ease: "power1.out" }, 0)
-        .to(tagEl, { y: 0, rotation: -1.4, duration: 1.0, ease: "power3.out", clearProps: "transform" }, 0)
+        .to(tagEl, { autoAlpha: 1, duration: .9, ease: "power1.out" }, 0)
+        .to(tagEl, { y: 0, rotation: -1.4, duration: 1.15, ease: "power2.out", clearProps: "transform" }, 0)
         .to(digits, { yPercent: 0, duration: .78, ease: "expo.out", stagger: .04 }, .45)
         .to(printEl || {}, { autoAlpha: 1, y: 0, duration: .9, ease: "power2.out", clearProps: "transform,opacity,visibility" }, .7)
         .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.35)
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
           onComplete: () => { MO.counting = false; tick(); } }, 1.85)
-      const go = () => heroTL.play();
+      const go = () => { html.classList.remove("tag-wait"); heroTL.play(); };
       if (window.LOADER) window.LOADER.then(go, go); // [loader] the tag falls once the print has landed
       else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
-    } else html.classList.remove("motion-pending");
+    } else html.classList.remove("motion-pending", "tag-wait");
     /* 2 · red string + pins in route order, scrubbed lightly with scroll */
     const pins = pinEls.map(e => e.g);
     if (reduce) { gsap.set(pins, { opacity: 1, y: 0 }); gsap.set(promiseEls, { opacity: 1 }); }
@@ -957,7 +981,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
 // if it hasn't arrived within 2.5s (slow network), skip the motion entirely.
 (() => { const V = (document.querySelector('script[src^="app.js"]') || {}).src || "", q = (V.split("?")[1] || "");
   const files = ["vendor/gsap.min.js", "vendor/ScrollTrigger.min.js", "vendor/DrawSVGPlugin.min.js"]; let late = false;
-  const unhide = () => document.documentElement.classList.remove("motion-pending");
+  const unhide = () => { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); };
   const giveUp = setTimeout(() => { late = true; unhide(); }, 2500);
   const next = i => { if (i === files.length) { clearTimeout(giveUp); if (!late) initMotion(); return; }
     const sc = document.createElement("script"); sc.src = files[i] + (q ? "?" + q : ""); sc.async = false;
