@@ -73,6 +73,12 @@ const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.pho
 if (H.print) $("#heroPrint").innerHTML = img(H.print, "", true); else $("#heroPrint").remove();
 $("#heroVol").textContent = H.vol || "";
 
+/* ---------- the page always opens at its top (WeChat / WebKit may restore an old scroll offset on reopen) ---------- */
+if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+  let touched = false; const mark = () => { touched = true; };
+  ["touchstart", "wheel", "keydown", "mousedown"].forEach(t => addEventListener(t, mark, { once: true, passive: true }));
+  const toTop = () => { if (!touched && !document.documentElement.classList.contains("secret-open") && scrollY > 0) scrollTo(0, 0); };
+  toTop(); addEventListener("load", toTop); addEventListener("pageshow", toTop); [300, 900, 1800].forEach(t => setTimeout(toTop, t)); }
 /* ---------- LOADER (first visit): the hero print develops on the paper, then glides into its place ---------- */
 (() => { const html = document.documentElement; if (!html.classList.contains("ld-show")) return;
   const ld = $("#ld"), pr = $("#heroPrint"), real = pr && pr.querySelector("img");

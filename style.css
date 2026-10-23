@@ -1075,3 +1075,18 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 #heroPrint .ld-dev i{position:absolute;inset:0;background:radial-gradient(120% 95% at 46% 42%,#f7efe2 0%,#efe2cc 46%,#e3cfb1 78%,#d9c19f 100%)}
 @media (min-width:900px){#heroPrint .ld-dev{left:12px;right:12px;top:12px}}
 @media (prefers-reduced-motion:reduce){#heroPrint .ld-dev{display:none}html.ld-fly #heroPrint{transition:none}html.ld-show #ld{transition:opacity .6s ease}}
+
+/* =====================================================================
+   HERO FIT (phones): the whole first screen — Vol. 04, a long run of ribbon, the tag, the print, the line —
+   fits the visible height (WeChat's short in-app viewport ~600–660px). The hero unit also follows the height,
+   so the composition scales as one and stays centred. Desktop (≥900px) untouched.
+   ===================================================================== */
+@media (max-width:899px){
+  .hero{--hfit:100vh;min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  @supports (height:100svh){.hero{--hfit:100svh;min-height:100svh}}
+  .hero{--u:min(1px, calc(100vw / 393), calc((var(--hfit) - 118px - env(safe-area-inset-bottom)) / 680))}
+  .hang{height:calc(680 * var(--u));margin-left:calc(-28px + (100vw - 393 * var(--u)) / 2)}
+  .tag{top:calc(-64 * var(--u))}
+  .hero-print{top:calc(320 * var(--u))}
+  .hero-sub{margin-left:calc((100vw - 393 * var(--u)) / 2)}
+}
