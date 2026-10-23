@@ -72,6 +72,57 @@ const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.p
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
 if (H.print) $("#heroPrint").innerHTML = img(H.print, "", true); else $("#heroPrint").remove();
 $("#heroVol").textContent = H.vol || "";
+
+/* ---------- LOADER (first visit): the hero print develops on the paper, then glides into its place ---------- */
+(() => { const html = document.documentElement; if (!html.classList.contains("ld-show")) return;
+  const ld = $("#ld"), pr = $("#heroPrint"), real = pr && pr.querySelector("img");
+  let ended = false;
+  const end = () => { if (ended) return; ended = true; clearTimeout(window.__ldKill);
+    html.classList.remove("ld", "ld-fly"); if (pr) { pr.style.transform = ""; pr.style.zIndex = ""; }
+    if (ld) ld.style.opacity = 0; setTimeout(() => { html.classList.remove("ld-show"); }, 900); window.__ldDone && window.__ldDone(); };
+  try {
+    clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 4500);   // never longer than that, whatever happens
+    if (!pr || !real || !ld) return end();
+    scrollTo(0, 0);
+    const MIN = 1200, MAX = 3000, DEV = 1500;
+    const m = (getComputedStyle(pr).transform.match(/matrix\(([^)]+)\)/) || [0, "1,0"])[1].split(",").map(Number);
+    const ang = +(Math.atan2(m[1], m[0]) * 180 / Math.PI).toFixed(3);   // the hero's own tilt, read from its CSS
+    pr.style.transform = "none"; const b = pr.getBoundingClientRect(); pr.style.transform = "";
+    const dx = innerWidth / 2 - (b.left + b.width / 2), dy = innerHeight * .47 - (b.top + b.height / 2);
+    let pale, haze, dev;
+    if (!reduced) {
+      pr.style.transform = `translate(${dx.toFixed(2)}px,${dy.toFixed(2)}px) rotate(-1.6deg)`;
+      dev = document.createElement("div"); dev.className = "ld-dev"; dev.setAttribute("aria-hidden", "true");
+      dev.innerHTML = `<img src="${real.getAttribute("src")}" alt=""><i></i>`; pr.appendChild(dev);
+      pale = dev.querySelector("img"); haze = dev.querySelector("i");
+    }
+    const waitImg = el => !el ? 0 : el.complete ? (el.decode ? el.decode().catch(() => {}) : 0) : new Promise(r => { el.addEventListener("load", r, { once: true }); el.addEventListener("error", r, { once: true }); });
+    const t0 = performance.now(); let ready = false;
+    Promise.race([Promise.all([document.fonts ? document.fonts.ready : 0, waitImg(real), waitImg($("#tag img"))]), new Promise(r => setTimeout(r, MAX))])
+      .then(() => { ready = true; }, () => { ready = true; });
+    if (reduced) {   // a plain crossfade: the print is already in its place, the paper lifts
+      const go = () => { if (!ready || performance.now() - t0 < MIN) return setTimeout(go, 60); end(); };
+      return go();
+    }
+    const clamp = v => Math.max(0, Math.min(1, v)), sm = (a, c, x) => { const t = clamp((x - a) / (c - a)); return t * t * (3 - 2 * t); };
+    let p = 0, last = t0;
+    const fly = () => { try {
+      dev.remove(); pr.style.zIndex = 8; html.classList.add("ld-fly"); void pr.offsetWidth;
+      pr.style.transform = `translate(0px,0px) rotate(${ang}deg)`;   // = its CSS rotate: the landing is the same pixels
+      setTimeout(() => { ld.style.opacity = 0; html.classList.remove("ld"); }, 180);
+      pr.addEventListener("transitionend", e => { if (e.propertyName === "transform") end(); });
+      setTimeout(end, 1150);
+    } catch (e) { end(); } };
+    const frame = now => { try {
+      p = Math.min(ready ? 1 : .72, p + Math.max(0, now - last) / DEV); last = now;   // holds half-developed until the page is ready
+      haze.style.opacity = (1 - sm(.02, .6, p)).toFixed(3);
+      pale.style.opacity = (1 - sm(.32, 1, p)).toFixed(3);
+      if (p < 1 || now - t0 < MIN) return requestAnimationFrame(frame);
+      setTimeout(fly, 260);
+    } catch (e) { end(); } };
+    requestAnimationFrame(frame);
+  } catch (e) { end(); }
+})();
 const start = new Date(C.startDate).getTime(), TARGET = 1461;
 function tick() {
   let ms = Math.max(0, Date.now() - start);
@@ -733,10 +784,10 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
   mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduce: "(prefers-reduced-motion: reduce)" }, ctx => {
     const { reduce } = ctx.conditions;
     /* 1 · hero: 1461 rises through its mask, then the dates, then the small live counter counts up, then the red line leaves the player */
-    const days = Math.floor(Math.max(0, Date.now() - start) / 864e5), first = performance.now() < 2600;
+    const days = Math.floor(Math.max(0, Date.now() - start) / 864e5), first = !!window.LOADER || performance.now() < 2600;
     const html = document.documentElement, digits = $$(".hero-num .d"), dates = $$(".hero-dates > *");
     if (!reduce && first) { MO.heroPending = true;
-      const tagEl = $("#tag"), printEl = $("#heroPrint");
+      const tagEl = $("#tag"), printEl = window.LOADER ? null : $("#heroPrint"); // [loader] the print arrives with the loader
       html.classList.remove("motion-pending"); gsap.set(digits, { y: 0, yPercent: 110 }); gsap.set(dates, { autoAlpha: 0, y: 12 }); // same frame: no flash
       gsap.set(tagEl, { autoAlpha: 0, y: -34, rotation: -2.6 }); if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
       MO.counting = true; $("#cDays").textContent = "0";
@@ -751,7 +802,8 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
           onComplete: () => { MO.counting = false; tick(); } }, 1.85)
       const go = () => heroTL.play();
-      Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
+      if (window.LOADER) window.LOADER.then(go, go); // [loader] the tag falls once the print has landed
+      else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
     } else html.classList.remove("motion-pending");
     /* 2 · red string + pins in route order, scrubbed lightly with scroll */
     const pins = pinEls.map(e => e.g);
@@ -779,7 +831,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .fromTo(".lk-jianghu .e", { autoAlpha: 0 }, { autoAlpha: 1, duration: .8, ease: "power1.out" }, 1.3);
       // rolls: the year and its roll label arrive first; then, frame by frame as they reach the screen, each photo develops
       // inside its frame (opacity + a few px) and its words follow. the film strip itself never moves. once only, no scrub, no pin.
-      $$(".yr").forEach(y => { const head = y.querySelectorAll(".yr-num, .yr-t");
+      $$(".yr").filter(y => !y.hidden).forEach(y => { const head = y.querySelectorAll(".yr-num, .yr-t");
         gsap.fromTo(head, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .8, ease: "power3.out", stagger: .08, clearProps: "transform",
           scrollTrigger: { trigger: y, start: "top 86%", once: true } });
         const frs = [...y.querySelectorAll(".vfr")], cps = [...y.querySelectorAll(".cp")];
