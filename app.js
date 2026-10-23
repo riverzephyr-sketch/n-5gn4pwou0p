@@ -232,9 +232,7 @@ const card = (o, kind) => {
 };
 const wrongC = card(HT.wrong, "wrong"), rightC = card(HT.right, "right");
 $("#hotels").append(wrongC, rightC);
-const xm = el("span", "mark strike", '<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path pathLength="1" d="M0 6 L100 4"/></svg>'); wrongC.querySelector(".key-n").append(xm); hairIO.observe(xm);
 const stamp = el("span", "stamp", esc(HT.stamp || "扣分")); wrongC.append(stamp);
-const okr = el("span", "mark okring", MARK.circle); rightC.append(okr);
 const qParts = (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
 $("#then").innerHTML = `<span class="qm o">“</span>${qParts.map((t, i) => `<span class="l l${i + 1}">${esc(t)}</span>`).join("")}<span class="qm c">”</span><span class="pen">${(HT.quoteEn || []).map(esc).join("<br>")}</span>`;
 // the quote shows as it comes into view (not hidden behind a tap)
@@ -250,12 +248,11 @@ function setScore(v) {
 function float(c, t) { const f = el("span", "minus", t); c.append(f); setTimeout(() => f.remove(), 1300); }
 wrongC.addEventListener("click", () => {
   if (navigator.vibrate) navigator.vibrate(40);
-  redraw(xm); stamp.classList.remove("go"); void stamp.offsetWidth; stamp.classList.add("go");
+  stamp.classList.remove("go"); void stamp.offsetWidth; stamp.classList.add("go");
   if (score > 0) { setScore(score - 20); float(wrongC, "−20"); }
   $("#then").classList.add("show");
 });
 rightC.addEventListener("click", () => {
-  redraw(okr);
   if (score < HT.startScore) { setScore(score + 1); float(rightC, "+1"); }
 });
 
