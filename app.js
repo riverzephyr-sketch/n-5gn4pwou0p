@@ -158,10 +158,40 @@ requestAnimationFrame(() => mini.classList.add("show"));
 /* ---------- THE DATE: 29 · 30 · 31, the 30th circled ---------- */
 { const K = C.calendar || {}, day = new Date(K.date || "2026-10-30T00:00:00+08:00");
   $("#calScript").textContent = K.script || "";
-  $("#calSince").textContent = K.since || "";
-  $("#calLine").textContent = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Shanghai" });
-  if (K.print) { const f = $("#calPrint"); f.innerHTML = img(K.print, "") + `<figcaption>${(K.printCaption || []).map((t, i) => `<span class="${i ? "c" : "d"}">${esc(t)}</span>`).join("")}</figcaption>`; }
-  else $("#calPrint").remove();
+  const cap = c => `<figcaption>${(c || []).map((t, i) => `<span class="${i ? "c" : "d"}">${esc(t)}</span>`).join("")}</figcaption>`;
+  const P = K.pages && K.pages.length ? K.pages : null;
+  if (!P) { $("#calSince").textContent = K.since || "";
+    $("#calLine").textContent = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Shanghai" });
+    if (K.print) $("#calPrint").innerHTML = img(K.print, "") + cap(K.printCaption); else $("#calPrint").remove(); }
+  else {
+    // one page per anniversary: the weekdays over 29 · 30 · 31, the year under OCT, the line and the print turn together.
+    // it turns by itself once (~2.8s a page) and rests on the last; tap the calendar or a dot to step. reduced motion: the last page, still.
+    const sec = $("#calendar"), strip = $("#calStrip"), wds = $$("#calStrip .wd"), pr = $("#calPrint"), line = $("#calLine");
+    const WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dots = el("p", "cal-dots"); dots.setAttribute("aria-label", "Anniversaries"); line.after(dots);
+    P.forEach((pg, k) => { const b = el("button", "", "<i></i>"); b.type = "button"; b.setAttribute("aria-label", pg.date.slice(0, 4)); b.onclick = e => { e.stopPropagation(); stop(); go(k); }; dots.append(b); });
+    P.forEach(pg => { if (pg.print) { const im = new Image(); im.src = pg.print; } });   // the photo is ready before its page turns
+    let cur = -1, timer = 0, swapT = 0;
+    const paint = k => { const pg = P[k], [y, m, d] = pg.date.split("-").map(Number), base = new Date(Date.UTC(y, m - 1, d));
+      wds.forEach((w, j) => { w.textContent = WD[(base.getUTCDay() + j - 1 + 7) % 7]; });
+      $("#calSince").textContent = `${y}.${pad2(m)}.${pad2(d)}`;
+      line.textContent = `${WD[base.getUTCDay()]}, October ${d}, ${y}`;
+      strip.setAttribute("aria-label", `${y}.${pad2(m)}.${pad2(d)}`);
+      pr.classList.toggle("undev", !pg.print);
+      pr.innerHTML = (pg.print ? img(pg.print, "", true) : '<div class="haze" aria-hidden="true"></div>') + cap(pg.caption);
+      [...dots.children].forEach((b, j) => b.setAttribute("aria-pressed", j === k ? "true" : "false")); };
+    const go = k => { k = (k + P.length) % P.length; if (k === cur) return; const first = cur < 0; cur = k;
+      if (first || reduced) { paint(k); return; }
+      clearTimeout(swapT); sec.classList.add("cal-out"); swapT = setTimeout(() => { paint(k); sec.classList.remove("cal-out"); }, 260); };
+    const stop = () => { clearInterval(timer); timer = 0; };
+    if (reduced) go(P.length - 1);
+    else { go(0);
+      if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; io.disconnect();
+          timer = setInterval(() => { if (cur >= P.length - 1) return stop(); go(cur + 1); if (cur >= P.length - 1) stop(); }, 2800); }), { threshold: .45 });
+        io.observe($(".cal-beat")); }
+      else go(P.length - 1); }
+    $(".cal-beat").addEventListener("click", () => { stop(); go(cur + 1); });
+  }
   hairIO.observe($(".cal-ring")); }
 
 /* ---------- THE RED LINE: built once the page is laid out (see SPINE below) ---------- */
@@ -287,7 +317,7 @@ S.forEach((s, i) => {
   const num = sv("text", { class: "num" }); num.textContent = pad2(i + 1);
   g.append(hit, sh, ring, hd, hl, num); svg.append(g);
   g.addEventListener("click", () => openPlace(i, g));
-  g.addEventListener("keydown", e => { if (e.key === "Enter") openStop(i); });
+  g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPlace(i, g); } });
   pinEls.push({ g, hit, sh, ring, hd, hl, num });
   if (!leadEls[s.city] && LBL_FAR[s.city]) { const ld = sv("path", { class: "lead", "aria-hidden": "true" }); svg.insertBefore(ld, svg.querySelector(".pin")); leadEls[s.city] = ld; }
   if (!lblEls[s.city]) { const t = sv("text", { class: "plbl" }); t.textContent = placeById[s.city].name; svg.append(t); lblEls[s.city] = t; }
@@ -337,7 +367,7 @@ function animVB(to, far) { const run = ++vbRun, from = vb.slice(), t0 = performa
   requestAnimationFrame(st); }
 applyVB(vb);
 $("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; MO.finishString && MO.finishString(); $("#zoom .on").classList.remove("on"); b.classList.add("on"); animVB(regions[b.dataset.z], b.dataset.z === "all"); });
-S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.onclick = () => openPlace(i, b); $("#chips").append(b); });
+S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => openPlace(i, b); $("#chips").append(b); });
 
 let cur = 0; const pc = $(".pola-card");
 /* ---------- TRAVEL: the map is the navigation layer of a photo story ---------- */
@@ -345,9 +375,17 @@ let cur = 0; const pc = $(".pola-card");
 const ROUTE = GROUPS.route = [], firstOf = {};
 S.forEach((s, i) => { const p = placeById[s.city], srcs = s.scans && s.scans.length ? s.scans : stopPhotos(s), notes = s.photoNotes || [];
   srcs.forEach((src, k) => { if (k === 0) firstOf[i] = ROUTE.length;
-    ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: notes[k] || s.scansDate || s.note || "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "", scene: srcs.length === 1 || k === 0 ? s.scene : null }); }); });
-function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on", j === i));
-  if (firstOf[i] != null) openViewer("route", firstOf[i], from); else openStop(i); }
+    ROUTE.push({ src, place: `${pad2(i + 1)} ${p.name}`, date: "", caption: k === 0 && !isTodo(s.memory) ? s.memory : "", scene: srcs.length === 1 || k === 0 ? s.scene : null }); }); });
+// a pin or a chip picks the place: only its card stays below the map, the others take no room. the first stop to begin with.
+// (the photos in the card still open the viewer.) a short fade on the switch, instant with reduced motion; the page never scrolls by itself.
+let curPlace = -1;
+function openPlace(i, from) { const st = $$("#story .st"); if (!st[i]) return;
+  pinEls.forEach((e, j) => e.g.classList.toggle("on", j === i));
+  $$("#chips button").forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
+  if (i === curPlace) return; const byHand = curPlace >= 0; curPlace = i;
+  st.forEach((e, j) => { e.hidden = j !== i; e.classList.remove("rt-in"); });
+  if (byHand && !reduced) { void st[i].offsetWidth; st[i].classList.add("rt-in"); }
+  if (window.ScrollTrigger) requestAnimationFrame(() => { try { ScrollTrigger.refresh(); } catch (e) {} }); }
 // the story itself: every stop of the route, in order, in three tiers.
 // each photo appears once on the site: a photo already told in the rolls (or the hero) is not repeated here,
 // that stop is set in type instead (city in caps, coordinates, date, its own words).
@@ -364,13 +402,14 @@ function openPlace(i, from) { pinEls.forEach((e, j) => e.g.classList.toggle("on"
         ph.append(f); });
       e.append(ph); }
     e.append(el("div", "st-tx", `<span class="st-no">${pad2(i + 1)}</span><h3><span>${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span>` +
-      (s.note ? `<span class="st-d">${esc(s.note)}</span>` : "") + (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
-    st.append(e); });
+      (mem ? `<p>${esc(mem)}</p>` : "") + (s.song ? `<span class="st-song">${esc(s.song)}</span>` : "")));
+    e.id = "st" + i; st.append(e); });
+  st.classList.add("tabs"); openPlace(0);
 })();
 function openStop(i) {
   cur = (i + S.length) % S.length; const s = S[cur], p = placeById[s.city];
   pinEls.forEach((e, j) => e.g.classList.toggle("on", j === cur));
-  $("#sIdx").innerHTML = `<b>${pad2(cur + 1)}</b> / ${S.length}<span>${esc(p.country)}${s.note ? " · " + esc(s.note) : ""}</span>`;
+  $("#sIdx").innerHTML = `<b>${pad2(cur + 1)}</b> / ${S.length}<span>${esc(p.country)}</span>`;
   $("#sName").textContent = p.name; $("#sEn").textContent = p.en;
   pc.classList.toggle("scan-mode", !!(s.scans && s.scans.length));
   const gid = "stop" + cur, G = GROUPS[gid] = [], note0 = s.note || "";
@@ -378,12 +417,11 @@ function openStop(i) {
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", p.name + " · 放大"); };
   if (s.scans && s.scans.length) { const sc = el("div", "scans"); sc.id = "sPhoto";
     s.scans.forEach((src, k) => { const f = el("figure", "scan", `<i class="tape top"></i>${img(src, `${p.name} · ${s.scansDate || ""}`)}`); tapC(f, src, k, s.scansDate); sc.append(f); });
-    if (s.scansDate) sc.append(el("span", "scan-date", esc(s.scansDate)));
     $("#sPhoto").replaceWith(sc);
   } else {
     const list = stopPhotos(s);
     const ph = photoBox(list[0], `photos/${s.city}.jpg`, false, p.name); ph.id = "sPhoto"; if (s.tall) ph.classList.add("tall");
-    const notes = s.photoNotes || [], nt = el("span", "ph-date", notes[0] ? esc(notes[0]) : ""); if (notes.length) ph.append(nt);
+    const notes = s.photoNotes || [], nt = null;
     list.forEach((src, k) => { G[k] = { src, place: p.name, date: notes[k] || note0, scene: list.length === 1 ? s.scene : null }; });
     if (list[0]) { tapC(ph, list[0], 0, notes[0]); if (s.scene && SCN[s.scene]) ph.insertAdjacentHTML("beforeend", '<span class="cue-mark" aria-hidden="true"></span>'); }
     if (list.length > 1) ph.append(el("span", "ph-dots", list.map((_, j) => `<i class="${j ? "" : "on"}"></i>`).join("")));
@@ -405,6 +443,22 @@ pc.addEventListener("touchstart", e => tx = [e.touches[0].clientX, e.touches[0].
 pc.addEventListener("touchend", e => { if (!tx) return; const dx = e.changedTouches[0].clientX - tx[0], dy = e.changedTouches[0].clientY - tx[1];
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) openStop(cur + (dx < 0 ? 1 : -1)); else if (dy > 80) closeSheet(); tx = null; });
 
+/* the 2022 frame: their couple outfits in the game as a stop-motion inside the film frame.
+   ~1s per outfit, hard cut (same pose in every frame, so a cut reads as the clothes changing).
+   frames load only once the roll is near the screen; it plays only while on screen; reduced motion keeps the still. */
+function wardrobeFrame(ph, WD) { ph.classList.add("wd"); const still = ph.querySelector("img"); if (!still) return; still.classList.add("on");
+  if (reduced || !WD || !WD.count || !("IntersectionObserver" in window)) return;
+  const ims = [still], ready = [true]; let cur = 0, timer = 0, visible = false, started = false;
+  // frame 1 is the still itself (the same outfit, cut sharper from the original); the rest are wardrobe m02…
+  for (let i = 1; i < WD.count; i++) { const im = new Image(); im.alt = ""; im.decoding = "async"; im.draggable = false; im.setAttribute("aria-hidden", "true"); ims.push(im); ph.append(im); }
+  const load = i => new Promise(r => { const im = ims[i]; if (ready[i]) return r(); im.onload = () => { ready[i] = true; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(r); }; im.onerror = r; im.src = `${WD.dir}/m${pad2(i + 1)}.webp`; });
+  const next = () => { for (let k = 1; k < ims.length; k++) { const j = (cur + k) % ims.length; if (ready[j]) { ims[cur].classList.remove("on"); cur = j; ims[cur].classList.add("on"); return; } } };
+  const play = () => { clearInterval(timer); if (visible && !document.hidden) timer = setInterval(next, 1000); };
+  const start = () => { if (started) return; started = true; let i = 1; const go = () => { if (i < ims.length) load(i++).then(go); }; go(); };
+  new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) start(); }), { rootMargin: "600px 0px" }).observe(ph);
+  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; play(); }), { threshold: .4 }).observe(ph);
+  document.addEventListener("visibilitychange", play); }
+
 /* ---------- CHAPTERS ---------- */
 $("#can1").textContent = H.canister[0]; $("#can2").textContent = H.canister[1];
 const strip = $("#stripH");
@@ -417,7 +471,8 @@ if ("IntersectionObserver" in window && !(window.matchMedia && matchMedia("(pref
 C.chapters.forEach((c, ci) => {
   const ph = c.items.find(m => m.photo);
   const f = el("button", "fr", `<i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
-  f.onclick = () => $("#yr" + ci).scrollIntoView({ behavior: "smooth" }); strip.append(f);
+  f.type = "button"; f.setAttribute("aria-controls", "yr" + ci); f.setAttribute("aria-pressed", ci === 0 ? "true" : "false");
+  f.onclick = () => selectRoll(ci, true); strip.append(f);
 });
 const list = $("#chapterList");
 // a negative frame: the print sits in a strip of film with sprocket holes down both sides and the edge print
@@ -481,6 +536,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
+    else if (m.wardrobe) { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); wardrobeFrame(ph, m.wardrobe); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
       const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
       const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
@@ -492,6 +548,20 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   });
   vr.append(vs, caps); y.append(vr); list.append(y);
 });
+// the strip picks the year: only that roll is on the page, the others take no room. 2022 first.
+// the switch is a short fade (opacity + a few px); reduced motion swaps at once. the page never scrolls by itself.
+const ROLLS = [...list.querySelectorAll(".yr")], FRS = [...strip.querySelectorAll(".fr")];
+let curRoll = 0; list.classList.add("tabs");
+function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) return; curRoll = i;
+  FRS.forEach((f, k) => f.setAttribute("aria-pressed", k === i ? "true" : "false"));
+  ROLLS.forEach((y, k) => { y.hidden = k !== i; y.classList.remove("rt-in"); });
+  const y = ROLLS[i]; alignCaps();
+  // anything a scroll reveal left half-done in this roll is shown as it is
+  if (byHand && window.gsap) y.querySelectorAll(".yr-num, .yr-t, .vfr .ph, .cp").forEach(e => { if (getComputedStyle(e).opacity === "0") gsap.set(e, { clearProps: "transform,opacity,visibility" }); });
+  if (byHand && !reduced) { void y.offsetWidth; y.classList.add("rt-in"); }
+  if (window.ScrollTrigger) requestAnimationFrame(() => { try { ScrollTrigger.refresh(); } catch (e) {} });
+}
+ROLLS.forEach((y, k) => { y.hidden = k !== 0; });
 // keep each caption level with its frame
 const alignCaps = () => $$(".vroll").forEach(v => { const frs = v.querySelectorAll(".vfr"), cps = v.querySelectorAll(".cp"), top0 = v.getBoundingClientRect().top;
   frs.forEach((f, i) => { const r = f.getBoundingClientRect(); if (!cps[i]) return; cps[i].style.minHeight = r.height + 8 + "px"; if (i === 0) v.querySelector(".caps").style.paddingTop = (r.top - top0) + "px"; }); });
@@ -538,15 +608,25 @@ $("#letter").innerHTML = F.letter.map((p, i) => {
   const t = txt(p); return t ? `<p class="${i === 0 && /[:：]$/.test(p) ? "salute" : ""}">${t}</p>` : "";
 }).join("");
 $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="script">${esc(F.signature)}</span>`;
-const sp = $("#secPola"); if (sp) sp.append(photoBox(F.photo, "photos/us.jpg", false, F.photoCaption)); const pcap = txt(F.photoCaption); if (pcap) sp.append(el("figcaption", "", pcap));
+// Aimer《Polaris》: one record, a ring of our photos round its rim, turning slowly (transform only).
+// no words on it but the label; it turns only while the private page is open and the record is on screen; reduced motion: still.
+(() => { const host = $("#record"), list = (F.record || []).filter(Boolean), N = list.length; if (!host || !N) return;
+  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Aimer · Polaris">
+    ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
+    <div class="vm-label"><b class="vm-song">POLARIS</b><span class="vm-title">Aimer</span><i class="vm-hole"></i></div></div>`;
+  const disc = host.firstElementChild; let seen = false;
+  const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);
+  else seen = true;
+  new MutationObserver(set).observe($("#secret"), { attributes: true, attributeFilter: ["class"] }); document.addEventListener("visibilitychange", set); })();
 const STAR = '<svg viewBox="0 0 40 40"><path d="M20 2 L22.2 17.8 L38 20 L22.2 22.2 L20 38 L17.8 22.2 L2 20 L17.8 17.8 Z"/></svg>';
 const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 4V9M20 31V36M4 20H9M31 20H36M8.7 8.7L12.2 12.2M27.8 27.8L31.3 31.3M31.3 8.7L27.8 12.2M12.2 27.8L8.7 31.3"/></svg>';
-if (F.rings) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
+if (F.rings && $("#rings")) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
 if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
 const W8 = F.wedding, wp = $("#weddingPola");
 if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
-  wp.append(el("figcaption", "", `${esc(W8.label)} · ${esc(W8.date)} · <em>${esc(W8.status)}</em>`)); }
+  wp.append(el("figcaption", "", [esc(W8.label), esc(W8.date), W8.status ? `<em>${esc(W8.status)}</em>` : ""].filter(Boolean).join(" · "))); }
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
 function unlock() {

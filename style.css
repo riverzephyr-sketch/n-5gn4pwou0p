@@ -937,3 +937,59 @@ button,[role=button],.hcard{touch-action:manipulation}
 @keyframes settle{from{opacity:0;transform:translate3d(0,22px,0)}to{opacity:1;transform:none}}
 .secret{transition:opacity .35s,visibility 0s .35s}.secret.open{transition:opacity .35s}
 @media (prefers-reduced-motion:reduce){.secret::before{display:none}.seal.lift{transform:none}}
+
+/* the rolls as a year picker: the top strip chooses one roll, the others take no room */
+.yr[hidden]{display:none !important}
+#chapterList.tabs .yr{padding-top:40px}
+.strip-h .fr{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
+.strip-h .fr[aria-pressed="false"]{opacity:.42}
+.strip-h .fr[aria-pressed="true"] span{color:rgba(236,206,164,.98)}
+.strip-h .fr[aria-pressed="true"]::after{content:"";position:absolute;left:34%;right:34%;bottom:-18px;height:1px;background:rgba(214,170,120,.8)}
+.strip-h .fr:focus-visible{outline:1px solid rgba(214,170,120,.7);outline-offset:3px}
+@keyframes rtIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.yr.rt-in{animation:rtIn .36s cubic-bezier(.2,.7,.3,1) both}
+/* the 2022 stop-motion: frames stacked in the same film frame, a hard cut between outfits */
+.chapters .ph.wd img{position:absolute;inset:0;opacity:0;pointer-events:none;-webkit-user-drag:none}
+.chapters .ph.wd img.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.yr.rt-in{animation:none}.strip-h .fr{transition:none}}
+/* the places, the same way: a pin or a chip picks one; only its card is below the map */
+.story .st[hidden]{display:none !important}
+.story.tabs{margin-top:64px}
+.story.tabs .st{margin-top:0}
+.st.rt-in{animation:rtIn .36s cubic-bezier(.2,.7,.3,1) both}
+.chips button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity .3s ease,border-color .3s ease}
+.chips button[aria-pressed="false"]{opacity:.55}
+.chips button[aria-pressed="true"]{border-bottom-color:currentColor}
+@media (prefers-reduced-motion:reduce){.st.rt-in{animation:none}.chips button{transition:none}}
+/* the anniversaries: one page per 10.30; the changing parts fade a few px on each turn */
+.cal-beat{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.cal-cell .wd,.cal-cell .since,.cal-line,.cal-print>*{transition:opacity .26s ease,transform .26s ease}
+.cal-out .cal-cell .wd,.cal-out .cal-cell .since,.cal-out .cal-line,.cal-out .cal-print>*{opacity:0;transform:translateY(4px)}
+.cal-dots{display:flex;justify-content:center;gap:2px;margin-top:14px}
+.cal-dots button{display:grid;place-items:center;width:24px;height:24px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.cal-dots i{display:block;width:5px;height:5px;border-radius:50%;border:1px solid rgba(90,15,23,.55);transition:background-color .3s ease}
+.cal-dots button[aria-pressed="true"] i{background:var(--wine);border-color:var(--wine)}
+/* an under-developed print: the same frame, the image still a pale warm haze (no black, nothing drawn in it) */
+.haze,.pola.undeveloped .ph{position:relative;background:radial-gradient(120% 95% at 46% 42%,#f7efe2 0%,#efe2cc 46%,#e3cfb1 78%,#d9c19f 100%)}
+.haze::after,.pola.undeveloped .ph::after{content:"";position:absolute;inset:0;pointer-events:none;background:url(assets/grain.png) 0 0/140px auto;opacity:.16;mix-blend-mode:multiply}
+.cal-print .haze{width:100%;aspect-ratio:4/5}
+@media (prefers-reduced-motion:reduce){.cal-cell .wd,.cal-cell .since,.cal-line,.cal-print>*,.cal-dots i{transition:none}}
+/* Aimer《Polaris》: a paper reel that turns like a record — cream card, 12 rounded windows round the rim,
+   small notches between them, a printed centre label and a punched hole. transform-only rotation, paused off screen. */
+.sx-polaris .vm-disc-wrap{position:relative;width:min(86vw,420px);aspect-ratio:1;margin:40px auto 0;container-type:inline-size}
+.vm-disc{position:absolute;inset:0;border-radius:50%;animation:vmSpin 52s linear infinite;animation-play-state:paused;will-change:transform;
+  background:radial-gradient(circle,rgba(255,255,255,0) 0 60%,rgba(120,80,50,.07) 99%),#efe7da url(assets/paper-cream.webp) center/160%;
+  box-shadow:inset 0 0 0 .35cqw rgba(90,60,40,.10),0 1px 2px rgba(60,35,20,.22),0 16px 30px -10px rgba(60,35,20,.42)}
+.vm-disc.spin{animation-play-state:running}
+@keyframes vmSpin{to{transform:rotate(360deg)}}
+.vm-slot{position:absolute;left:50%;top:50%;width:17cqw;height:17cqw;margin:-8.5cqw 0 0 -8.5cqw;transform:rotate(var(--a)) translateY(-36.5cqw);z-index:2}
+.vm-f{display:block;width:100%;height:100%;border-radius:2.6cqw;overflow:hidden;background:#d9cfc0;box-shadow:inset 0 0 0 1px rgba(60,35,20,.18),0 0 0 .45cqw rgba(255,255,255,.35)}
+.vm-f img{width:100%;height:100%;object-fit:cover;transform:rotate(calc(var(--a) * -1)) scale(1.42)}
+.vm-notch{position:absolute;left:50%;top:50%;width:1.5cqw;height:4.2cqw;margin:-2.1cqw 0 0 -.75cqw;border-radius:.4cqw;background:#cfc3b1;box-shadow:inset 0 1px 1.5px rgba(60,35,20,.35);transform:rotate(var(--a)) translateY(-45.5cqw);z-index:2}
+.vm-label{position:absolute;left:50%;top:50%;width:40cqw;height:40cqw;margin:-20cqw 0 0 -20cqw;border-radius:50%;z-index:3;
+  background:#f6f1e8 url(assets/paper-cream.webp) center/220%;box-shadow:inset 0 0 0 .35cqw rgba(122,31,36,.55),inset 0 0 0 .9cqw #f6f1e8,inset 0 0 0 1cqw rgba(122,31,36,.3),0 1px 2px rgba(60,35,20,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.vm-song{position:absolute;top:10.5cqw;font-family:var(--lat);font-weight:400;font-size:4.6cqw;letter-spacing:.32em;margin-right:-.32em;color:var(--wine)}
+.vm-title{position:absolute;bottom:11cqw;font-family:var(--lat);font-style:italic;font-size:3.4cqw;letter-spacing:.06em;color:var(--ink2)}
+.vm-hole{position:absolute;left:50%;top:50%;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;background:#e3d9c9;box-shadow:inset 0 1px 2px rgba(60,35,20,.45)}
+@media (prefers-reduced-motion:reduce){.vm-disc{animation:none}}

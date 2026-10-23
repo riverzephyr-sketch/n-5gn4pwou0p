@@ -1,4 +1,8 @@
 window.PHOTO_SIZES = {
+"photos/g2022.webp": [
+896,
+1120
+],
 "photos/beijing.webp": [
 788,
 1400

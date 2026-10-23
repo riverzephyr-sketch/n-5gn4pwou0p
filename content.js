@@ -103,7 +103,7 @@ window.CONTENT = {
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
     { city: "dali",      photo: "photos/dali-first-shadows.webp", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
-    { city: "hangzhou",  photo: null, scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
+    { city: "hangzhou",  photo: null, scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
     { city: "fukuoka",   photo: null, memory: "待填写" },
     { city: "wuning",    photo: null, memory: "待填写" },
@@ -124,8 +124,8 @@ window.CONTENT = {
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
-    { year: "2022", layout: "strip", title: "待填写", items: [
-      { title: "重庆", date: "2022", text: "", photo: "photos/n1.webp" },   // 第一张合照 · 奔现
+    { year: "2022", layout: "strip", title: "待填写", thumb: "photos/g2022.webp", items: [   // 2022 还没奔现：用游戏里的情侣时装
+      { title: "天涯明月刀", date: "2022", text: "", photo: "photos/g2022.webp", wardrobe: { dir: "photos/wardrobe", count: 27 } },   // 时装定格动画（约 1 秒一套，硬切）；第一帧/减少动态时用 g2022
     ]},
     { year: "2023", layout: "feature", title: "待填写", items: [
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
@@ -153,8 +153,6 @@ window.CONTENT = {
       { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" } },   // 烛光、粉玫瑰，镜子自拍
       { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp" },   // 网吧，他戴着耳机
       { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/m13.webp", crop: { pos: "50% 100%" } },   // 白色鸟居、夫妇岩，海边
-      { milestone: true, title: "第二次异地结束", date: "2025.05.01", text: "2024 年我先来了杭州，2025 年五一你也搬了过来。" },
-      { title: "杭州", date: "2025.05.20", text: "", scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"] },
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
       { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
       { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
@@ -170,6 +168,13 @@ window.CONTENT = {
     script: "save the date",
     since: "2022.10.30",
     print: "photos/n2.webp", printCaption: ["2023.10.30", "一周年 · 重庆"],
+    // 纪念日翻页：每年 10.30 一页，按顺序自动翻（约 2.8 秒一页），最后停在 2026。没有照片的一页显示「还没显影」的拍立得
+    pages: [
+      { date: "2023-10-30", print: "photos/n2.webp", caption: ["2023.10.30", "一周年 · 重庆"] },
+      { date: "2024-10-30", print: null, caption: ["2024.10.30", "两周年"] },   // TODO: 2024.10.30 的照片（发来后填 photos/xxx.webp）
+      { date: "2025-10-30", print: null, caption: ["2025.10.30", "三周年"] },   // TODO: 2025.10.30 的照片
+      { date: "2026-10-30", print: null, caption: ["2026.10.30", "第 1461 天"] },   // 这一天还没拍：一直是未显影的拍立得
+    ],
   },
 
   // 最后的信封
@@ -198,9 +203,10 @@ window.CONTENT = {
     ],
     signature: "Helios",
     photo: "photos/dali-proposal.webp",   // 隐藏页上的拍立得
-    photoCaption: "大理 · 2026.06.22",
+    photoCaption: "",   // 隐藏页上不放地点 / 日期（求婚照现在在 Polaris 唱片上）
     // 隐藏页上的「两半」：两张真实拍立得原样摆放
-    pair: { scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], caption: "杭州 · 2025.05.20" },
+    // 这两张只放在隐藏页（胶卷和地图里都不再出现）
+    pair: { scans: ["photos/hangzhou-ears.webp", "photos/hangzhou-eyes.webp"], caption: "" },
     // 《Polaris》歌词摘录（日文 + 中文）
     lyricTitle: "Aimer《Polaris》",
     lyrics: [
@@ -212,16 +218,15 @@ window.CONTENT = {
       ["そうやって生きてきた 君のためだけの", "为了这样一路走来的你"],
       ["ポラリスになりたい", "我愿成为只属于你的 北极星"],
     ],
-    rings: [
-      { name: "Helios",  is: "是我",               item: "对戒" },
-      { name: "Polaris", is: "我想成为的那颗星",   item: "钻戒" },
-    ],
     // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.webp）里抠出来的轮廓，里面填满我们的照片
     // （photos/silhouette.webp，加了新照片后运行 python3 tools/make_silhouette.py 重新生成）
     silhouette: "photos/silhouette.webp",
-    silhouetteCaption: "亚庇 · 2026.10",
+    silhouetteCaption: "",   // 剪影下不放文字
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
-    wedding: { label: "婚礼", date: "20__", status: "待解锁", photo: null },
+    wedding: { label: "婚礼", date: "", status: "待解锁", photo: null },   // 隐藏页不显示日期
+    // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
+    record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
+      "photos/m12.webp", "photos/m13.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
     closing: "I would choose you in every version of my life.",
     heartLine: "Four years down. A lifetime of little adventures to go.",
   },
