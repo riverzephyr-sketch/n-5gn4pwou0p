@@ -747,7 +747,7 @@ $("#heart").addEventListener("click", e => {
   }
 });
 
-/* ---------- PHOTO VIEWER (one system for every photo; 冰箱花 / 大理 add a scene on top) ----------
+/* ---------- PHOTO VIEWER (one system for every photo; 大理 adds a scene on top) ----------
    Opens FLIP-style from the tapped photo (transform + opacity only). Tap or swipe down closes, swipe left/right moves through the roll. */
 const V = { el: null, g: null, i: 0, from: null, busy: false };
 function viewerDOM() {
@@ -766,10 +766,11 @@ function viewerDOM() {
   v.addEventListener("click", e => { if (!("ontouchstart" in window)) closeViewer(); });
   return v;
 }
-function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], vw = innerWidth, vh = innerHeight;
-  if (item.full && !(item.scene && SCN[item.scene])) {   // full-bleed: an upright photo fills the screen; a landscape one spans the width
-    const k = w / h > 1.05 ? vw / w : Math.max(vw / w, vh / h), fw = w * k, fh = h * k;
-    return { left: (vw - fw) / 2, top: Math.min(0, (vh - fh) / 2) + (fh < vh ? (vh - fh) / 2 - vh * .08 : 0), width: fw, height: fh, cover: 1 }; }
+addEventListener("resize", () => { const v = V.el; if (!v || !v.classList.contains("open") || !V.g) return; const f = fitRect(V.g[V.i]), im = v.querySelector(".v-img");
+  Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px" }); });
+function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], box = V.el || document.documentElement;
+  const vw = box.clientWidth || innerWidth, vh = box.clientHeight || innerHeight;   // the viewer's real box (not 100vw)
+  if (item.full && !(item.scene && SCN[item.scene])) return { left: 0, top: 0, width: vw, height: vh, cover: 1 };   // full-bleed: exactly the screen, cropped by object-fit
   const k = Math.min(vw * .9 / w, vh * .7 / h);
   const fw = w * k, fh = h * k; return { left: (vw - fw) / 2, top: (vh - fh) / 2 - vh * .02, width: fw, height: fh, cover: Math.max(vw / fw, vh / fh) }; }
 function flipFrom(o, f) { const s = Math.max(o.width / f.width, o.height / f.height);
@@ -780,10 +781,13 @@ function fillViewer(item, f) { const v = V.el, im = v.querySelector(".v-img");
   v.querySelector(".v-count").textContent = V.g.length > 1 ? `${V.i + 1} / ${V.g.length}` : "";
   v.querySelector(".v-cap").textContent = item.caption || "";
   const S = item.scene && SCN[item.scene]; v.classList.remove("scene", "scene-run");
-  const full = !!item.full && !S; v.classList.toggle("full", full); v.classList.toggle("cap-ph", full && !!item.capPH);
+  const full = !!item.full && !S; v.classList.toggle("full", full);
   if (full) v.querySelector(".v-cap").textContent = "";
-  v.querySelector(".v-l1").textContent = S ? S.lines[0] || "" : full ? [item.date, item.place].filter(Boolean).join(" · ") : "";
-  v.querySelector(".v-l2").textContent = S ? S.lines[1] || "" : full ? item.caption || "" : "";
+  // a roll photo's words are said once, at the foot: with a scene (the slow zoom) they arrive after it, instead of the scene's own lines
+  const once = !!item.full && !!S; v.classList.toggle("sc-once", once); v.classList.toggle("cap-ph", (full || once) && !!item.capPH);
+  if (once) v.querySelector(".v-cap").textContent = "";
+  v.querySelector(".v-l1").textContent = (full || once) ? [item.date, item.place].filter(Boolean).join(" · ") : S ? S.lines[0] || "" : "";
+  v.querySelector(".v-l2").textContent = (full || once) ? item.caption || "" : S ? S.lines[1] || "" : "";
   return S; }
 function runScene(S, f) { const v = V.el, im = v.querySelector(".v-img"); v.classList.add("scene");
   if (reduced) { v.classList.add("scene-run"); return; }

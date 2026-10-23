@@ -431,7 +431,7 @@ img{display:block;max-width:100%}
 .sig{margin-top:10px}.sig .script{font-size:40px;line-height:1;color:var(--wine)}
 .letter-end{padding-bottom:30vh}
 
-/* ============ photo viewer (every photo; 冰箱花 / 大理 scenes on top) ============ */
+/* ============ photo viewer (every photo; 大理 scene on top) ============ */
 .viewer{position:fixed;inset:0;z-index:190;visibility:hidden;pointer-events:none}
 .viewer.open{visibility:visible;pointer-events:auto}
 .viewer:focus{outline:none}
@@ -1119,6 +1119,9 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 
 /* rolls: the full-screen photo — date · place small, one line of its story at the foot */
 .viewer.full .v-img{border:0;box-shadow:none}
+/* every slide is exactly the viewer box: no global max-width clamps it, the photo fills it (cover) */
+.viewer .v-img{max-width:none;max-height:none}
+.viewer.full .v-img{object-fit:cover;object-position:50% 50%}
 .viewer.full .v-place,.viewer.full .v-date,.viewer.full .v-cap{display:none}
 .viewer.full .v-shade{background:linear-gradient(180deg,rgba(10,6,6,.28),transparent 18%,transparent 52%,rgba(10,6,6,.8))}
 .viewer.full.full-in .v-shade{opacity:1;transition:opacity .6s .15s}
@@ -1152,3 +1155,8 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 .pair{margin-top:44px}
 .sx-polaris{margin-top:84px}
 @media (min-width:1000px){.book{margin:0}.book-t{font-size:56px}.sx-archive .book .silhouette{margin:24px 0 0}}
+
+/* a roll photo with a scene: no caption before the zoom — its date · place and its one line come once, after it */
+.viewer.sc-once .v-place,.viewer.sc-once .v-date,.viewer.sc-once .v-cap{display:none}
+.viewer.sc-once .v-l2{font-size:15px;line-height:1.8;letter-spacing:.08em;text-wrap:pretty}
+.viewer.sc-once.cap-ph .v-l2{color:rgba(236,230,220,.5);font-size:13px}
