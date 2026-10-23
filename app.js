@@ -141,34 +141,66 @@ function tick() {
 tick(); setInterval(tick, 1000);
 
 /* ---------- MUSIC ---------- */
-const MU = C.music, audio = $("#song"), mini = $("#mini");
-const songName = isTodo(MU.title) ? "Side A" : MU.title;
+const MU = C.music, mini = $("#mini");
+let audio = $("#song");
+let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
 let fresh = true;
 let playing = false, ctx = null, gain = null, fadeT = null;
 function setMini() { const t = $("#miniTxt");
-  if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`; else t.textContent = songName; mini.classList.toggle("on", playing); }
-function fadeTo(v, dur, done) {
-  clearInterval(fadeT);
-  if (gain) { const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
-  const from = audio.volume, t0 = performance.now();
-  fadeT = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / dur); audio.volume = from + (v - from) * k; if (k >= 1) { clearInterval(fadeT); done && done(); } }, 40);
+  if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`;
+  else if (!playing && audio.dataset.blocked) t.innerHTML = `<span class="mt-en">Tap to play ▸</span><span class="mt-zh">${esc(songName)}</span>`;   // the browser refused to start it: wait quietly for a tap
+  else t.textContent = songName; mini.classList.toggle("on", playing);
+  // the ending covers the page (and the chip): if its song was refused, the chip comes up over it so one tap starts it
+  mini.classList.toggle("up", !playing && audio.dataset.track === "finale" && !!audio.dataset.blocked); }
+// a fade on one element (iOS ignores element.volume, so over http the level goes through a Web Audio gain)
+function fadeEl(a, g, v, dur, done, own) {
+  if (g) { const t = ctx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
+  const from = a.volume, t0 = performance.now();
+  const id = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / dur); a.volume = from + (v - from) * k; if (k >= 1) { clearInterval(id); done && done(); } }, 40);
+  if (own) fadeT = id;
+}
+function fadeTo(v, dur, done) { clearInterval(fadeT); fadeEl(audio, gain, v, dur, done, true); }
+// one gain per <audio>, all on one context (created inside a tap)
+const GAINS = new Map();
+function graph(a) {
+  if (!ctx && location.protocol.startsWith("http") && (window.AudioContext || window.webkitAudioContext)) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
+  if (ctx && !GAINS.has(a)) { try { const src = ctx.createMediaElementSource(a), g = ctx.createGain(); g.gain.value = 0; src.connect(g).connect(ctx.destination); GAINS.set(a, g); } catch (e) { GAINS.set(a, null); } }
+  return (ctx && GAINS.get(a)) || null;
 }
 function play() {
   if (fresh) { fresh = false; mini.classList.remove("fresh"); }
   if (!audio.src) audio.src = MU.src;
-  if (!ctx && location.protocol.startsWith("http") && (window.AudioContext || window.webkitAudioContext)) {
-    try { ctx = new (window.AudioContext || window.webkitAudioContext)(); const src = ctx.createMediaElementSource(audio); gain = ctx.createGain(); gain.gain.value = 0; src.connect(gain).connect(ctx.destination); } catch (e) { ctx = null; gain = null; }
-  }
+  gain = graph(audio);
   if (ctx && ctx.state === "suspended") ctx.resume();
   if (!gain) audio.volume = 0;
   const p = audio.play();
   playing = true; audio.dataset.started = 1; document.body.classList.add("playing"); setMini();
-  fadeTo(MU.volume ?? .7, 2600);
-  if (p && p.catch) p.catch(() => { playing = false; document.body.classList.remove("playing"); setMini(); });
+  fadeTo(audio === $("#song") ? (MU.volume ?? .7) : (FM.volume ?? .7), 2600);
+  delete audio.dataset.blocked; const me = audio;
+  if (p && p.catch) p.catch(() => { if (audio !== me) return; playing = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); setMini(); });
 }
 function pause() { playing = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
+// the ending's song: when the passcode is accepted the music always becomes Aimer「ポラリス」, whatever was on before (or nothing).
+// called synchronously inside the tap that completes the code (a user gesture, so iOS / WeChat let play() through).
+const FM = (C.finale && C.finale.music) || {};
+function toFinaleSong() {
+  if (!FM.src) return false;                    // no Polaris file in audio/ yet: the music is left as it is
+  if (audio.dataset.track === "finale") { if (!playing) play(); return true; }
+  const old = audio, oldGain = gain, wasOn = playing && !old.paused;
+  // the current track fades out and stops (a second element, so the new one can start inside this same tap)
+  if (wasOn) { clearInterval(fadeT); fadeEl(old, oldGain, 0, 900, () => { old.pause(); }); } else old.pause();
+  const a = new Audio(); a.loop = true; a.preload = "auto"; a.setAttribute("playsinline", ""); a.dataset.track = "finale"; a.src = FM.src;
+  audio = a; songName = [FM.title, FM.artist].filter(Boolean).join(" · ") || "Polaris"; fresh = false; mini.classList.remove("fresh");
+  play();
+  // if WebKit still refuses, WeChat's bridge usually lets media start once it is ready; otherwise the chip quietly waits for a tap
+  const retry = () => { if (!playing && audio === a) a.play().then(() => { delete a.dataset.blocked; playing = true; document.body.classList.add("playing"); setMini(); fadeTo(FM.volume ?? .7, 2600); }).catch(() => {}); };
+  if (window.WeixinJSBridge && WeixinJSBridge.invoke) setTimeout(() => { try { WeixinJSBridge.invoke("getNetworkType", {}, retry); } catch (e) {} }, 60);
+  else document.addEventListener("WeixinJSBridgeReady", retry, { once: true });
+  mini.classList.add("show"); peek();
+  return true;
+}
 // the player rests as a small record; a tap opens it to show the song for a moment, then it folds back
 let miniT = 0; const peek = () => { mini.classList.add("open"); clearTimeout(miniT); miniT = setTimeout(() => mini.classList.remove("open"), 2600); };
 const toggle = () => { playing ? pause() : play(); peek(); };
@@ -668,7 +700,7 @@ const dots = [...dotsEl.children];
   b.onclick = () => { if (checking) return;
     if (k === "清除") code = ""; else if (k === "删除") code = code.slice(0, -1); else if (code.length < LEN) code += k;
     dots.forEach((d, j) => d.classList.toggle("f", j < code.length));
-    if (code.length === LEN) { checking = true; setTimeout(check, 200); }
+    if (code.length === LEN) { checking = true; if (code === String(F.code)) toFinaleSong(); setTimeout(check, 200); }
   };
   $("#pad").append(b);
 });

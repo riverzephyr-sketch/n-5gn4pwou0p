@@ -187,6 +187,8 @@ window.CONTENT = {
   },
 
   finale: {
+    // 结尾的歌：密码一对上就换成这首（不管之前在放什么）。把音频放进 audio/ 并在 src 填文件名即可；src 为空则不换歌
+    music: { src: "", title: "ポラリス", artist: "Aimer", volume: 0.7 },
     lockedTitle: "NEXT CHAPTER",
     code: "411223",            // 隐藏页密码（几位数字都可以，圆点个数会自动跟着变）
     seal: "4",                 // 火漆印上的字（1–2 个字符最好看）
