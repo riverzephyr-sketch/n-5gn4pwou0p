@@ -687,12 +687,12 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
       <circle class="vm-ring" r="26.2"/><circle class="vm-ring2" r="21.6"/>${nums}
       <path class="vm-tri" d="M0 -20.3L1 -18.6H-1Z"/>
       <text class="vm-arc"><textPath href="#vmArc" startOffset="50%">REEL ONE</textPath></text>
-      <text class="vm-song" y="-5.6">ÁSTIN Í SUMAR</text>
+      <text class="vm-song" x=".35" y="-5.2" lang="ja">ポラリス</text>
       <circle class="vm-ring3" r="3.4"/>
       <text class="vm-side" y="8.6">SIDE A</text>
       <text class="vm-sm" y="12.4">FOLLOW &amp; HELIOS</text>
       <text class="vm-sm" y="15.4">2022.10.30 – 2026.10.30</text></svg>`;
-  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Ástin í sumar">${print}
+  host.innerHTML = `<div class="vm-disc" role="img" aria-label="ポラリス" lang="ja">${print}
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
     <i class="vm-hole"></i></div>`;
   const disc = host.firstElementChild; let seen = false;
