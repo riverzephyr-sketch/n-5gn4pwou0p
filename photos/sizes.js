@@ -1,4 +1,12 @@
 window.PHOTO_SIZES = {
+"photos/fukuoka-torii.webp": [
+1050,
+1400
+],
+"photos/fukuoka-ship.webp": [
+1050,
+1400
+],
 "photos/g2022.webp": [
 896,
 1120

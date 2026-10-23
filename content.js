@@ -105,7 +105,7 @@ window.CONTENT = {
     { city: "dali",      photo: "photos/dali-first-shadows.webp", scene: "dali", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
     { city: "hangzhou",  photo: null, scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
-    { city: "fukuoka",   photo: null, memory: "待填写" },
+    { city: "fukuoka",   photo: "photos/fukuoka-torii.webp", memory: "待填写" },   // 白色鸟居、夫妇岩，海边（替换原 m13）
     { city: "wuning",    photo: null, memory: "待填写" },
     { city: "krabi",     photo: "photos/krabi.webp", memory: "待填写", note: "2025.10 · 十一" },
     { city: "jiaxing",   photo: null, memory: "待填写" },
@@ -149,7 +149,7 @@ window.CONTENT = {
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
       { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" } },   // 烛光、粉玫瑰，镜子自拍
       { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp" },   // 网吧，他戴着耳机
-      { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/m13.webp", crop: { pos: "50% 100%" } },   // 白色鸟居、夫妇岩，海边
+      { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/fukuoka-ship.webp" },   // 2025.04.05 船上合照，海面
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
     ]},
     { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
@@ -225,7 +225,7 @@ window.CONTENT = {
     wedding: { label: "婚礼", date: "", status: "待解锁", photo: null },   // 隐藏页不显示日期
     // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
     record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
-      "photos/m12.webp", "photos/m13.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
+      "photos/m12.webp", "photos/fukuoka-torii.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
     closing: "I would choose you in every version of my life.",
     heartLine: "Four years down. A lifetime of little adventures to go.",
   },
