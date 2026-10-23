@@ -986,7 +986,7 @@ button,[role=button],.hcard{touch-action:manipulation}
 .vm-label{position:absolute;left:50%;top:50%;width:40cqw;height:40cqw;margin:-20cqw 0 0 -20cqw;border-radius:50%;z-index:3;
   background:#f6f1e8 url(assets/paper-cream.webp) center/220%;box-shadow:inset 0 0 0 .35cqw rgba(122,31,36,.55),inset 0 0 0 .9cqw #f6f1e8,inset 0 0 0 1cqw rgba(122,31,36,.3),0 1px 2px rgba(60,35,20,.15);
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.vm-song{position:absolute;top:10.5cqw;font-family:var(--lat);font-weight:400;font-size:4.6cqw;letter-spacing:.32em;margin-right:-.32em;color:var(--wine)}
+.vm-song{position:absolute;top:10cqw;font-family:var(--lat);font-weight:400;font-style:italic;font-size:4.4cqw;letter-spacing:.04em;white-space:nowrap;color:var(--wine)}
 .vm-title{position:absolute;bottom:11cqw;font-family:var(--lat);font-style:italic;font-size:3.4cqw;letter-spacing:.06em;color:var(--ink2)}
 .vm-hole{position:absolute;left:50%;top:50%;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;background:#e3d9c9;box-shadow:inset 0 1px 2px rgba(60,35,20,.45)}
 @media (prefers-reduced-motion:reduce){.vm-disc{animation:none}}

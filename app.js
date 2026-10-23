@@ -594,9 +594,9 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
 // Aimer《Polaris》: one record, a ring of our photos round its rim, turning slowly (transform only).
 // no words on it but the label; it turns only while the private page is open and the record is on screen; reduced motion: still.
 (() => { const host = $("#record"), list = (F.record || []).filter(Boolean), N = list.length; if (!host || !N) return;
-  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Aimer · Polaris">
+  host.innerHTML = `<div class="vm-disc" role="img" aria-label="Astin í sumar">
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
-    <div class="vm-label"><b class="vm-song">POLARIS</b><span class="vm-title">Aimer</span><i class="vm-hole"></i></div></div>`;
+    <div class="vm-label"><b class="vm-song">Astin í sumar</b><i class="vm-hole"></i></div></div>`;
   const disc = host.firstElementChild; let seen = false;
   const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
   if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);
