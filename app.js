@@ -71,6 +71,13 @@ const stopPhotos = s => s.photos && s.photos.length ? s.photos : (s.photo ? [s.p
 const photoStops = C.stops.filter(s => stopPhotos(s).length && !s.tall && !s.photoNotes).map(s => ({ ...s, photo: stopPhotos(s)[0] }));
 if (H.print && !$("#heroPrint img")) $("#heroPrint").innerHTML = img(H.print, "", true); else if (!H.print) $("#heroPrint").remove();
 $("#heroVol").textContent = H.vol || "";
+/* the first screen is the visible window, not the full phone (WeChat's bars are inside 100svh) */
+function fitHero() {
+  const hero = $("#hero"); if (!hero || innerWidth >= 900) return;
+  const h = Math.round((window.visualViewport && visualViewport.height) || innerHeight);
+  if (h > 200) hero.style.setProperty("--hfit", h + "px");
+}
+fitHero(); addEventListener("resize", fitHero); if (window.visualViewport) visualViewport.addEventListener("resize", fitHero);
 
 /* ---------- the page always opens at its top (WeChat / WebKit may restore an old scroll offset on reopen) ---------- */
 if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
@@ -678,10 +685,8 @@ function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) ret
   FRS.forEach((f, k) => f.setAttribute("aria-pressed", k === i ? "true" : "false"));
   ROLLS.forEach((y, k) => { y.hidden = k !== i; y.classList.remove("rt-in"); });
   const y = ROLLS[i]; alignCaps();
-  // anything a scroll reveal left half-done in this roll is shown as it is
-  if (byHand && window.gsap) y.querySelectorAll(".yr-num, .yr-t, .vfr .ph, .cp").forEach(e => { if (getComputedStyle(e).opacity === "0") gsap.set(e, { clearProps: "transform,opacity,visibility" }); });
-  if (byHand && !reduced) { void y.offsetWidth; y.classList.add("rt-in"); }
-  if (window.ScrollTrigger) requestAnimationFrame(() => { try { ScrollTrigger.refresh(); } catch (e) {} });
+  // a hidden roll never plays its entrance again: it is simply there
+  if (window.gsap) y.querySelectorAll(".yr-num, .yr-t, .vfr .ph, .cp").forEach(e => gsap.set(e, { clearProps: "transform,opacity,visibility" }));
 }
 ROLLS.forEach((y, k) => { y.hidden = k !== 0; });
 // keep each caption level with its frame
@@ -974,7 +979,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     MO.sealReset = () => { seal.pause(0); gsap.set([shut, ...halves, letter], { clearProps: "all" }); };
     return () => { MO.counting = false; MO.finishString = null; };
   });
-  const refresh = () => { try { ScrollTrigger.refresh(); spineSoon(80); } catch (e) { motionOff(); } };
+  const refresh = () => { try { ScrollTrigger.refresh(); spineSoon(80); } catch (e) {} };
   addEventListener("load", refresh); if (document.fonts) document.fonts.ready.then(refresh);
 } catch (e) { motionOff(); } }
 // GSAP is optional: the page is complete without it. Load it after the content is on screen;
@@ -989,5 +994,4 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
   next(0); })();
 // safety net: if the counter is still running after 2.5s, show the real number
 setTimeout(() => { if (MO.counting) { MO.counting = false; tick(); } }, 8000);
-addEventListener("error", () => motionOff());
 })();

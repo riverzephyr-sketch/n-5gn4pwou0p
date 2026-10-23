@@ -1079,13 +1079,13 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
    so the composition scales as one and stays centred. Desktop (≥900px) untouched.
    ===================================================================== */
 @media (max-width:899px){
-  .hero{--hfit:100vh;min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
-  @supports (height:100svh){.hero{--hfit:100svh;min-height:100svh}}
-  .hero{--u:min(1px, calc(100vw / 393), calc((var(--hfit) - 118px - env(safe-area-inset-bottom)) / 680))}
+  .hero{--hfit:100svh;height:var(--hfit);min-height:0;padding:46px 28px calc(96px + env(safe-area-inset-bottom));overflow:hidden}
+  .hero{--u:min(1px, calc(100vw / 393), calc((var(--hfit) - 214px - env(safe-area-inset-bottom)) / 680))}
   .hang{height:calc(680 * var(--u));margin-left:calc(-28px + (100vw - 393 * var(--u)) / 2)}
   .tag{top:calc(-64 * var(--u))}
-  .hero-print{top:calc(320 * var(--u))}
-  .hero-sub{margin-left:calc((100vw - 393 * var(--u)) / 2)}
+  .hero-print{top:calc(296 * var(--u))}
+  .hero-sub{position:absolute;left:28px;right:122px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:6;margin:0;max-width:none;font-size:16px;line-height:1.45}
+  .scroll-hint{bottom:calc(16px + env(safe-area-inset-bottom))}
 }
 
 /* =====================================================================
