@@ -948,9 +948,6 @@ button,[role=button],.hcard{touch-action:manipulation}
 .strip-h .fr:focus-visible{outline:1px solid rgba(214,170,120,.7);outline-offset:3px}
 @keyframes rtIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .yr.rt-in{animation:rtIn .36s cubic-bezier(.2,.7,.3,1) both}
-/* the 2022 stop-motion: frames stacked in the same film frame, a hard cut between outfits */
-.chapters .ph.wd img{position:absolute;inset:0;opacity:0;pointer-events:none;-webkit-user-drag:none}
-.chapters .ph.wd img.on{opacity:1}
 @media (prefers-reduced-motion:reduce){.yr.rt-in{animation:none}.strip-h .fr{transition:none}}
 /* the places, the same way: a pin or a chip picks one; only its card is below the map */
 .story .st[hidden]{display:none !important}

@@ -124,9 +124,6 @@ window.CONTENT = {
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
-    { year: "2022", layout: "strip", title: "待填写", thumb: "photos/g2022.webp", items: [   // 2022 还没奔现：用游戏里的情侣时装
-      { title: "天涯明月刀", date: "2022", text: "", photo: "photos/g2022.webp", wardrobe: { dir: "photos/wardrobe", count: 27 } },   // 时装定格动画（约 1 秒一套，硬切）；第一帧/减少动态时用 g2022
-    ]},
     { year: "2023", layout: "feature", title: "待填写", items: [
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp" },
       { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp" },   // 胡同
@@ -147,13 +144,15 @@ window.CONTENT = {
       { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
       { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp" },   // 夜里自拍
     ]},
-    { year: "2025–26", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2025–26 thumbnail
+    { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp" },   // 贴脸自拍
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
       { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" } },   // 烛光、粉玫瑰，镜子自拍
       { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp" },   // 网吧，他戴着耳机
       { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/m13.webp", crop: { pos: "50% 100%" } },   // 白色鸟居、夫妇岩，海边
       { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" } },
+    ]},
+    { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
       { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" } },
       { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" } },
       { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m2.webp", crop: { pos: "50% 50%", zoom: 1, ratio: "2/1" } },   // 洱海边的午饭（同一趟求婚旅行）

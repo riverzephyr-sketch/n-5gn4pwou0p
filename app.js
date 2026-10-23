@@ -443,22 +443,6 @@ pc.addEventListener("touchstart", e => tx = [e.touches[0].clientX, e.touches[0].
 pc.addEventListener("touchend", e => { if (!tx) return; const dx = e.changedTouches[0].clientX - tx[0], dy = e.changedTouches[0].clientY - tx[1];
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) openStop(cur + (dx < 0 ? 1 : -1)); else if (dy > 80) closeSheet(); tx = null; });
 
-/* the 2022 frame: their couple outfits in the game as a stop-motion inside the film frame.
-   ~1s per outfit, hard cut (same pose in every frame, so a cut reads as the clothes changing).
-   frames load only once the roll is near the screen; it plays only while on screen; reduced motion keeps the still. */
-function wardrobeFrame(ph, WD) { ph.classList.add("wd"); const still = ph.querySelector("img"); if (!still) return; still.classList.add("on");
-  if (reduced || !WD || !WD.count || !("IntersectionObserver" in window)) return;
-  const ims = [still], ready = [true]; let cur = 0, timer = 0, visible = false, started = false;
-  // frame 1 is the still itself (the same outfit, cut sharper from the original); the rest are wardrobe m02…
-  for (let i = 1; i < WD.count; i++) { const im = new Image(); im.alt = ""; im.decoding = "async"; im.draggable = false; im.setAttribute("aria-hidden", "true"); ims.push(im); ph.append(im); }
-  const load = i => new Promise(r => { const im = ims[i]; if (ready[i]) return r(); im.onload = () => { ready[i] = true; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(r); }; im.onerror = r; im.src = `${WD.dir}/m${pad2(i + 1)}.webp`; });
-  const next = () => { for (let k = 1; k < ims.length; k++) { const j = (cur + k) % ims.length; if (ready[j]) { ims[cur].classList.remove("on"); cur = j; ims[cur].classList.add("on"); return; } } };
-  const play = () => { clearInterval(timer); if (visible && !document.hidden) timer = setInterval(next, 1000); };
-  const start = () => { if (started) return; started = true; let i = 1; const go = () => { if (i < ims.length) load(i++).then(go); }; go(); };
-  new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) start(); }), { rootMargin: "600px 0px" }).observe(ph);
-  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; play(); }), { threshold: .4 }).observe(ph);
-  document.addEventListener("visibilitychange", play); }
-
 /* ---------- CHAPTERS ---------- */
 $("#can1").textContent = H.canister[0]; $("#can2").textContent = H.canister[1];
 const strip = $("#stripH");
@@ -536,7 +520,6 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     const fr = el("div", "vfr" + (m.highlight ? " hi" : ""));
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
     else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
-    else if (m.wardrobe) { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m); wardrobeFrame(ph, m.wardrobe); fr.append(ph); }
     else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
       const r = m.crop && m.crop.ratio; if (r === "3/2") fr.classList.add("land"); else if (r && r !== "4/5") ph.style.aspectRatio = r;
       const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
@@ -548,7 +531,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   });
   vr.append(vs, caps); y.append(vr); list.append(y);
 });
-// the strip picks the year: only that roll is on the page, the others take no room. 2022 first.
+// the strip picks the year: only that roll is on the page, the others take no room. 2023 first.
 // the switch is a short fade (opacity + a few px); reduced motion swaps at once. the page never scrolls by itself.
 const ROLLS = [...list.querySelectorAll(".yr")], FRS = [...strip.querySelectorAll(".fr")];
 let curRoll = 0; list.classList.add("tabs");
