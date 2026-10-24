@@ -999,3 +999,17 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
 // safety net: if the counter is still running after 2.5s, show the real number
 setTimeout(() => { if (MO.counting) { MO.counting = false; tick(); } }, 8000);
 })();
+
+/* v59 · as the cream sheet comes up, the cover lags a few pixels behind it (native scroll, no pinning) */
+(() => {
+  const hero = document.getElementById("hero"), sheet = document.getElementById("jianghu");
+  if (!hero || !sheet || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const RANGE = 170, DRIFT = 20; let ticking = false, last = -1;
+  const set = () => { ticking = false;
+    const top = sheet.getBoundingClientRect().top, vh = innerHeight;
+    const p = Math.min(1, Math.max(0, (vh - top) / RANGE));
+    const e = p * p * (3 - 2 * p), py = +(e * DRIFT).toFixed(1);
+    if (py !== last) { last = py; hero.style.setProperty("--py", py + "px"); } };
+  const on = () => { if (!ticking) { ticking = true; requestAnimationFrame(set); } };
+  addEventListener("scroll", on, { passive: true }); addEventListener("resize", on); set();
+})();

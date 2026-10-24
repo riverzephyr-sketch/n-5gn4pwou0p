@@ -1211,3 +1211,22 @@ html{background:var(--wine2)}
 .hero.wine .scue-l b{background:var(--chalk)}
 .hero.wine .tag,.hero.wine .hero-print{filter:var(--sh-dark)}
 html.ld-show #ld{background:var(--wine2) url(assets/wine-field.webp) 0 0/460px auto repeat}
+
+/* =====================================================================
+   v59 · wine cover → cream 江湖: the next page is a sheet laid over the cover
+   ===================================================================== */
+:root{--lap:56px}
+@media (min-width:900px){
+  .hero.wine{min-height:calc(100vh + var(--lap) + 6px);padding-bottom:var(--lap)}
+  .hero.wine .hero-sub{bottom:calc(60px + var(--lap))}
+}
+@media (max-width:899px){
+  .hero.wine{min-height:calc(100vh + var(--lap) + 6px);padding-bottom:calc(70px + var(--lap) + env(safe-area-inset-bottom))}
+  @supports (height:100svh){.hero.wine{min-height:calc(100svh + var(--lap) + 6px)}}
+}
+.hero.wine .scue{bottom:var(--lap)}
+.hero.wine .hang,.hero.wine .hero-sub,.hero.wine .scue,.hero.wine #heroVol{translate:0 var(--py,0px)}
+.hero.wine + .jianghu{position:relative;z-index:3;margin-top:calc(-1 * var(--lap));box-shadow:0 -5px 18px rgba(18,4,6,.30),0 -1px 3px rgba(18,4,6,.22)}
+.hero.wine + .jianghu::before{content:"";position:absolute;left:0;right:0;top:-4px;height:5px;pointer-events:none;
+  background:var(--cream) url(assets/paper-cream.webp) 0 0/460px auto repeat;
+  -webkit-mask:url(assets/paper-edge.svg) 0 0/100% 100% no-repeat;mask:url(assets/paper-edge.svg) 0 0/100% 100% no-repeat}
