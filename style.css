@@ -1233,3 +1233,41 @@ html.reveal .hero.wine + .jianghu{z-index:1;margin-top:calc(-1 * var(--hh,100vh)
 #coverShade{position:absolute;left:0;right:0;height:26px;z-index:3;pointer-events:none;
   background:linear-gradient(rgba(18,4,6,.30),rgba(18,4,6,.10) 35%,rgba(18,4,6,0))}
 html:not(.reveal) #coverShade{display:none}
+
+/* =====================================================================
+   v61 · every dark ↔ cream seam gets the same fine torn edge as the cover:
+   the dark page is the sheet on top (2–4px fibre edge, each seam its own tear), a faint contact shade on the cream.
+   static, no layout change: the edges are 5px pseudo strips over the seam line.
+   ===================================================================== */
+/* 1 · 重庆 (cream) → four rolls (night): the night sheet's top edge */
+.hotel + .chapters::before{content:"";position:absolute;left:0;right:0;top:-4px;height:5px;z-index:2;pointer-events:none;
+  background:var(--night) url(assets/night-field.webp) 0 4px/460px auto repeat;
+  -webkit-mask:url(assets/paper-edge-c.svg) 0 0/100% 100% no-repeat;mask:url(assets/paper-edge-c.svg) 0 0/100% 100% no-repeat}
+.hotel::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;pointer-events:none;
+  background:linear-gradient(rgba(18,4,6,0),rgba(18,4,6,.07) 65%,rgba(18,4,6,.16))}
+/* 2 · four rolls (night) → map (cream): the night sheet's bottom edge, shade below like the cover */
+.chapters + .map-sec::before{content:"";position:absolute;left:0;right:0;top:-1px;height:5px;z-index:2;pointer-events:none;
+  background:var(--night) url(assets/night-field.webp) 0 0/460px auto repeat;
+  -webkit-mask:url(assets/paper-edge-d.svg) 0 0/100% 100% no-repeat;mask:url(assets/paper-edge-d.svg) 0 0/100% 100% no-repeat}
+.chapters + .map-sec::after{content:"";position:absolute;left:0;right:0;top:0;height:26px;z-index:1;pointer-events:none;
+  background:linear-gradient(rgba(18,4,6,.30),rgba(18,4,6,.10) 35%,rgba(18,4,6,0))}
+/* 3 · the date (cream) → ending (wine-black): the ending's top edge, same glow as its own top row */
+.cal::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;z-index:2;pointer-events:none;
+  background:radial-gradient(70.711% 2400px at 50% 100%,#2e0d11,#120d0c 62%,#0d0a09);
+  -webkit-mask:url(assets/paper-edge-e.svg) 0 0/100% 100% no-repeat;mask:url(assets/paper-edge-e.svg) 0 0/100% 100% no-repeat}
+.cal::before{content:"";position:absolute;left:0;right:0;bottom:1px;height:16px;pointer-events:none;
+  background:linear-gradient(rgba(18,4,6,0),rgba(18,4,6,.07) 65%,rgba(18,4,6,.16))}
+/* 0 · the cover → 江湖 when it doesn't lift (reduced motion / no script): the same torn edge, held still */
+html:not(.reveal) .hero.wine{
+  -webkit-mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 4px) no-repeat,url(assets/paper-edge-b.svg) 0 100%/100% 5px no-repeat;
+  mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 4px) no-repeat,url(assets/paper-edge-b.svg) 0 100%/100% 5px no-repeat}
+html:not(.reveal) .hero.wine{z-index:2}
+html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left:0;right:0;top:-4px;height:30px;z-index:1;pointer-events:none;
+  background:linear-gradient(rgba(18,4,6,.30),rgba(18,4,6,.10) 35%,rgba(18,4,6,0))}
+/* wide screens: the tear keeps its phone-sized fibres (tiled) instead of stretching into a smooth wave */
+@media (min-width:900px){
+  html.reveal .hero.wine,html:not(.reveal) .hero.wine{-webkit-mask-size:100% calc(100% - 4px),520px 5px;mask-size:100% calc(100% - 4px),520px 5px;-webkit-mask-repeat:no-repeat,repeat-x;mask-repeat:no-repeat,repeat-x}
+  .hotel + .chapters::before,.chapters + .map-sec::before,.cal::after{-webkit-mask-size:560px 100%;mask-size:560px 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x}
+  .chapters + .map-sec::before{-webkit-mask-position:-170px 0;mask-position:-170px 0}
+  .cal::after{-webkit-mask-position:-310px 0;mask-position:-310px 0}
+}
