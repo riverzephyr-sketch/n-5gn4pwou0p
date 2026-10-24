@@ -894,6 +894,13 @@ const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.
 function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => { document.documentElement.classList.add("tag-fade"); document.documentElement.classList.remove("tag-wait"); }; if (window.LOADER) window.LOADER.then(drop, drop); else drop(); setTimeout(scue, 1500); return; } try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
   document.documentElement.classList.add("js-motion");
+  // v60 · the wine cover slides up and away; 江湖 is held still underneath until the cover has gone (native scroll, no smoothing)
+  if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { const hero = $("#hero"), sheet = $("#jianghu");
+    if (hero && sheet) { const html = document.documentElement, shade = document.createElement("div"); shade.id = "coverShade"; shade.setAttribute("aria-hidden", "true"); document.body.append(shade);
+      const fit = () => { const hh = hero.offsetHeight; sheet.style.setProperty("--hh", hh + "px"); shade.style.top = (hero.offsetTop + hh - 2) + "px"; return hh; };
+      html.classList.add("reveal"); fit();
+      ScrollTrigger.create({ trigger: sheet, start: "top top", end: () => "+=" + hero.offsetHeight, pin: true, pinSpacing: true, refreshPriority: 10, onRefreshInit: fit });
+      ScrollTrigger.sort(); } }
   mm = gsap.matchMedia();
   const promiseEls = [promisePath, promiseLbl];
   mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduce: "(prefers-reduced-motion: reduce)" }, ctx => {
@@ -998,18 +1005,4 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
   next(0); })();
 // safety net: if the counter is still running after 2.5s, show the real number
 setTimeout(() => { if (MO.counting) { MO.counting = false; tick(); } }, 8000);
-})();
-
-/* v59 · as the cream sheet comes up, the cover lags a few pixels behind it (native scroll, no pinning) */
-(() => {
-  const hero = document.getElementById("hero"), sheet = document.getElementById("jianghu");
-  if (!hero || !sheet || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const RANGE = 170, DRIFT = 20; let ticking = false, last = -1;
-  const set = () => { ticking = false;
-    const top = sheet.getBoundingClientRect().top, vh = innerHeight;
-    const p = Math.min(1, Math.max(0, (vh - top) / RANGE));
-    const e = p * p * (3 - 2 * p), py = +(e * DRIFT).toFixed(1);
-    if (py !== last) { last = py; hero.style.setProperty("--py", py + "px"); } };
-  const on = () => { if (!ticking) { ticking = true; requestAnimationFrame(set); } };
-  addEventListener("scroll", on, { passive: true }); addEventListener("resize", on); set();
 })();

@@ -1225,8 +1225,11 @@ html.ld-show #ld{background:var(--wine2) url(assets/wine-field.webp) 0 0/460px a
   @supports (height:100svh){.hero.wine{min-height:calc(100svh + var(--lap) + 6px)}}
 }
 .hero.wine .scue{bottom:calc(var(--lap) + 6px)}
-.hero.wine .hang,.hero.wine .hero-sub,.hero.wine .scue,.hero.wine #heroVol{translate:0 var(--py,0px)}
-.hero.wine + .jianghu{position:relative;z-index:3;margin-top:calc(-1 * var(--lap));box-shadow:0 -5px 18px rgba(18,4,6,.30),0 -1px 3px rgba(18,4,6,.22)}
-.hero.wine + .jianghu::before{content:"";position:absolute;left:0;right:0;top:-4px;height:5px;pointer-events:none;
-  background:var(--cream) url(assets/paper-cream.webp) 0 0/460px auto repeat;
-  -webkit-mask:url(assets/paper-edge.svg) 0 0/100% 100% no-repeat;mask:url(assets/paper-edge.svg) 0 0/100% 100% no-repeat}
+/* v60 · the cover is lifted away: 江湖 waits underneath, held still while the wine page slides up off it */
+html.reveal .hero.wine{z-index:4;
+  -webkit-mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 4px) no-repeat,url(assets/paper-edge-b.svg) 0 100%/100% 5px no-repeat;
+  mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 4px) no-repeat,url(assets/paper-edge-b.svg) 0 100%/100% 5px no-repeat}
+html.reveal .hero.wine + .jianghu{z-index:1;margin-top:calc(-1 * var(--hh,100vh))}
+#coverShade{position:absolute;left:0;right:0;height:26px;z-index:3;pointer-events:none;
+  background:linear-gradient(rgba(18,4,6,.30),rgba(18,4,6,.10) 35%,rgba(18,4,6,0))}
+html:not(.reveal) #coverShade{display:none}
