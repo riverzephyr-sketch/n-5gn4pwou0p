@@ -938,7 +938,7 @@ button,[role=button],.hcard{touch-action:manipulation}
 .strip-h .fr{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
 .strip-h .fr[aria-pressed="false"]{opacity:.42}
 .strip-h .fr[aria-pressed="true"] span{color:rgba(236,206,164,.98)}
-.strip-h .fr[aria-pressed="true"]::after{content:"";position:absolute;left:34%;right:34%;bottom:-18px;height:1px;background:rgba(214,170,120,.8)}
+.strip-h .fr[aria-pressed="true"]::after{content:"";position:absolute;left:34%;right:34%;bottom:-14.5px;height:1px;background:rgba(214,170,120,.8)}
 .strip-h .fr:focus-visible{outline:1px solid rgba(214,170,120,.7);outline-offset:3px}
 @keyframes rtIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .yr.rt-in{animation:rtIn .36s cubic-bezier(.2,.7,.3,1) both}
@@ -1284,3 +1284,7 @@ html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left
 .vroll.idx .vstrip{grid-column:1}.vroll.idx .caps{grid-column:2}
 .yr:nth-child(even) .vroll.idx .vstrip{grid-column:2}.yr:nth-child(even) .vroll.idx .caps{grid-column:1}
 .yr:nth-child(even) .vroll.idx .cp{align-items:flex-end;text-align:right}
+.vroll.idx .cp .sl{margin-top:6px;font-family:var(--lat);font-size:10px;line-height:1;color:#927B73}
+.vroll.idx .cp .sl + .d{margin-top:7px}
+/* the cover is at least as tall as the screen really is (JS --vh), whatever 100svh says on a first load */
+html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) + 6px)}

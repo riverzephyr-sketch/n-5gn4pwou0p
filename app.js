@@ -677,7 +677,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     vs.append(fr);
     const d = txt(m.date), n = vs.querySelectorAll(".vfr").length;
     // [index] 2023 first: a small "01" over the date, the pair centred on its own frame (same grid row, see style.css)
-    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), (IDX && d ? `<span class="ix">${pad2(n)}</span>` : "") + (d ? `<span class="d">${d}</span>` : "")));   // the date only; the words are in the photo
+    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), (IDX && d ? `<span class="ix">${pad2(n)}</span><span class="sl" aria-hidden="true">/</span>` : "") + (d ? `<span class="d">${d}</span>` : "")));   // the date only; the words are in the photo
   });
   if (IDX) { vr.classList.add("idx"); vr.style.setProperty("--n", c.items.length); }
   vr.append(vs, caps); y.append(vr); list.append(y);
@@ -909,7 +909,12 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
   if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) { const hero = $("#hero"), sheet = $("#jianghu");
     if (hero && sheet) { const html = document.documentElement, shade = document.createElement("div"); shade.id = "coverShade"; shade.setAttribute("aria-hidden", "true"); document.body.append(shade);
       const fit = () => { const hh = hero.offsetHeight; sheet.style.setProperty("--hh", hh + "px"); shade.style.top = (hero.offsetTop + hh - 2) + "px"; return hh; };
-      html.classList.add("reveal"); fit();
+      // in-app browsers can report a short 100svh on a first load (toolbars): the cover is never shorter than the screen really is
+      let vh0 = 0; const setVh = () => { const v = Math.max(innerHeight, html.clientHeight); if (v > vh0 && scrollY < 40) { vh0 = v; html.style.setProperty("--vh", v + "px"); return true; } return false; };
+      setVh(); html.classList.add("reveal"); fit();
+      const recheck = () => { if (setVh()) ScrollTrigger.refresh(); };
+      addEventListener("resize", recheck); addEventListener("load", recheck); [300, 1200, 3000].forEach(t => setTimeout(recheck, t));
+      if (window.LOADER) window.LOADER.then(() => setTimeout(() => { recheck(); ScrollTrigger.refresh(); }, 950));
       ScrollTrigger.create({ trigger: sheet, start: "top top", end: () => "+=" + hero.offsetHeight, pin: true, pinSpacing: true, refreshPriority: 10, onRefreshInit: fit });
       ScrollTrigger.sort(); } }
   mm = gsap.matchMedia();
