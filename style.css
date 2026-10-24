@@ -1224,7 +1224,7 @@ html.ld-show #ld{background:var(--wine2) url(assets/wine-field.webp) 0 0/460px a
   .hero.wine{min-height:calc(100vh + var(--lap) + 6px);padding-bottom:calc(70px + var(--lap) + env(safe-area-inset-bottom))}
   @supports (height:100svh){.hero.wine{min-height:calc(100svh + var(--lap) + 6px)}}
 }
-.hero.wine .scue{bottom:var(--lap)}
+.hero.wine .scue{bottom:calc(var(--lap) + 6px)}
 .hero.wine .hang,.hero.wine .hero-sub,.hero.wine .scue,.hero.wine #heroVol{translate:0 var(--py,0px)}
 .hero.wine + .jianghu{position:relative;z-index:3;margin-top:calc(-1 * var(--lap));box-shadow:0 -5px 18px rgba(18,4,6,.30),0 -1px 3px rgba(18,4,6,.22)}
 .hero.wine + .jianghu::before{content:"";position:absolute;left:0;right:0;top:-4px;height:5px;pointer-events:none;
