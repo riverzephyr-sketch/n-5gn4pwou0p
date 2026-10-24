@@ -661,7 +661,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
       f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span>`)); y.append(f); f._m = fm; y._feature = ph; } }
   // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
   // the words sit in their own column beside it, each one level with its frame
-  const IDX = ci === 0 && CSS.supports && CSS.supports("grid-template-rows", "subgrid");
+  const IDX = CSS.supports && CSS.supports("grid-template-rows", "subgrid");
   const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
   c.items.forEach(m => {
     const fr = el("div", "vfr");

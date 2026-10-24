@@ -1281,3 +1281,6 @@ html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left
 .vroll.idx .cp .ix{font-family:var(--lat);font-size:10px;line-height:1;letter-spacing:.16em;color:#927B73;font-variant-numeric:lining-nums tabular-nums}
 .vroll.idx .cp .d{margin-top:9px;font-family:var(--lat);font-size:17px;line-height:1.1;letter-spacing:.04em;color:#E8DCCF;font-variant-numeric:lining-nums tabular-nums}
 @media (min-width:900px){.vroll.idx{column-gap:48px}}
+.vroll.idx .vstrip{grid-column:1}.vroll.idx .caps{grid-column:2}
+.yr:nth-child(even) .vroll.idx .vstrip{grid-column:2}.yr:nth-child(even) .vroll.idx .caps{grid-column:1}
+.yr:nth-child(even) .vroll.idx .cp{align-items:flex-end;text-align:right}
