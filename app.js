@@ -676,8 +676,8 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
     fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
     vs.append(fr);
     const d = txt(m.date), n = vs.querySelectorAll(".vfr").length;
-    // [index] 2023 first: a small "01 / 07" over the date, the pair centred on its own frame (same grid row, see style.css)
-    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), (IDX && d ? `<span class="ix">${pad2(n)} / ${pad2(c.items.length)}</span>` : "") + (d ? `<span class="d">${d}</span>` : "")));   // the date only; the words are in the photo
+    // [index] 2023 first: a small "01" over the date, the pair centred on its own frame (same grid row, see style.css)
+    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), (IDX && d ? `<span class="ix">${pad2(n)}</span>` : "") + (d ? `<span class="d">${d}</span>` : "")));   // the date only; the words are in the photo
   });
   if (IDX) { vr.classList.add("idx"); vr.style.setProperty("--n", c.items.length); }
   vr.append(vs, caps); y.append(vr); list.append(y);
