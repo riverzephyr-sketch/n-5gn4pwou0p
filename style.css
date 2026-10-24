@@ -1271,3 +1271,13 @@ html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left
   .chapters + .map-sec::before{-webkit-mask-position:-170px 0;mask-position:-170px 0}
   .cal::after{-webkit-mask-position:-310px 0;mask-position:-310px 0}
 }
+
+/* [index] roll dates as a photo-book index: each frame and its date share one grid row (subgrid), the date centred on its frame */
+.vroll.idx{grid-template-rows:repeat(var(--n),auto);row-gap:10px;column-gap:24px;align-items:stretch}
+.vroll.idx .vstrip{display:grid;grid-row:1 / -1;grid-template-rows:subgrid;row-gap:10px}
+.vroll.idx .vfr,.vroll.idx .vfr+.vfr{margin:0}
+.vroll.idx .caps{display:grid;grid-row:1 / -1;grid-template-rows:subgrid;row-gap:10px;padding:10px 0 !important}
+.vroll.idx .cp{min-height:0 !important;align-self:center;padding:0;gap:0;justify-content:center}
+.vroll.idx .cp .ix{font-family:var(--lat);font-size:10px;line-height:1;letter-spacing:.16em;color:#927B73;font-variant-numeric:lining-nums tabular-nums}
+.vroll.idx .cp .d{margin-top:9px;font-family:var(--lat);font-size:17px;line-height:1.1;letter-spacing:.04em;color:#E8DCCF;font-variant-numeric:lining-nums tabular-nums}
+@media (min-width:900px){.vroll.idx{column-gap:48px}}

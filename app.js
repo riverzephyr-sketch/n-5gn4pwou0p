@@ -86,10 +86,10 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     html.classList.remove("ld", "ld-fly"); if (pr) { pr.style.transform = ""; pr.style.zIndex = ""; }
     if (ld) ld.style.opacity = 0; setTimeout(() => { html.classList.remove("ld-show"); }, 900); window.__ldDone && window.__ldDone(); };
   try {
-    clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 4500);   // never longer than that, whatever happens
+    clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 9000);   // never longer than that, whatever happens
     if (!pr || !real || !ld) return end();
     scrollTo(0, 0);
-    const MIN = 1200, MAX = 3000, DEV = 1500;
+    const MIN = 1200, MAX = 8000, DEV = 1500;
     const m = (getComputedStyle(pr).transform.match(/matrix\(([^)]+)\)/) || [0, "1,0"])[1].split(",").map(Number);
     const ang = +(Math.atan2(m[1], m[0]) * 180 / Math.PI).toFixed(3);   // the hero's own tilt, read from its CSS
     pr.style.transform = "none"; const b = pr.getBoundingClientRect(); pr.style.transform = "";
@@ -121,7 +121,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     } catch (e) { end(); } };
     const frame = now => { try {
       if (ended) return;
-      p = Math.min(ready ? 1 : .72, p + Math.max(0, now - last) / DEV); last = now;   // holds half-developed until the photo itself has loaded
+      p = Math.min(ready ? 1 : .3, p + Math.max(0, now - last) / DEV); last = now;   // holds half-developed until the photo itself has loaded
       haze.style.opacity = (1 - sm(.02, .6, p)).toFixed(3);
       pale.style.opacity = (1 - sm(.32, 1, p)).toFixed(3);
       if (p < 1 || now - t0 < MIN) return requestAnimationFrame(frame);
@@ -661,6 +661,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
       f.append(filmFrame(ph, ci, c.year), el("figcaption", "", `<span class="d">${esc(fm.date)}</span>`)); y.append(f); f._m = fm; y._feature = ph; } }
   // the roll as a vertical strip of film: sprocket holes down both edges, edge print, frames in order;
   // the words sit in their own column beside it, each one level with its frame
+  const IDX = ci === 0 && CSS.supports && CSS.supports("grid-template-rows", "subgrid");
   const vr = el("div", "vroll"), vs = el("div", "vstrip", `<i class="sprk a" aria-hidden="true"></i><i class="sprk b" aria-hidden="true"></i><span class="edge" aria-hidden="true">1461 · ROLL ${pad2(ci + 1)} · ${esc(c.year)}</span>`), caps = el("div", "caps");
   c.items.forEach(m => {
     const fr = el("div", "vfr");
@@ -674,8 +675,11 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
       fr.append(ph); }
     fr.insertAdjacentHTML("beforeend", `<span class="fno" aria-hidden="true">▸ ${frameNo}&nbsp;&nbsp;${frameNo}A</span>`); frameNo++;
     vs.append(fr);
-    const d = txt(m.date); caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), d ? `<span class="d">${d}</span>` : ""));   // the date only; the words are in the photo
+    const d = txt(m.date), n = vs.querySelectorAll(".vfr").length;
+    // [index] 2023 first: a small "01 / 07" over the date, the pair centred on its own frame (same grid row, see style.css)
+    caps.append(el("div", "cp" + (m.milestone ? " cp-ms" : ""), (IDX && d ? `<span class="ix">${pad2(n)} / ${pad2(c.items.length)}</span>` : "") + (d ? `<span class="d">${d}</span>` : "")));   // the date only; the words are in the photo
   });
+  if (IDX) { vr.classList.add("idx"); vr.style.setProperty("--n", c.items.length); }
   vr.append(vs, caps); y.append(vr); list.append(y);
 });
 // the strip picks the year: only that roll is on the page, the others take no room. 2023 first.
@@ -696,7 +700,7 @@ function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) ret
 }
 ROLLS.forEach((y, k) => { y.hidden = k !== 0; });
 // keep each caption level with its frame
-const alignCaps = () => $$(".vroll").forEach(v => { const frs = v.querySelectorAll(".vfr"), cps = v.querySelectorAll(".cp"), top0 = v.getBoundingClientRect().top;
+const alignCaps = () => $$(".vroll:not(.idx)").forEach(v => { const frs = v.querySelectorAll(".vfr"), cps = v.querySelectorAll(".cp"), top0 = v.getBoundingClientRect().top;
   frs.forEach((f, i) => { const r = f.getBoundingClientRect(); if (!cps[i]) return; cps[i].style.minHeight = r.height + 8 + "px"; if (i === 0) v.querySelector(".caps").style.paddingTop = (r.top - top0) + "px"; }); });
 alignCaps(); addEventListener("resize", alignCaps); addEventListener("load", alignCaps); setTimeout(alignCaps, 1200);
 if (document.fonts) document.fonts.ready.then(alignCaps);
