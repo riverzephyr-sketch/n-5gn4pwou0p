@@ -544,7 +544,7 @@ function collageHTML(list, gid, name) {
 }
 (() => { const st = $("#story"); if (!st) return;
   S.forEach((s, i) => { const p = placeById[s.city], list = cityPhotos(s.city), gid = "city-" + s.city;
-    GROUPS[gid] = list.map(ph => ({ src: ph.src, place: p.name, date: ph.date }));
+    GROUPS[gid] = list.map(ph => ({ src: ph.src, place: p.name, date: geo(ph.geo || p) }));   // map photos: the place and its coordinates, no date and no caption
     const e = el("article", "st city" + (list.length ? "" : " type-only"));
     e.innerHTML = `<header class="city-h"><h3><span class="cn">${esc(p.name)}</span><i>${esc(p.en)}</i></h3><span class="st-geo">${geo(p)}</span></header>` +
       (list.length ? `<div class="collage">${collageHTML(list, gid, p.name)}</div>` : "") +
