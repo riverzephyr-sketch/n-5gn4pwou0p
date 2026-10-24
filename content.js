@@ -135,13 +135,13 @@ window.CONTENT = {
   chapters: [
     { year: "2023", layout: "feature", title: "待填写", thumb: "photos/thumb-2023.webp", items: [   // thumb: only the FOUR ROLLS picker
       // 2023 这一卷只放这 7 张（只出现在这卷里，别处不用）；只有日期，点开显示日期和文案（dateOnly）
-      { title: "", date: "2023.01.01", text: "隔着屏幕说了90天晚安，今天你终于站在了我面前。", photo: "photos/r23-0101.webp", dateOnly: true },
-      { title: "", date: "2023.01.27", text: "从山城到京城，南方小土豆差点没扛住北京的零下温度。", photo: "photos/r23-0127.webp", dateOnly: true },
-      { title: "", date: "2023.03.26", text: "第二次飞往山城。异地的日子里，连一个普通的周末都不舍得错过。", photo: "photos/r23-0326.webp", dateOnly: true },
+      { title: "", date: "2023.01.01", text: "隔着屏幕说了90天晚安，今天总算见到活的了。", photo: "photos/r23-0101.webp", dateOnly: true },
+      { title: "", date: "2023.01.27", text: "重庆来的小土豆，差点被北京的零下冻成土豆冰棍。", photo: "photos/r23-0127.webp", dateOnly: true },
+      { title: "", date: "2023.03.26", text: "第二次飞山城。别人的周末是睡懒觉，我的周末是赶飞机。", photo: "photos/r23-0326.webp", dateOnly: true },
       { title: "", date: "2023.05.02", text: "老北京导游认真营业，某位游客眼神全程拉丝。", photo: "photos/r23-0502.webp", dateOnly: true },
-      { title: "", date: "2023.05.12", text: "病倒在大理的第一次旅行。错过了白天的风景，还好有夜晚牵着我的你。", photo: "photos/r23-0512.webp", dateOnly: true },
-      { title: "", date: "2023.10.14", text: "欢迎来到同居时代，奖励自己一只在欢乐谷卖萌的大兔子。", photo: "photos/r23-1014.webp", dateOnly: true },
-      { title: "", date: "2023.12.25", text: "不用圣诞老人送礼物了，镜子里最好的礼物已经贴着我了。", photo: "photos/r23-1225.webp", dateOnly: true },
+      { title: "", date: "2023.05.12", text: "第一次一起旅行，我在大理病成一摊，白天全躺过去了，还好晚上有人牵着。", photo: "photos/r23-0512.webp", dateOnly: true },
+      { title: "", date: "2023.10.14", text: "开始同居啦，在欢乐谷给自己捡了一只卖萌的大兔子。", photo: "photos/r23-1014.webp", dateOnly: true },
+      { title: "", date: "2023.12.25", text: "不用等圣诞老人送礼物了，镜子里贴着我的这个就是。", photo: "photos/r23-1225.webp", dateOnly: true },
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp", city: "chongqing" },   // 水母灯
