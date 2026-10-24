@@ -1164,3 +1164,7 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 @media (max-width:899px){.scue{left:calc(28px + (100vw - 393 * var(--u)) / 2)}}
 @media (min-width:900px){.scue{left:0;right:0;width:max-content;margin:0 auto}.scue-t{font-size:9.5px}.scue-l{height:30px;margin-top:10px}}
 @media (prefers-reduced-motion:reduce){.scue{transform:none;transition:opacity .6s ease}.scue-l b{animation:none;transform:none;opacity:.45}}
+
+/* the tag stays hidden until its entrance plays (or, without motion, fades in) — it never pops in over the print */
+html.tag-wait .tag{opacity:0;visibility:hidden}
+html.tag-fade .tag{transition:opacity .9s ease,visibility 0s}

@@ -89,7 +89,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 4500);   // never longer than that, whatever happens
     if (!pr || !real || !ld) return end();
     scrollTo(0, 0);
-    const MIN = 1200, DEV = 1500;
+    const MIN = 1200, MAX = 3000, DEV = 1500;
     const m = (getComputedStyle(pr).transform.match(/matrix\(([^)]+)\)/) || [0, "1,0"])[1].split(",").map(Number);
     const ang = +(Math.atan2(m[1], m[0]) * 180 / Math.PI).toFixed(3);   // the hero's own tilt, read from its CSS
     pr.style.transform = "none"; const b = pr.getBoundingClientRect(); pr.style.transform = "";
@@ -103,7 +103,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
     }
     const waitImg = el => !el ? 0 : el.complete ? (el.decode ? el.decode().catch(() => {}) : 0) : new Promise(r => { el.addEventListener("load", r, { once: true }); el.addEventListener("error", r, { once: true }); });
     const t0 = performance.now(); let ready = false;
-    Promise.all([document.fonts ? document.fonts.ready : 0, waitImg(real), waitImg($("#tag img"))])
+    Promise.race([Promise.all([document.fonts ? document.fonts.ready : 0, waitImg(real), waitImg($("#tag img"))]), new Promise(r => setTimeout(r, MAX))])
       .then(() => { ready = true; }, () => { ready = true; });
     if (reduced) {   // a plain crossfade: the print is already in its place, the paper lifts
       const go = () => { if (!ready || performance.now() - t0 < MIN) return setTimeout(go, 60); end(); };
@@ -155,7 +155,8 @@ let audio = $("#song");
 const WX = /MicroMessenger/i.test(navigator.userAgent || "");
 audio.setAttribute("playsinline", "");
 audio.setAttribute("webkit-playsinline", "true");
-audio.preload = "auto";
+audio.preload = "none";   // the song (3.8 MB) waits: the first screen loads first
+addEventListener("load", () => setTimeout(() => { if (audio.preload === "none") audio.preload = "auto"; }, 4000), { once: true });
 if (MU.src) audio.src = MU.src;
 let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
@@ -677,6 +678,11 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
 // the switch is a short fade (opacity + a few px); reduced motion swaps at once. the page never scrolls by itself.
 const ROLLS = [...list.querySelectorAll(".yr")], FRS = [...strip.querySelectorAll(".fr")];
 let curRoll = 0; list.classList.add("tabs");
+// photos in the rolls load before they are needed: the open roll as the section nears, the other years right after
+(() => { const warm = y => y && y.querySelectorAll('img[loading="lazy"]').forEach(im => { im.loading = "eager"; });
+  const go = () => { warm(ROLLS[curRoll]); let k = 0; const next = () => { if (k >= ROLLS.length) return; warm(ROLLS[k++]); setTimeout(next, 700); }; setTimeout(next, 900); };
+  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); go(); } }), { rootMargin: "1600px 0px" }); io.observe(list); }
+  else go(); })();
 function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) return; curRoll = i;
   FRS.forEach((f, k) => f.setAttribute("aria-pressed", k === i ? "true" : "false"));
   ROLLS.forEach((y, k) => { y.hidden = k !== i; y.classList.remove("rt-in"); });
@@ -884,7 +890,7 @@ const SP = { svgs: [] }; const spineSoon = () => {};
 let mm = null;
 const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
   document.documentElement.classList.remove("js-motion", "motion-pending", "tag-wait"); try { tick(); } catch (e) {} };
-function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); setTimeout(scue, 1500); return; } try {
+function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => { document.documentElement.classList.add("tag-fade"); document.documentElement.classList.remove("tag-wait"); }; if (window.LOADER) window.LOADER.then(drop, drop); else drop(); setTimeout(scue, 1500); return; } try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
   document.documentElement.classList.add("js-motion");
   mm = gsap.matchMedia();
@@ -913,7 +919,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
       const go = () => { html.classList.remove("tag-wait"); heroTL.play(); };
       if (window.LOADER) window.LOADER.then(go, go); // [loader] the tag falls once the print has landed
       else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
-    } else { html.classList.remove("motion-pending", "tag-wait"); (window.LOADER || Promise.resolve()).then(() => setTimeout(scue, 900)); }
+    } else { html.classList.add("tag-fade"); html.classList.remove("motion-pending", "tag-wait"); (window.LOADER || Promise.resolve()).then(() => setTimeout(scue, 900)); }
     /* 2 · red string + pins in route order, scrubbed lightly with scroll */
     const pins = pinEls.map(e => e.g);
     if (reduce) { gsap.set(pins, { opacity: 1, y: 0 }); gsap.set(promiseEls, { opacity: 1 }); }
@@ -983,8 +989,8 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
 // if it hasn't arrived within 2.5s (slow network), skip the motion entirely.
 (() => { const V = (document.querySelector('script[src^="app.js"]') || {}).src || "", q = (V.split("?")[1] || "");
   const files = ["vendor/gsap.min.js", "vendor/ScrollTrigger.min.js", "vendor/DrawSVGPlugin.min.js"]; let late = false;
-  const unhide = () => { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); };
-  const giveUp = setTimeout(() => { late = true; unhide(); }, 2500);
+  const unhide = () => { document.documentElement.classList.remove("motion-pending"); const drop = () => { document.documentElement.classList.add("tag-fade"); document.documentElement.classList.remove("tag-wait"); }; if (window.LOADER) window.LOADER.then(drop, drop); else drop(); };
+  const giveUp = setTimeout(() => { late = true; unhide(); }, 6000);
   const next = i => { if (i === files.length) { clearTimeout(giveUp); if (!late) initMotion(); return; }
     const sc = document.createElement("script"); sc.src = files[i] + (q ? "?" + q : ""); sc.async = false;
     sc.onload = () => next(i + 1); sc.onerror = () => { clearTimeout(giveUp); unhide(); }; document.head.appendChild(sc); };
