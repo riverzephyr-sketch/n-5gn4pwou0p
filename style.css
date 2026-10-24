@@ -1150,3 +1150,17 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 .sx-polaris{margin-top:84px}
 @media (min-width:1000px){.book{margin:0}.book-t{font-size:56px}.sx-archive .book .silhouette{margin:24px 0 0}}
 
+
+/* hero: a quiet scroll cue — one small letter-spaced word over a hairline that runs off the bottom edge.
+   Shown only after the hero intro has settled; it leaves for good after the first bit of scrolling. */
+.scue{position:absolute;z-index:6;left:28px;bottom:0;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.3,.7,.2,1)}
+.scue-t{font-family:var(--lat);font-size:8.5px;line-height:1;letter-spacing:.38em;margin-right:-.38em;text-transform:uppercase;color:var(--ink2)}
+.scue-l{position:relative;display:block;width:1px;height:calc(22px + env(safe-area-inset-bottom));margin-top:8px;overflow:hidden;background:rgba(90,15,23,.14)}
+.scue-l b{position:absolute;left:0;top:0;width:1px;height:100%;background:var(--wine);opacity:.75;transform:translateY(-100%);animation:scueRun 2.8s cubic-bezier(.55,0,.25,1) 1.2s infinite}
+@keyframes scueRun{0%{transform:translateY(-100%)}62%,100%{transform:translateY(100%)}}
+.scue.in{opacity:1;transform:none}
+.scue.gone{opacity:0;transform:none;transition:opacity .5s ease}
+.scue.gone .scue-l b{animation-play-state:paused}
+@media (max-width:899px){.scue{left:calc(28px + (100vw - 393 * var(--u)) / 2)}}
+@media (min-width:900px){.scue{left:0;right:0;width:max-content;margin:0 auto}.scue-t{font-size:9.5px}.scue-l{height:30px;margin-top:10px}}
+@media (prefers-reduced-motion:reduce){.scue{transform:none;transition:opacity .6s ease}.scue-l b{animation:none;transform:none;opacity:.45}}

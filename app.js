@@ -140,6 +140,14 @@ function tick() {
   $("#cH").textContent = pad2(h); $("#cM").textContent = pad2(m); $("#cS").textContent = pad2(Math.floor(ms / 1e3));
 }
 tick(); setInterval(tick, 1000);
+/* ---------- SCROLL CUE (hero): comes in once the intro has settled, leaves for good after a little scroll ---------- */
+const scue = (() => { const el = $("#scue"); if (!el) return () => {};
+  let done = false; const gone = () => { if (done) return; done = true; el.classList.add("gone"); removeEventListener("scroll", onS); };
+  const onS = () => { if (scrollY > 24) gone(); };
+  addEventListener("scroll", onS, { passive: true });
+  const show = () => { if (done) return; if (scrollY > 24) return gone(); el.classList.add("in"); };
+  setTimeout(show, 9000);   // safety: if the intro never runs, it still comes in
+  return show; })();
 
 /* ---------- MUSIC ---------- */
 const MU = C.music, mini = $("#mini");
@@ -876,7 +884,7 @@ const SP = { svgs: [] }; const spineSoon = () => {};
 let mm = null;
 const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
   document.documentElement.classList.remove("js-motion", "motion-pending", "tag-wait"); try { tick(); } catch (e) {} };
-function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); return; } try {
+function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); const drop = () => document.documentElement.classList.remove("tag-wait"); if (window.LOADER) window.LOADER.then(drop, drop); else drop(); setTimeout(scue, 1500); return; } try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
   document.documentElement.classList.add("js-motion");
   mm = gsap.matchMedia();
@@ -901,10 +909,11 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
         .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.35)
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
           onComplete: () => { MO.counting = false; tick(); } }, 1.85)
+        .call(() => scue(), null, 3.25)   // the counter has nearly settled: the scroll cue comes in
       const go = () => { html.classList.remove("tag-wait"); heroTL.play(); };
       if (window.LOADER) window.LOADER.then(go, go); // [loader] the tag falls once the print has landed
       else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
-    } else html.classList.remove("motion-pending", "tag-wait");
+    } else { html.classList.remove("motion-pending", "tag-wait"); (window.LOADER || Promise.resolve()).then(() => setTimeout(scue, 900)); }
     /* 2 · red string + pins in route order, scrubbed lightly with scroll */
     const pins = pinEls.map(e => e.g);
     if (reduce) { gsap.set(pins, { opacity: 1, y: 0 }); gsap.set(promiseEls, { opacity: 1 }); }
