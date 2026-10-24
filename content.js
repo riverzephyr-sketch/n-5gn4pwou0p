@@ -175,7 +175,7 @@ window.CONTENT = {
       { date: "2023-10-30", print: "photos/n2.webp", caption: ["2023.10.30", "一周年 · 重庆"] },
       { date: "2024-10-30", print: null, caption: ["2024.10.30", "两周年"] },   // TODO: 2024.10.30 的照片（发来后填 photos/xxx.webp）
       { date: "2025-10-30", print: null, caption: ["2025.10.30", "三周年"] },   // TODO: 2025.10.30 的照片
-      { date: "2026-10-30", print: null, caption: ["2026.10.30", "第 1461 天"] },   // 这一天还没拍：一直是未显影的拍立得
+      { date: "2026-10-30", print: null, caption: ["2026.10.30", "四周年"] },   // 这一天还没拍：一直是未显影的拍立得
     ],
   },
 
@@ -221,14 +221,13 @@ window.CONTENT = {
     silhouette: "photos/silhouette-film.webp",   // 胶片条版本（/workspace/anniversary/tools/make_silhouette_film.py 生成）
     silhouetteCaption: "",   // 剪影下不放文字
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
-    wedding: { label: "婚礼", date: "", status: "待解锁", photo: null },   // 隐藏页不显示日期
     // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
     record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
       "photos/m12.webp", "photos/fukuoka-torii.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
     // 唱片上方的一段文字（原文照录；每一行拆成几段，只用来决定手机上在哪里换行，拼起来就是原文）
     reelNotes: [
       [["「blanc」収録"]],
-      [["4　ポラリス"]],
+      [["ポラリス"]],
       null,
       [["みんなが旅人。"]],
       [["戻ることはできない道、"], ["前へ進めば傷つくこともある。"]],

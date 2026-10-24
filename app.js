@@ -84,7 +84,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
   let ended = false;
   const end = () => { if (ended) return; ended = true; clearTimeout(window.__ldKill);
     html.classList.remove("ld", "ld-fly"); if (pr) { pr.style.transform = ""; pr.style.zIndex = ""; }
-    if (ld) ld.style.opacity = 0; setTimeout(() => { html.classList.remove("ld-show"); }, 900); window.__ldDone && window.__ldDone(); };
+    if (ld) ld.style.opacity = 0; setTimeout(() => { html.classList.remove("ld-show"); }, 900); window.__ldReveal && window.__ldReveal(); window.__ldDone && window.__ldDone(); };
   try {
     clearTimeout(window.__ldKill); window.__ldKill = setTimeout(end, 4500);   // never longer than that, whatever happens
     if (!pr || !real || !ld) return end();
@@ -115,6 +115,7 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
       dev.remove(); pr.style.zIndex = 8; html.classList.add("ld-fly"); void pr.offsetWidth;
       pr.style.transform = `translate(0px,0px) rotate(${ang}deg)`;   // = its CSS rotate: the landing is the same pixels
       setTimeout(() => { ld.style.opacity = 0; html.classList.remove("ld"); }, 180);
+      setTimeout(() => { window.__ldReveal && window.__ldReveal(); }, 250);   // [tag] the tag starts down on its ribbon while the paper is still lifting
       pr.addEventListener("transitionend", e => { if (e.propertyName === "transform") end(); });
       setTimeout(end, 1150);
     } catch (e) { end(); } };
@@ -139,71 +140,106 @@ function tick() {
 }
 tick(); setInterval(tick, 1000);
 
+/* ---------- SCROLL CUE (hero): comes in once the intro has settled, leaves for good after a little scroll ---------- */
+const scue = (() => { const el = $("#scue"); if (!el) return () => {};
+  let done = false; const gone = () => { if (done) return; done = true; el.classList.add("gone"); removeEventListener("scroll", onS); };
+  const onS = () => { if (scrollY > 24) gone(); };
+  addEventListener("scroll", onS, { passive: true });
+  const show = () => { if (done) return; if (scrollY > 24) return gone(); el.classList.add("in"); };
+  setTimeout(show, 9000);   // safety: if the intro never runs, it still comes in
+  return show; })();
 /* ---------- MUSIC ---------- */
+// the <audio> plays straight to the speaker (no Web Audio routing: on iPhone a routed element goes silent whenever the
+// audio context is suspended or interrupted, and Web Audio obeys the ringer switch). `want` is what the listener asked
+// for; the chip follows what the element really does (its own playing / pause / waiting events), never a guess.
 const MU = C.music, mini = $("#mini");
 let audio = $("#song");
 let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
 let fresh = true;
-let playing = false, ctx = null, gain = null, fadeT = null;
-function setMini() { const t = $("#miniTxt");
+let want = false, playing = false, fadeT = null;
+const FM = (C.finale && C.finale.music) || {};
+// iOS ignores element.volume (it always reads back 1): there the song simply starts at its level, with no fade
+const VOL = (() => { try { const a = document.createElement("audio"); a.volume = .5; return Math.abs(a.volume - .5) < .01; } catch (e) { return false; } })();
+const level = a => a.dataset.track === "finale" ? (FM.volume ?? .7) : (MU.volume ?? .7);
+function setMini() { const t = $("#miniTxt"), blocked = !!audio.dataset.blocked;
   if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`;
-  else if (!playing && audio.dataset.blocked) t.innerHTML = `<span class="mt-en">Tap to play ▸</span><span class="mt-zh">${esc(songName)}</span>`;   // the browser refused to start it: wait quietly for a tap
-  else t.textContent = songName; mini.classList.toggle("on", playing);
+  else if (!want && blocked) t.innerHTML = `<span class="mt-en">Tap to play ▸</span><span class="mt-zh">${esc(songName)}</span>`;   // the browser refused to start it: wait quietly for a tap
+  else t.textContent = songName;
+  mini.classList.toggle("on", playing); mini.classList.toggle("wait", want && !playing);   // asked for, not sounding yet: the record breathes
+  document.body.classList.toggle("playing", playing);
   // the ending covers the page (and the chip): if its song was refused, the chip comes up over it so one tap starts it
-  mini.classList.toggle("up", !playing && audio.dataset.track === "finale" && !!audio.dataset.blocked); }
-// a fade on one element (iOS ignores element.volume, so over http the level goes through a Web Audio gain)
-function fadeEl(a, g, v, dur, done, own) {
-  if (g) { const t = ctx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
+  mini.classList.toggle("up", !playing && audio.dataset.track === "finale" && blocked); }
+function fadeEl(a, v, dur, done) {
+  if (!VOL) { if (done) done(); return 0; }
   const from = a.volume, t0 = performance.now();
-  const id = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / dur); a.volume = from + (v - from) * k; if (k >= 1) { clearInterval(id); done && done(); } }, 40);
-  if (own) fadeT = id;
+  const id = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / dur); a.volume = Math.max(0, Math.min(1, from + (v - from) * k)); if (k >= 1) { clearInterval(id); done && done(); } }, 40);
+  return id;
 }
-function fadeTo(v, dur, done) { clearInterval(fadeT); fadeEl(audio, gain, v, dur, done, true); }
-// one gain per <audio>, all on one context (created inside a tap)
-const GAINS = new Map();
-function graph(a) {
-  if (!ctx && location.protocol.startsWith("http") && (window.AudioContext || window.webkitAudioContext)) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
-  if (ctx && !GAINS.has(a)) { try { const src = ctx.createMediaElementSource(a), g = ctx.createGain(); g.gain.value = 0; src.connect(g).connect(ctx.destination); GAINS.set(a, g); } catch (e) { GAINS.set(a, null); } }
-  return (ctx && GAINS.get(a)) || null;
+function fadeTo(v, dur, done) { clearInterval(fadeT); fadeT = fadeEl(audio, v, dur, done); }
+const block = a => { if (a !== audio) return; want = false; playing = false; a.dataset.blocked = 1; setMini(); };
+// WeChat: when WebKit refuses, its bridge usually lets the same element start once it answers
+const viaBridge = a => { const go = () => { if (a === audio && want && a.paused) a.play().catch(() => block(a)); };
+  if (window.WeixinJSBridge && WeixinJSBridge.invoke) { try { WeixinJSBridge.invoke("getNetworkType", {}, go); return true; } catch (e) {} }
+  return false; };
+const WIRED = new WeakSet();
+function wire(a) { if (WIRED.has(a)) return; WIRED.add(a);
+  let tries = 0, stallT = 0; const cur = () => a === audio;
+  const retry = () => { if (!cur() || !want || tries >= 1) return false; tries++;   // one quiet reload from where it was, then it gives up to the chip
+    const at = a.currentTime || 0, src = a.getAttribute("src");
+    a.addEventListener("loadedmetadata", () => { try { if (at) a.currentTime = at; } catch (e) {} }, { once: true });
+    a.src = src; a.load(); a.play().catch(() => block(a)); return true; };
+  a.__retry = retry;
+  a.addEventListener("playing", () => { clearTimeout(stallT); if (!cur()) return;
+    if (!want) { a.pause(); return; }
+    playing = true; delete a.dataset.blocked; setMini(); if (VOL && a.volume < level(a)) fadeTo(level(a), 2200); });
+  // paused from outside (another app's sound, the system): the chip says so; if the page was hidden it resumes on return
+  a.addEventListener("pause", () => { clearTimeout(stallT); if (cur()) { playing = false; if (!document.hidden) want = false; setMini(); } });
+  a.addEventListener("waiting", () => { if (!cur()) return; playing = false; setMini(); clearTimeout(stallT); stallT = setTimeout(retry, 9000); });
+  a.addEventListener("stalled", () => { if (!cur() || !want || playing) return; clearTimeout(stallT); stallT = setTimeout(retry, 6000); });
+  a.addEventListener("error", () => { if (cur() && want && !retry()) block(a); });
+  a.addEventListener("ended", () => { if (cur() && !a.loop) { want = false; playing = false; setMini(); } });
 }
+// always called inside the tap itself, so iOS / WeChat count it as the listener's gesture
 function play() {
   if (fresh) { fresh = false; mini.classList.remove("fresh"); }
-  if (!audio.src) audio.src = MU.src;
-  gain = graph(audio);
-  if (ctx && ctx.state === "suspended") ctx.resume();
-  if (!gain) audio.volume = 0;
-  const p = audio.play();
-  playing = true; audio.dataset.started = 1; document.body.classList.add("playing"); setMini();
-  fadeTo(audio === $("#song") ? (MU.volume ?? .7) : (FM.volume ?? .7), 2600);
-  delete audio.dataset.blocked; const me = audio;
-  if (p && p.catch) p.catch(() => { if (audio !== me) return; playing = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); setMini(); });
+  const a = audio; wire(a);
+  if (!a.getAttribute("src")) a.src = MU.src;
+  want = true; delete a.dataset.blocked; clearInterval(fadeT);
+  if (VOL && a.paused) a.volume = 0;
+  setMini();
+  let p; try { p = a.play(); } catch (e) { p = Promise.reject(e); }
+  if (p && p.then) p.then(() => { if (a !== audio) return; if (!want) a.pause(); else { playing = !a.paused; setMini(); } },
+    err => { if (a !== audio || !want) return; if (err && err.name === "AbortError" && !a.paused) return;
+      if (err && err.name !== "NotAllowedError" && a.__retry && a.__retry()) return;   // the file failed to load: one quiet retry
+      if (!viaBridge(a)) block(a); });
 }
-function pause() { playing = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
+function pause() { want = false; setMini(); const a = audio; fadeTo(0, 600, () => { if (!want && a === audio) a.pause(); }); }
+// coming back to the page (WeChat in the background, a call, the lock screen): if it was asked for, it carries on
+document.addEventListener("visibilitychange", () => { if (!document.hidden && want && audio.paused) { const a = audio; a.play().catch(() => block(a)); } });
 // the ending's song: when the passcode is accepted the music always becomes Aimer「ポラリス」, whatever was on before (or nothing).
 // called synchronously inside the tap that completes the code (a user gesture, so iOS / WeChat let play() through).
-const FM = (C.finale && C.finale.music) || {};
 function toFinaleSong() {
   if (!FM.src) return false;                    // no Polaris file in audio/ yet: the music is left as it is
-  if (audio.dataset.track === "finale") { if (!playing) play(); return true; }
-  const old = audio, oldGain = gain, wasOn = playing && !old.paused;
+  if (audio.dataset.track === "finale") { if (!want || audio.paused) play(); return true; }
+  const old = audio, wasOn = !old.paused;
   // the current track fades out and stops (a second element, so the new one can start inside this same tap)
-  if (wasOn) { clearInterval(fadeT); fadeEl(old, oldGain, 0, 900, () => { old.pause(); }); } else old.pause();
+  clearInterval(fadeT); fadeT = null;
+  if (wasOn) fadeEl(old, 0, 900, () => old.pause()); else old.pause();
   const a = new Audio(); a.loop = true; a.preload = "auto"; a.setAttribute("playsinline", ""); a.dataset.track = "finale"; a.src = FM.src;
   audio = a; songName = [FM.title, FM.artist].filter(Boolean).join(" · ") || "Polaris"; fresh = false; mini.classList.remove("fresh");
   play();
-  // if WebKit still refuses, WeChat's bridge usually lets media start once it is ready; otherwise the chip quietly waits for a tap
-  const retry = () => { if (!playing && audio === a) a.play().then(() => { delete a.dataset.blocked; playing = true; document.body.classList.add("playing"); setMini(); fadeTo(FM.volume ?? .7, 2600); }).catch(() => {}); };
-  if (window.WeixinJSBridge && WeixinJSBridge.invoke) setTimeout(() => { try { WeixinJSBridge.invoke("getNetworkType", {}, retry); } catch (e) {} }, 60);
-  else document.addEventListener("WeixinJSBridgeReady", retry, { once: true });
   mini.classList.add("show"); peek();
   return true;
 }
 // the player rests as a small record; a tap opens it to show the song for a moment, then it folds back
 let miniT = 0; const peek = () => { mini.classList.add("open"); clearTimeout(miniT); miniT = setTimeout(() => mini.classList.remove("open"), 2600); };
-const toggle = () => { playing ? pause() : play(); peek(); };
+// a tap while it is still starting asks again (never toggles it off before a note was heard)
+const toggle = () => { want && !audio.paused ? pause() : play(); peek(); };
 mini.addEventListener("click", toggle);
+// the address is known from the start, so the first tap does not also have to discover the file
+if (MU.src && !audio.getAttribute("src")) audio.src = MU.src;
 // 江湖: the cover of the song he shared is a quiet play / pause for the music on this page
 setMini();
 // the player is visible from the first screen on
@@ -397,10 +433,8 @@ const pos = S.map(s => { const p = placeById[s.city]; const [x, y] = proj(p.lon,
 const stringPath = sv("path", { class: "string draw" });
 const promisePath = sv("path", { class: "promise" });
 const promiseLbl = sv("text", { class: "promise-lbl", "text-anchor": "middle" }); promiseLbl.textContent = C.promise ? C.promise.label : "";
-// zoomed into a region, only the legs of the route that start and end inside it are drawn (the others would cross the
-// whole frame as long straight lines to cities off the edge)
-const stringLocal = sv("path", { class: "string-local", "aria-hidden": "true" });
-svg.append(stringPath, stringLocal, promisePath, promiseLbl);
+// the route line belongs to 全图 only: zoomed into a region (a tab or a city tap) the map shows just pins and names
+svg.append(stringPath, promisePath, promiseLbl);
 const pinEls = [], lblEls = {};
 S.forEach((s, i) => {
   const g = sv("g", { class: "pin" + (s.highlight ? " hi" : ""), tabindex: 0, role: "button", "aria-label": `${pad2(i + 1)} ${placeById[s.city].name}` });
@@ -419,13 +453,8 @@ function layoutMap(z) {
   let d = `M${P[0].x} ${P[0].y}`;
   for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y); d += ` Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; }
   stringPath.setAttribute("d", d);
-  const R = focusBox || (curRegion !== "all" && regions[curRegion]); let dl = "";
-  if (R) { const inR = q => q.x >= R[0] && q.x <= R[0] + R[2] && q.y >= R[1] && q.y <= R[1] + R[3];
-    for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i]; if (!inR(a) || !inR(b)) continue; const L = Math.hypot(b.x - a.x, b.y - a.y);
-      dl += `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${(a.y + b.y) / 2 + L * .12} ${b.x} ${b.y}`; } }
-  stringLocal.setAttribute("d", dl);
   // the red string keeps its hairline weight on screen when the map zooms in (it used to thicken with the zoom)
-  const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; stringLocal.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
+  const zk = z / (fullVB[2] / M.w); stringPath.style.strokeWidth = .9 * zk; promisePath.style.strokeWidth = .7 * zk;
   if (C.promise) { const a = P[C.promise.from - 1], b = P[C.promise.to - 1], r = 34 * z;
     promisePath.setAttribute("d", `M${a.x} ${a.y} C ${a.x - r * 1.6} ${a.y + r * .9}, ${a.x - r * 1.4} ${a.y - r * 1.6}, ${b.x} ${b.y}`);
     promiseLbl.setAttribute("x", a.x - r * 1.3); promiseLbl.setAttribute("y", a.y - r * .2); promiseLbl.setAttribute("font-size", 11 * z); }
@@ -733,8 +762,21 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
   host.innerHTML = `<div class="vm-disc" role="img" aria-label="ポラリス" lang="ja">${print}
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
     <i class="vm-hole"></i></div>`;
-  const disc = host.firstElementChild; let seen = false;
-  const set = () => disc.classList.toggle("spin", !reduced && seen && $("#secret").classList.contains("open") && !document.hidden);
+  // each time it comes into view it is upright (label readable, ▲ on top), rests ~1.7s, then eases into its slow turn.
+  // off screen it stops and is set back upright there, out of sight. reduced motion: upright and still.
+  const disc = host.firstElementChild; let seen = false, ang = 0, raf = 0, last = 0, runT = 0, hold = true, t0 = 0;
+  const HOLD = 1700, RAMP = 3200, SPEED = 360 / 52 / 1000;   // deg per ms at full speed (one turn in 52s, as before)
+  const paintA = () => { disc.style.transform = `rotate(${ang.toFixed(3)}deg)`; };
+  const step = now => { raf = 0; const dt = Math.min(64, now - last); last = now;
+    const k = Math.min(1, Math.max(0, (now - t0) / RAMP)), ease = k * k * (3 - 2 * k);   // gentle start, no jump
+    ang = (ang + dt * SPEED * ease) % 360; paintA(); raf = requestAnimationFrame(step); };
+  const stop = () => { clearTimeout(runT); runT = 0; cancelAnimationFrame(raf); raf = 0; };
+  const set = () => { const on = !reduced && seen && $("#secret").classList.contains("open") && !document.hidden;
+    if (!on) { stop(); if (!seen || !$("#secret").classList.contains("open")) { ang = 0; hold = true; paintA(); } return; }   // reset only while out of sight
+    if (raf || runT) return;
+    const go = () => { runT = 0; hold = false; last = performance.now(); t0 = last; raf = requestAnimationFrame(step); };
+    if (hold) runT = setTimeout(go, HOLD); else go(); };
+  paintA();
   if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => { seen = e.isIntersecting; set(); }), { root: $("#secret"), threshold: .05 }).observe(host);
   else seen = true;
   new MutationObserver(set).observe($("#secret"), { attributes: true, attributeFilter: ["class"] }); document.addEventListener("visibilitychange", set); })();
@@ -752,9 +794,6 @@ const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M2
 if (F.rings && $("#rings")) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
 if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
-const W8 = F.wedding, wp = $("#weddingPola");
-if (W8) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
-  wp.append(el("figcaption", "", [esc(W8.label), esc(W8.date), W8.status ? `<em>${esc(W8.status)}</em>` : ""].filter(Boolean).join(" · "))); }
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
 function unlock() {
@@ -859,7 +898,7 @@ const SP = { svgs: [] }; const spineSoon = () => {};
 let mm = null;
 const motionOff = () => { try { mm && mm.revert(); } catch (e) {} mm = null; MO.counting = false; MO.sealTL = null; MO.finishString = null;
   document.documentElement.classList.remove("js-motion", "motion-pending"); try { tick(); } catch (e) {} };
-function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); return; } try {
+function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.DrawSVGPlugin)) { document.documentElement.classList.remove("motion-pending"); setTimeout(scue, 1500); return; } try {
   gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
   document.documentElement.classList.add("js-motion");
   mm = gsap.matchMedia();
@@ -872,22 +911,28 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     if (!reduce && first) { MO.heroPending = true;
       const tagEl = $("#tag"), printEl = window.LOADER ? null : $("#heroPrint"); // [loader] the print arrives with the loader
       html.classList.remove("motion-pending"); gsap.set(digits, { y: 0, yPercent: 110 }); gsap.set(dates, { autoAlpha: 0, y: 12 }); // same frame: no flash
-      gsap.set(tagEl, { autoAlpha: 0, y: -34, rotation: -2.6 }); if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
+      // [loader] the tag comes down on its ribbon from above while the loader paper lifts, always in front of the print
+      // (its final order: tag over print), so it is never seen fading in on top of the landed photo
+      const viaLd = !!window.LOADER, drop = viaLd ? -Math.min(190, Math.round(tagEl.offsetHeight * .4)) : -34;
+      gsap.set(tagEl, { autoAlpha: 0, y: drop, rotation: -2.6 }); if (viaLd) tagEl.style.zIndex = 9; if (printEl) gsap.set(printEl, { autoAlpha: 0, y: 10 });
       MO.counting = true; $("#cDays").textContent = "0";
       const o = { v: 0 }, out = $("#cDays");
       // the tag falls a little way on its ribbon and settles (one move, no swinging); 1461 rises as it lands; the print follows
+      const tagIn = () => { const z = () => { tagEl.style.zIndex = ""; }; viaLd ? window.LOADER.then(z, z) : z(); };
       const heroTL = gsap.timeline({ paused: true })
         .to(tagEl, { autoAlpha: 1, duration: .35, ease: "power1.out" }, 0)
-        .to(tagEl, { y: 0, rotation: -1.4, duration: 1.0, ease: "power3.out", clearProps: "transform" }, 0)
+        .to(tagEl, viaLd ? { y: 0, rotation: -1.4, duration: 1.45, ease: "sine.inOut", clearProps: "transform", onComplete: tagIn }
+                         : { y: 0, rotation: -1.4, duration: 1.0, ease: "power3.out", clearProps: "transform" }, 0)
         .to(digits, { yPercent: 0, duration: .78, ease: "expo.out", stagger: .04 }, .45)
         .to(printEl || {}, { autoAlpha: 1, y: 0, duration: .9, ease: "power2.out", clearProps: "transform,opacity,visibility" }, .7)
         .to(dates, { autoAlpha: 1, y: 0, duration: .6, ease: "power2.out", stagger: .08 }, 1.35)
         .to(o, { v: days, duration: 1.6, ease: "power2.out", onUpdate: () => { out.textContent = Math.round(o.v).toLocaleString("en-US"); },
           onComplete: () => { MO.counting = false; tick(); } }, 1.85)
+        .call(() => scue(), null, 3.25)   // the counter has nearly settled: the scroll cue comes in
       const go = () => heroTL.play();
-      if (window.LOADER) window.LOADER.then(go, go); // [loader] the tag falls once the print has landed
+      if (window.LOADER) (window.LOADER_REVEAL || window.LOADER).then(go, go); // [loader] the tag comes down as the loader paper lifts
       else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]).then(go, go);
-    } else html.classList.remove("motion-pending");
+    } else { html.classList.remove("motion-pending"); (window.LOADER || Promise.resolve()).then(() => setTimeout(scue, 900)); }
     /* 2 · red string + pins in route order, scrubbed lightly with scroll */
     const pins = pinEls.map(e => e.g);
     if (reduce) { gsap.set(pins, { opacity: 1, y: 0 }); gsap.set(promiseEls, { opacity: 1 }); }
@@ -930,7 +975,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     }
     /* the private page: its blocks flow into one another as it scrolls (scroll-linked; transform + opacity only) */
     if (!reduce) { const sx = $("#secret");
-      ["#cover", "#pair", "#reelNotes", "#record", "#lyrics", "#weddingPola", "#secret .letter-card"].forEach(sel => { const e = $(sel); if (!e) return;
+      ["#cover", "#pair", "#reelNotes", "#record", "#lyrics", "#secret .letter-card"].forEach(sel => { const e = $(sel); if (!e) return;
         gsap.fromTo(e, { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, ease: "none", scrollTrigger: { trigger: e, scroller: sx, start: "top 97%", end: "top 64%", scrub: .5 } }); });
       // the film silhouette drifts a little inside its cover, the pair of prints a little against it
       if ($("#silhouette img")) gsap.fromTo("#silhouette img", { y: 16 }, { y: -16, ease: "none", scrollTrigger: { trigger: "#cover", scroller: sx, start: "top bottom", end: "bottom top", scrub: .5 } });

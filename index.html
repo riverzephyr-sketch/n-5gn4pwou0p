@@ -13,11 +13,11 @@
   /* loader (first visit of a session only): the homepage print develops on the paper, then settles into the hero */
   if(location.hash||sessionStorage.getItem("ld1461"))return; sessionStorage.setItem("ld1461","1");
   d.classList.add("ld","ld-show"); if(history.scrollRestoration)history.scrollRestoration="manual";
-  window.LOADER=new Promise(function(r){window.__ldDone=r});
-  window.__ldKill=setTimeout(function(){d.classList.remove("ld","ld-show");window.__ldDone()},4500); // safety net if app.js never runs
+  window.LOADER=new Promise(function(r){window.__ldDone=r});window.LOADER_REVEAL=new Promise(function(r){window.__ldReveal=r});
+  window.__ldKill=setTimeout(function(){d.classList.remove("ld","ld-show");window.__ldReveal();window.__ldDone()},4500); // safety net if app.js never runs
 }catch(e){}})(document.documentElement)</script>
 <script>(function(d){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("motion-pending");setTimeout(function(){d.classList.remove("motion-pending")},2500)})(document.documentElement)</script>
-<link rel="stylesheet" href="style.css?v=50">
+<link rel="stylesheet" href="style.css?v=51">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -39,6 +39,7 @@
     </div>
   </div>
   <p class="hero-sub" id="heroSub"></p>
+  <div class="scue" id="scue" aria-hidden="true"><span class="scue-t">Scroll</span><i class="scue-l"><b></b></i></div>
 </header>
 
 <!-- 2 · 江湖 — one printed post: the song he shared, the line she left -->
@@ -141,7 +142,7 @@
 
 <!-- the music, folded small (bottom-right, inside the safe area) -->
 <button class="mini fresh" id="mini" type="button" aria-label="播放 / 暂停音乐"><span class="mini-txt" id="miniTxt" translate="no"></span><span class="mini-dot" aria-hidden="true"><i></i></span></button>
-<audio id="song" preload="none" loop playsinline></audio>
+<audio id="song" preload="metadata" loop playsinline></audio>
 
 <!-- City card -->
 <div class="sheet" id="sheet" aria-hidden="true">
@@ -180,7 +181,6 @@
       <div class="reel-notes" id="reelNotes"></div>
       <div class="vm-disc-wrap" id="record"></div>
       <div class="lyrics" id="lyrics"></div>
-      <figure class="pola undeveloped" id="weddingPola"></figure>
     </div>
     <article class="letter-card letter-end">
       <h3 class="letter-title" id="letterTitle"></h3>
@@ -190,9 +190,9 @@
   </div>
 </div>
 
-<script src="content.js?v=50"></script>
-<script src="map-data.js?v=50"></script>
-<script src="photos/sizes.js?v=50"></script>
-<script src="app.js?v=50"></script>
+<script src="content.js?v=51"></script>
+<script src="map-data.js?v=51"></script>
+<script src="photos/sizes.js?v=51"></script>
+<script src="app.js?v=51"></script>
 </body>
 </html>
