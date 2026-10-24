@@ -1288,3 +1288,8 @@ html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left
 .vroll.idx .cp .sl + .d{margin-top:7px}
 /* the cover is at least as tall as the screen really is (JS --vh), whatever 100svh says on a first load */
 html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) + 6px)}
+/* phone: the days either side of 30 sit against its rules, so 29 and 31 read whole at the screen edges */
+@media (max-width:899px){
+  #calStrip .cal-cell:first-child b,#calStrip .cal-cell:first-child .mo{align-self:flex-end;margin-right:calc(6 * var(--u))}
+  #calStrip .cal-cell:last-child b,#calStrip .cal-cell:last-child .mo{align-self:flex-start;margin-left:calc(6 * var(--u))}
+}
