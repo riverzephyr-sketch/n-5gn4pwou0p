@@ -732,9 +732,10 @@ function check() {
 
 /* hidden page */
 $("#letterTitle").textContent = F.letterTitle;
+const nobr3 = s => { s = String(s); const m = s.match(/(?:[^\s。，、！？」』）：；.,!?][。，、！？」』）：；.,!?]*){2}$/u); return m ? esc(s.slice(0, m.index)) + `<span class="nw">${esc(m[0])}</span>` : esc(s); };
 $("#letter").innerHTML = F.letter.map((p, i) => {
-  if (i === F.letter.length - 1 && p.trim() === F.closing.trim()) return `<p class="close-line">${esc(p)}</p>`;
-  const t = txt(p); return t ? `<p class="${i === 0 && /[:：]$/.test(p) ? "salute" : ""}">${t}</p>` : "";
+  if (i === F.letter.length - 1 && p.trim() === F.closing.trim()) { const w = p.trim().split(/\s+/), k = Math.max(0, w.length - 2); return `<p class="close-line">${esc(w.slice(0, k).join(" "))} <span class="nw">${esc(w.slice(k).join(" "))}</span></p>`; }
+  const t = isTodo(p) ? txt(p) : nobr3(p); return t ? `<p class="${i === 0 && /[:：]$/.test(p) ? "salute" : ""}">${t}</p>` : "";
 }).join("");
 $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="script">${esc(F.signature)}</span>`;
 // Aimer《Polaris》: one record, a ring of our photos round its rim, turning slowly (transform only).
@@ -963,7 +964,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
     /* the private page: its blocks flow into one another as it scrolls (scroll-linked; transform + opacity only) */
     if (!reduce) { const sx = $("#secret");
       ["#cover", "#pair", "#reelNotes", "#record", "#lyrics", "#weddingPola", "#secret .letter-card"].forEach(sel => { const e = $(sel); if (!e) return;
-        gsap.fromTo(e, { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, ease: "none", scrollTrigger: { trigger: e, scroller: sx, start: "top 97%", end: "top 64%", scrub: .5 } }); });
+        gsap.fromTo(e, { autoAlpha: 0, y: 48 }, { autoAlpha: 1, y: 0, ease: "none", scrollTrigger: { trigger: e, scroller: sx, start: "top 98%", end: "top 80%", scrub: .5 } }); });
       // the film silhouette drifts a little inside its cover, the pair of prints a little against it
       if ($("#silhouette img")) gsap.fromTo("#silhouette img", { y: 16 }, { y: -16, ease: "none", scrollTrigger: { trigger: "#cover", scroller: sx, start: "top bottom", end: "bottom top", scrub: .5 } });
       $$("#pair .scan").forEach((e, k) => gsap.fromTo(e, { yPercent: k ? 10 : 4 }, { yPercent: k ? -6 : -2, ease: "none", scrollTrigger: { trigger: "#pair", scroller: sx, start: "top bottom", end: "bottom top", scrub: .5 } })); }

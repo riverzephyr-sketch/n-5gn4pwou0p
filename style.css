@@ -1168,3 +1168,35 @@ html.ld-fly #heroPrint{transition:transform 1s cubic-bezier(.33,.08,.2,1)}
 /* the tag stays hidden until its entrance plays (or, without motion, fades in) — it never pops in over the print */
 html.tag-wait .tag{opacity:0;visibility:hidden}
 html.tag-fade .tag{transition:opacity .9s ease,visibility 0s}
+
+/* ============ polish pass (v57): spacing and legibility only ============ */
+.nw{white-space:nowrap}
+@media (max-width:899px){
+  /* 江湖: the game line sits closer to the card; the Aimer titles share one size and tone */
+  .slip-wrap{margin-top:calc(70 * var(--u))}
+  .at,.at.jp{font-size:9px;color:rgba(27,23,20,.42)}
+  .at.hi{color:var(--wine)}
+  /* 北京 — 重庆 reads with 从江湖到人间, not half a screen below it */
+  .jianghu{padding-bottom:72px}
+  .hotel{padding-top:20px}
+  /* Marriott: the title and the 100 are two beats, not one */
+  .score{margin-top:64px}
+  .then .l{font-size:15px;line-height:1.85}
+  .then .pen{margin-top:22px;padding-top:16px;font-size:12.5px}
+  /* rolls: each date a little larger and nearer its frame */
+  .vroll{gap:0 14px}
+  .cp .d{font-size:12.5px;letter-spacing:.16em;color:rgba(222,182,134,.95)}
+  /* map figures: tighter tracking */
+  .stats span{letter-spacing:.17em}
+  /* finale: finish reading before the keypad */
+  .lock{margin-top:132px}
+  /* private page */
+  .book{margin-top:36px}
+  .rn-l{font-size:13.5px;line-height:2;color:var(--ink)}
+  .rn-l[lang="zh-CN"]{font-size:13.5px;line-height:1.95;color:#6f665e}
+  .rn-src{font-size:11px;color:#8a8077}
+  .lyrics .jp{font-size:14px;line-height:1.75;color:var(--ink)}
+  .lyrics .cn{font-size:13px;line-height:1.65;color:#6f665e}
+  .letter p{color:#37312d;line-height:1.92;margin-bottom:24px}
+  .letter-end{padding-bottom:calc(128px + env(safe-area-inset-bottom))}
+}
