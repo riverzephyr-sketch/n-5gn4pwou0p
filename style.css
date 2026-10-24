@@ -1200,3 +1200,14 @@ html.tag-fade .tag{transition:opacity .9s ease,visibility 0s}
   .letter p{color:#37312d;line-height:1.92;margin-bottom:24px}
   .letter-end{padding-bottom:calc(128px + env(safe-area-inset-bottom))}
 }
+
+/* ============ v58: the homepage on deep wine (the tag and print stay cream) ============ */
+html{background:var(--wine2)}
+.hero.wine::before{background:radial-gradient(120% 70% at 22% 8%,rgba(255,235,225,.07),transparent 60%),radial-gradient(140% 90% at 50% 110%,rgba(0,0,0,.28),transparent 60%)}
+.hero.wine #heroVol{color:var(--chalk2)}
+.hero.wine .hero-sub{color:var(--chalk)}
+.hero.wine .scue-t{color:var(--chalk2)}
+.hero.wine .scue-l{background:rgba(236,230,220,.16)}
+.hero.wine .scue-l b{background:var(--chalk)}
+.hero.wine .tag,.hero.wine .hero-print{filter:var(--sh-dark)}
+html.ld-show #ld{background:var(--wine2) url(assets/wine-field.webp) 0 0/460px auto repeat}
