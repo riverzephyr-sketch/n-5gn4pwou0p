@@ -229,7 +229,7 @@ window.CONTENT = {
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
     wedding: null,   // 婚礼拍立得已撤：不想在信前面放一张「待解锁」
     // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
-    record: ["photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
+    record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
       "photos/m12.webp", "photos/fukuoka-torii.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
     // 唱片上方的一段文字（原文照录；每一行拆成几段，只用来决定手机上在哪里换行，拼起来就是原文）
     reelNotes: [
