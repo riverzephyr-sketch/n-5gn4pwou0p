@@ -100,11 +100,11 @@ window.CONTENT = {
   // 竖长的大头贴：加 tall: true
   // 一站想放多张照片：把 photo 换成 photos: ["photos/a.webp", "photos/b.webp"]（点照片切换）
   stops: [
-    { city: "chongqing", photos: ["photos/n1.webp", "photos/chongqing-2nd.webp", "photos/chongqing-fridge-flowers.webp"], photoNotes: ["2022 · 重庆", "第二次来重庆 · 2023", "2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
+    { city: "chongqing", photos: ["photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
     { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
-    { city: "dali",      photo: "photos/dali-first-shadows.webp", memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
+    { city: "dali",      photo: null, memory: "2023.05 · 第一次一起旅行。我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", note: "2023.05" },
     { city: "hangzhou",  photo: null, scansDate: "2025.05.20", memory: "2024 年我先来了杭州，2025 年五一你也搬了过来。异地结束的第一个 520。", note: "我们的家" },
     { city: "shanghai",  photo: null, memory: "待填写" },
     { city: "fukuoka",   photo: "photos/fukuoka-torii.webp", memory: "待填写" },   // 白色鸟居、夫妇岩，海边（替换原 m13）
@@ -120,11 +120,8 @@ window.CONTENT = {
   // 地图上额外的一条虚线：从第 5 站连到第 15 站
   promise: { from: 5, to: 15, label: "约定" },
 
-  // 地图城市页里原来跟着 2023 胶卷出现的照片（胶卷换图后单独留在这里，地图保持原样；不出现在胶卷里）
+  // 地图城市页里原来跟着 2023 胶卷出现的照片（胶卷换图后单独留在这里；跟 2023 胶卷同一张的已撤掉：n1、chongqing-2nd、m0、dali-first-shadows 只在胶卷里）
   mapPhotos: [
-    { city: "chongqing", photo: "photos/chongqing-2nd.webp", date: "2023" },
-    { city: "beijing",   photo: "photos/m0.webp", date: "2023.05.01" },   // 胡同
-    { city: "dali",      photo: "photos/dali-first-shadows.webp", date: "2023.05" },
     { city: "chongqing", photo: "photos/chongqing-fridge-flowers.webp", date: "2023.08" },
     { city: "chongqing", photo: "photos/n2.webp", date: "2023.10.30" },
   ],
@@ -138,9 +135,9 @@ window.CONTENT = {
   chapters: [
     { year: "2023", layout: "feature", title: "待填写", thumb: "photos/thumb-2023.webp", items: [   // thumb: only the FOUR ROLLS picker
       // 2023 这一卷只放这 7 张（只出现在这卷里，别处不用）；只有日期，点开也只显示日期（dateOnly）
-      { title: "", date: "2023.01.01", text: "", photo: "photos/r23-0101.webp", dateOnly: true },
-      { title: "", date: "2023.01.27", text: "", photo: "photos/r23-0127.webp", dateOnly: true },
-      { title: "", date: "2023.03.26", text: "", photo: "photos/r23-0326.webp", dateOnly: true },
+      { title: "", date: "2023.01.01", text: "隔着屏幕说了90天晚安，今天你终于站在了我面前。", photo: "photos/r23-0101.webp", dateOnly: true },
+      { title: "", date: "2023.01.27", text: "从山城到京城，南方小土豆差点没扛住北京的零下温度。", photo: "photos/r23-0127.webp", dateOnly: true },
+      { title: "", date: "2023.03.26", text: "第二次飞往山城。异地的日子里，连一个普通的周末都不舍得错过。", photo: "photos/r23-0326.webp", dateOnly: true },
       { title: "", date: "2023.05.02", text: "", photo: "photos/r23-0502.webp", dateOnly: true },
       { title: "", date: "2023.05.12", text: "", photo: "photos/r23-0512.webp", dateOnly: true },
       { title: "", date: "2023.10.14", text: "", photo: "photos/r23-1014.webp", dateOnly: true },
@@ -232,7 +229,7 @@ window.CONTENT = {
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
     wedding: null,   // 婚礼拍立得已撤：不想在信前面放一张「待解锁」
     // Aimer《Polaris》：一张像 View-Master 转盘的纸质唱片，盘边 12 格照片，慢慢转（结尾这里允许和前面重复；不放游戏截图）
-    record: ["photos/n1.webp", "photos/dali-first-shadows.webp", "photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
+    record: ["photos/chongqing-fridge-flowers.webp", "photos/n2.webp", "photos/n0-hardware.webp", "photos/m9.webp",
       "photos/m12.webp", "photos/fukuoka-torii.webp", "photos/krabi.webp", "photos/tokyo.webp", "photos/dali-proposal.webp", "photos/sunset-kiss.webp"],
     // 唱片上方的一段文字（原文照录；每一行拆成几段，只用来决定手机上在哪里换行，拼起来就是原文）
     reelNotes: [

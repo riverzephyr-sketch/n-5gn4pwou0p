@@ -523,7 +523,7 @@ function openPlace(i, from) { const st = $$("#story .st"); if (!st[i]) return;
 // the place card: only the city (name + coordinates) and every photo we have of it, laid out as one editorial page —
 // big and small prints, a little off the grid. a paragraph of the city's own words can follow later (places[].copy).
 // the 2023 roll's own photos (r23-*) are shown only inside that roll: never on the map or anywhere else
-const ROLL_ONLY = /^photos\/r23-/;
+const ROLL_ONLY = /^photos\/(r23-|n1\.webp|chongqing-2nd\.webp|m0\.webp|dali-first-shadows\.webp|n3\.webp)/;   // + the older files of the same shots
 const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) => { if (!src || got.has(src) || /hangzhou-(ears|eyes)/.test(src) || ROLL_ONLY.test(src)) return; got.add(src); out.push({ src, date }); };
   S.forEach(s => { if (s.city !== id) return; (s.scans && s.scans.length ? s.scans : stopPhotos(s)).forEach((src, k) => add(src, (s.photoNotes && s.photoNotes[k]) || s.note || "")); });
   (C.mapPhotos || []).forEach(m => { if (m.city === id) add(m.photo, m.date); });   // the photos the 2023 roll used to bring here (same place, same order)
@@ -843,6 +843,9 @@ addEventListener("resize", () => { const v = V.el; if (!v || !v.classList.contai
   Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px" }); });
 function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], box = V.el || document.documentElement;
   const vw = box.clientWidth || innerWidth, vh = box.clientHeight || innerHeight;   // the viewer's real box (not 100vw)
+  // a wide (landscape) roll photo opens whole: full width, centred on the dark backdrop, kept clear of the words at the foot
+  if (item.full && w > h) { const fw = Math.min(vw, vh * .62 * w / h), fh = fw * h / w, top = Math.max(0, Math.min((vh - fh) / 2, vh - 190 - fh));
+    return { left: (vw - fw) / 2, top, width: fw, height: fh, cover: 1 }; }
   if (item.full) return { left: 0, top: 0, width: vw, height: vh, cover: 1 };   // full-bleed: exactly the screen, cropped by object-fit
   const k = Math.min(vw * .9 / w, vh * .7 / h);
   const fw = w * k, fh = h * k; return { left: (vw - fw) / 2, top: (vh - fh) / 2 - vh * .02, width: fw, height: fh, cover: Math.max(vw / fw, vh / fh) }; }
