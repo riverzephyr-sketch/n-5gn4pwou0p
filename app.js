@@ -751,7 +751,7 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
       <text class="vm-song" x=".35" y="-5.2" lang="ja">ポラリス</text>
       <circle class="vm-ring3" r="3.4"/>
       <text class="vm-side" y="8.6">SIDE A</text>
-      <text class="vm-sm" y="12.4">FOLLOW &amp; HELIOS</text>
+      <text class="vm-sm" y="12.4">SUMMER &amp; HELIOS</text>
       <text class="vm-sm" y="15.4">2022.10.30 – 2026.10.30</text></svg>`;
   host.innerHTML = `<div class="vm-disc" role="img" aria-label="ポラリス" lang="ja">${print}
     ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
