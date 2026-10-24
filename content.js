@@ -128,7 +128,7 @@ window.CONTENT = {
   // 胶卷排法 layout：strip = 竖胶片 · feature = 胶片 + 一张放大的重点照片（feature: true 的那张）
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
-    { year: "2023", layout: "feature", title: "待填写", items: [
+    { year: "2023", layout: "feature", title: "待填写", thumb: "photos/thumb-2023.webp", items: [   // thumb: only the FOUR ROLLS picker
       { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp", city: "chongqing" },
       { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp", city: "beijing" },   // 胡同
       { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", city: "dali" },
