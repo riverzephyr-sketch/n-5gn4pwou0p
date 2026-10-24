@@ -67,9 +67,20 @@ window.CONTENT = {
     right: { name: "万豪", en: "Marriott" },
     wrong: { name: "JW 万豪", en: "JW Marriott" },
     stamp: "扣分",
-    // 第一次点错后出现（按逗号自动分行）
-    quoteEn: ["Short, dazed, and he left me starving.", "Never coming back to Chongqing. Hmph."],
-    quote: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼",
+    // 第一次点错后出现（quoteLines 每项一行；红色那行单独标）
+    quoteEn: ["He took me to the wrong Marriott,", "then we sat in traffic forever.", "Short, clueless, zero stars.", "Never coming back. Hmph."],
+    quoteLines: [
+      "接我的时候打错了车，",
+      "把“万豪”去成了“JW 万豪”。",
+      "两家隔着十万八千里，",
+      "一路堵车，我差点饿晕。",
+      "看着旁边这个又矮又呆、",
+      "晕头转向的人，",
+      "差评负分！",
+      "再也不来重庆了哼",
+    ],
+    quoteRed: "差评负分！",
+    quote: "接我的时候打错了车，把“万豪”去成了“JW 万豪”。两家隔着十万八千里，一路堵车，我差点饿晕。看着旁边这个又矮又呆、晕头转向的人，差评负分！再也不来重庆了哼",
   },
 
   // 一起去过的城市（只写坐标，每个城市一次）
@@ -100,7 +111,7 @@ window.CONTENT = {
   // 竖长的大头贴：加 tall: true
   // 一站想放多张照片：把 photo 换成 photos: ["photos/a.webp", "photos/b.webp"]（点照片切换）
   stops: [
-    { city: "chongqing", photos: ["photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023.08"], memory: "当时我在想，这个人又矮又呆，还晕头转向的让我饿着，差评负分！再也不来重庆了哼", note: "初见" },
+    { city: "chongqing", photos: ["photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023.08"], memory: "接我的时候打错了车，把“万豪”去成了“JW 万豪”。两家隔着十万八千里，一路堵车，我差点饿晕。看着旁边这个又矮又呆、晕头转向的人，差评负分！再也不来重庆了哼", note: "初见" },
     { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },

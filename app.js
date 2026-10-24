@@ -375,8 +375,9 @@ const card = (o, kind) => {
 const wrongC = card(HT.wrong, "wrong"), rightC = card(HT.right, "right");
 $("#hotels").append(wrongC, rightC);
 const stamp = el("span", "stamp", esc(HT.stamp || "扣分")); wrongC.append(stamp);
-const qParts = (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
-$("#then").innerHTML = `<span class="qm o">“</span>${qParts.map((t, i) => `<span class="l l${i + 1}">${esc(t)}</span>`).join("")}<span class="qm c">”</span><span class="pen">${(HT.quoteEn || []).map(esc).join("<br>")}</span>`;
+const qParts = HT.quoteLines || (HT.quote.match(/[^，！。？]+[，！。？]?/g) || [HT.quote]);
+const qRed = HT.quoteRed || qParts[3];
+$("#then").innerHTML = `<span class="qm o">“</span>${qParts.map((t, i) => `<span class="l l${i + 1}${t === qRed ? " red" : ""}">${esc(t)}</span>`).join("")}<span class="qm c">”</span><span class="pen">${(HT.quoteEn || []).map(esc).join("<br>")}</span>`;
 // the quote shows as it comes into view (not hidden behind a tap)
 { const th = $("#then"); if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { th.classList.add("show"); io.disconnect(); } }), { threshold: .2 }); io.observe(th); } else th.classList.add("show"); }
 let score = HT.startScore; const hist = [];

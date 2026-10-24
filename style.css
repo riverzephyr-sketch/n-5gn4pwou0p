@@ -172,7 +172,7 @@ img{display:block;max-width:100%}
 .then::before{content:"";position:absolute;left:34%;top:-13px;width:32%;height:26px;background:url(assets/tape.webp) center/100% 100%;opacity:.9;transform:rotate(-3deg)}
 .then .qm{display:none}
 .then .l{display:block;font-family:var(--zh);font-size:14px;line-height:2;letter-spacing:.08em;color:var(--ink)}
-.then .l4{color:var(--wine)}
+.then .red{color:var(--wine)}
 .then .pen{display:block;margin-top:18px;padding-top:14px;border-top:1px solid var(--hair);font-family:var(--lat);font-style:italic;font-size:12px;line-height:1.55;color:var(--ink2)}
 
 /* ============ 4 · ROLLS (near-black) ============ */
