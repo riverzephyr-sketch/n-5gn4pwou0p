@@ -522,8 +522,11 @@ function openPlace(i, from) { const st = $$("#story .st"); if (!st[i]) return;
 // that stop is set in type instead (city in caps, coordinates, date, its own words).
 // the place card: only the city (name + coordinates) and every photo we have of it, laid out as one editorial page —
 // big and small prints, a little off the grid. a paragraph of the city's own words can follow later (places[].copy).
-const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) => { if (!src || got.has(src) || /hangzhou-(ears|eyes)/.test(src)) return; got.add(src); out.push({ src, date }); };
+// the 2023 roll's own photos (r23-*) are shown only inside that roll: never on the map or anywhere else
+const ROLL_ONLY = /^photos\/r23-/;
+const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) => { if (!src || got.has(src) || /hangzhou-(ears|eyes)/.test(src) || ROLL_ONLY.test(src)) return; got.add(src); out.push({ src, date }); };
   S.forEach(s => { if (s.city !== id) return; (s.scans && s.scans.length ? s.scans : stopPhotos(s)).forEach((src, k) => add(src, (s.photoNotes && s.photoNotes[k]) || s.note || "")); });
+  (C.mapPhotos || []).forEach(m => { if (m.city === id) add(m.photo, m.date); });   // the photos the 2023 roll used to bring here (same place, same order)
   C.chapters.forEach(c => c.items.forEach(m => { if (m.city === id) [m.photo, ...(m.scans || [])].forEach(src => add(src, isTodo(m.date) ? c.year : m.date)); }));
   (placeById[id].extra || []).forEach(src => add(src, ""));
   return out; };
@@ -615,7 +618,7 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   const gid = "roll" + ci, G = GROUPS[gid] = [];
   // every photo of a roll opens full-screen with its date · place and one line of its story (a placeholder until written)
   const add = (src, m) => { const own = !isTodo(m.text) && m.text; G.push({ src, date: isTodo(m.date) ? c.year : m.date, place: isTodo(m.title) ? "" : m.title,
-    full: true, caption: own || "占位文案：这张照片的故事，之后写在这里。", capPH: !own }); return G.length - 1; };
+    full: true, caption: own || (m.dateOnly ? "" : "占位文案：这张照片的故事，之后写在这里。"), capPH: !own && !m.dateOnly }); return G.length - 1; };
   const tapPhoto = (box, src, m) => { if (!src) return box; const k = add(src, m); box.dataset.vg = gid; box.dataset.vi = k;
     box.setAttribute("role", "button"); box.tabIndex = 0; box.setAttribute("aria-label", (isTodo(m.title) ? c.year : m.title) + " · 放大");
     return box; };

@@ -120,6 +120,14 @@ window.CONTENT = {
   // 地图上额外的一条虚线：从第 5 站连到第 15 站
   promise: { from: 5, to: 15, label: "约定" },
 
+  // 地图城市页里原来跟着 2023 胶卷出现的照片（胶卷换图后单独留在这里，地图保持原样；不出现在胶卷里）
+  mapPhotos: [
+    { city: "chongqing", photo: "photos/chongqing-2nd.webp", date: "2023" },
+    { city: "beijing",   photo: "photos/m0.webp", date: "2023.05.01" },   // 胡同
+    { city: "dali",      photo: "photos/dali-first-shadows.webp", date: "2023.05" },
+    { city: "chongqing", photo: "photos/chongqing-fridge-flowers.webp", date: "2023.08" },
+    { city: "chongqing", photo: "photos/n2.webp", date: "2023.10.30" },
+  ],
   // 四个年份章节（每一卷胶卷），每个年份可以放任意多条
   // city（可选）：这张照片属于哪个城市（places 里的 id）——地图上点城市，会把这个城市的所有照片拼在一页
   // text：点开照片后底部的那一句话（所有故事文字都放在这里；空着就显示「占位文案」）
@@ -129,13 +137,14 @@ window.CONTENT = {
   //              contact = 横排印样 · peak = 照片拼贴（情绪高点）
   chapters: [
     { year: "2023", layout: "feature", title: "待填写", thumb: "photos/thumb-2023.webp", items: [   // thumb: only the FOUR ROLLS picker
-      { title: "第二次来重庆", date: "2023", text: "待填写", photo: "photos/chongqing-2nd.webp", city: "chongqing" },
-      { title: "北京", date: "2023.05.01", text: "", photo: "photos/m0.webp", city: "beijing" },   // 胡同
-      { title: "大理 · 第一次一起旅行", date: "2023.05", text: "我发烧了一整趟，你守了我一整趟。「等求婚的时候再来一次吧。」", photo: "photos/dali-first-shadows.webp", city: "dali" },
-      { title: "第一次异地结束", date: "2023.08", text: "我辞职去了重庆。你为了迎接我，布置了一冰箱的花。", photo: "photos/chongqing-fridge-flowers.webp", highlight: true, feature: true, city: "chongqing" },
-      { title: "一周年 · 重庆", date: "2023.10.30", text: "", photo: "photos/n2.webp", city: "chongqing" },
-      { title: "圣诞", date: "2023", text: "", photo: "photos/n3.webp" },
-      { title: "待填写", date: "待填写", text: "待填写", photo: null },
+      // 2023 这一卷只放这 7 张（只出现在这卷里，别处不用）；只有日期，点开也只显示日期（dateOnly）
+      { title: "", date: "2023.01.01", text: "", photo: "photos/r23-0101.webp", dateOnly: true },
+      { title: "", date: "2023.01.27", text: "", photo: "photos/r23-0127.webp", dateOnly: true },
+      { title: "", date: "2023.03.26", text: "", photo: "photos/r23-0326.webp", dateOnly: true },
+      { title: "", date: "2023.05.02", text: "", photo: "photos/r23-0502.webp", dateOnly: true },
+      { title: "", date: "2023.05.12", text: "", photo: "photos/r23-0512.webp", dateOnly: true },
+      { title: "", date: "2023.10.14", text: "", photo: "photos/r23-1014.webp", dateOnly: true },
+      { title: "", date: "2023.12.25", text: "", photo: "photos/r23-1225.webp", dateOnly: true },
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp", city: "chongqing" },   // 水母灯

@@ -1,4 +1,11 @@
 window.PHOTO_SIZES = {
+"photos/r23-0101.webp": [1050, 1400],
+"photos/r23-0127.webp": [1050, 1400],
+"photos/r23-0326.webp": [1400, 1050],
+"photos/r23-0502.webp": [1050, 1400],
+"photos/r23-0512.webp": [1050, 1400],
+"photos/r23-1014.webp": [1050, 1400],
+"photos/r23-1225.webp": [1050, 1400],
 "photos/fukuoka-torii.webp": [
 1050,
 1400
