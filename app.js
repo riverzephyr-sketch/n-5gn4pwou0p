@@ -534,6 +534,7 @@ const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) =>
   return out; };
 // collage rhythm: rows of one or two prints; [width %, left %, drop % (of the width), tilt°]
 const COL_ROWS = [[[60, 0, 0, -.8], [34, 5, 18, 1.3]], [[40, 7, 9, 1], [47, 5, 0, -.6]], [[72, 20, 0, .5]], [[33, 0, 14, -1.2], [57, 9, 0, .7]]];
+const name2id = n => (Object.values(placeById).find(p => p.name === n) || {}).id;
 const COL_ONE = [[[84, 8, 0, -.5]]], COL_LAST = [[68, 15, 0, .6]];
 // a city with many photos: a photo wall — rows of polaroids pegged to a sagging twine, three to a line
 const WALL_F = { 3: [.18, .5, .82], 2: [.32, .68], 1: [.5] }, WALL_TILT = [-3, 1.8, -1.2, 2.6, -2.2, 1, 3, -1.6, -.6, 2.2, -2.8, 1.4];
@@ -547,9 +548,20 @@ function wallHTML(list, gid, name) {
     k += n; r++; }
   return `<div class="wall">${out}</div>`;
 }
+// or a taped wall: photos at their own proportions in three loose columns, a strip or two of tape holding each one
+const TAPE = [["t", -6], ["tl", -38, "tr", 36], ["t", 4], ["tr", 32], ["t", -3], ["tl", -34], ["t", 7], ["tl", -40, "tr", 40]];
+function tapeHTML(list, gid, name) {
+  const cols = [[], [], []], h = [0, 0, 0];
+  list.forEach((ph, vi) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], c = h.indexOf(Math.min(...h)), sc = [1, .9, .96, .86, 1, .92][vi % 6];
+    cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .12; });
+  const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = vi % 3 === 1;
+    const tapes = []; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`);
+    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name)}</figure>`; };
+  return `<div class="tapewall">${cols.map(c => `<div class="tw-col">${c.map(fig).join("")}</div>`).join("")}</div>`;
+}
 function collageHTML(list, gid, name) {
   const rows = []; let k = 0, r = 0;
-  if (list.length > 6) return wallHTML(list, gid, name);
+  if (list.length > 6) return (placeById[name2id(name)] || {}).wall === "tape" ? tapeHTML(list, gid, name) : wallHTML(list, gid, name);
   if (list.length === 1) rows.push(COL_ONE[0].map(t => [t, list[0], 0]));
   else while (k < list.length) { let tpl = COL_ROWS[r % COL_ROWS.length]; if (list.length - k === 1 && tpl.length > 1) tpl = COL_LAST;
     rows.push(tpl.map((t, j) => [t, list[k + j], k + j]).filter(x => x[1])); k += tpl.length; r++; }

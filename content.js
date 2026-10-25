@@ -87,7 +87,7 @@ window.CONTENT = {
   // copy：地图上点开城市后，照片下面的一段文字（空着就不显示）
   // extra：这个城市额外的照片（不在胶卷里的），会一起拼进城市页
   places: [
-    { id: "chongqing", name: "重庆", en: "Chongqing", country: "中国", lat: 29.563, lon: 106.551, copy: "", photos: ["photos/cq-01.webp", "photos/cq-02.webp", "photos/cq-03.webp", "photos/cq-04.webp", "photos/cq-05.webp", "photos/cq-06.webp", "photos/cq-07.webp", "photos/cq-08.webp", "photos/cq-09.webp", "photos/cq-10.webp", "photos/cq-11.webp", "photos/cq-12.webp", "photos/cq-13.webp", "photos/cq-14.webp", "photos/cq-15.webp", "photos/cq-16.webp", "photos/cq-17.webp"] },
+    { id: "chongqing", name: "重庆", en: "Chongqing", country: "中国", lat: 29.563, lon: 106.551, copy: "", wall: "tape", photos: ["photos/cq-01.webp", "photos/cq-02.webp", "photos/cq-03.webp", "photos/cq-04.webp", "photos/cq-05.webp", "photos/cq-06.webp", "photos/cq-07.webp", "photos/cq-08.webp", "photos/cq-09.webp", "photos/cq-10.webp", "photos/cq-11.webp", "photos/cq-12.webp", "photos/cq-13.webp", "photos/cq-14.webp", "photos/cq-15.webp", "photos/cq-16.webp", "photos/cq-17.webp"] },
     { id: "beijing",   name: "北京", en: "Beijing",   country: "中国", lat: 39.904, lon: 116.407, copy: "" },
     { id: "chengdu",   name: "成都", en: "Chengdu",   country: "中国", lat: 30.573, lon: 104.066, copy: "" },
     { id: "dongguan",  name: "东莞", en: "Dongguan",  country: "中国", lat: 23.021, lon: 113.752, copy: "" },

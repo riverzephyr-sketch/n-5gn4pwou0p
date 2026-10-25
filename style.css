@@ -1344,3 +1344,14 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 .w-ph img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:50% 35%}
 .w-pin{position:absolute;z-index:1;left:50%;top:-10px;width:6px;height:17px;margin-left:-3px;border-radius:1px;background:linear-gradient(90deg,#c9a676,#dcc092 45%,#b8925f);box-shadow:0 1px 2px rgba(45,25,15,.25)}
 .w-pin::after{content:"";position:absolute;left:0;right:0;top:7px;height:1px;background:rgba(80,55,30,.35)}
+
+/* the taped wall */
+.tapewall{display:flex;gap:4%;margin:10px -6px 0;align-items:flex-start}
+.tw-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.tw-f{position:relative;margin:0;transform:rotate(var(--r,0deg));cursor:pointer;box-shadow:0 1px 1px rgba(45,25,15,.1),0 3px 8px rgba(45,25,15,.08)}
+.tw-f+.tw-f{margin-top:12%}
+.tw-f img{display:block;width:100%;height:auto}
+.tw-f.white{padding:5% 5% 9%;background:#f8f5ef}
+.tp{position:absolute;z-index:1;width:30px;height:9px;background:rgba(52,22,24,.82);transform:translate(-50%,-50%) rotate(var(--a));pointer-events:none}
+.tp-t{left:50%;top:0;width:12px;height:26px;transform:translate(-50%,-55%) rotate(var(--a))}
+.tp-tl{left:4%;top:4%}.tp-tr{left:96%;top:4%}
