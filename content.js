@@ -151,7 +151,7 @@ window.CONTENT = {
       { title: "", date: "2023.03.26", text: "第二次飞山城。别人的周末是睡懒觉，我的周末是赶飞机。", photo: "photos/r23-0326.webp", dateOnly: true },
       { title: "", date: "2023.05.02", text: "老北京导游认真营业，某位游客眼神全程拉丝。", photo: "photos/r23-0502.webp", dateOnly: true },
       { title: "", date: "2023.05.12", text: "第一次一起旅行，我在大理病成一摊，白天全躺过去了，还好晚上有人牵着。", photo: "photos/r23-0512.webp", dateOnly: true },
-      { title: "", date: "2023.10.14", text: "开始同居啦，在欢乐谷给自己捡了一只卖萌的大兔子。", photo: "photos/r23-1014.webp", dateOnly: true },
+      { title: "", date: "2023.10.14", text: "开始同居啦，在欢乐谷给自己捡了一只卖萌的大灰狼。", photo: "photos/r23-1014.webp", dateOnly: true },
       { title: "", date: "2023.12.25", text: "不用等圣诞老人送礼物了，镜子里贴着我的这个就是。", photo: "photos/r23-1225.webp", dateOnly: true },
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail

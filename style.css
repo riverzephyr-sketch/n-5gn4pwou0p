@@ -1288,8 +1288,22 @@ html:not(.reveal) .hero.wine + .jianghu::after{content:"";position:absolute;left
 .vroll.idx .cp .sl + .d{margin-top:7px}
 /* the cover is at least as tall as the screen really is (JS --vh), whatever 100svh says on a first load */
 html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) + 6px)}
-/* phone: the days either side of 30 sit against its rules, so 29 and 31 read whole at the screen edges */
+
+/* the date, refined: a fixed window onto 29 · 30 · 31, a thin round stamp on 30, the 30th's print under its column */
+.cal-ring{width:calc(146 * var(--u));height:calc(146 * var(--u));transform:translate(-50%,-50%);opacity:0;transition:opacity .9s ease .2s}
+.cal-ring.in{opacity:1}
+.cal-ring circle{fill:none;stroke:var(--wine);stroke-width:1.25px;vector-effect:non-scaling-stroke;opacity:.85}
+.cal-cell .wd{font-size:10.5px;letter-spacing:.18em}
 @media (max-width:899px){
-  #calStrip .cal-cell:first-child b,#calStrip .cal-cell:first-child .mo{align-self:flex-end;margin-right:calc(6 * var(--u))}
-  #calStrip .cal-cell:last-child b,#calStrip .cal-cell:last-child .mo{align-self:flex-start;margin-left:calc(6 * var(--u))}
+  .cal{min-height:0;padding-bottom:86px}
+  .cal-strip{--cw:calc(180 * var(--u));border-color:rgba(90,15,23,.32);clip-path:inset(-2px calc((var(--cw) * 3 - 100vw + 56px) / 2))}
+  .cal-cell+.cal-cell,.cal-cell .wd{border-color:rgba(90,15,23,.32)}
+  .cal-cell b{font-size:calc(94 * var(--u))}
+  .cal-ring{top:calc(50% + 6px);width:calc(140 * var(--u));height:calc(140 * var(--u))}
+  .cal-cell .since{margin-top:calc(11 * var(--u))}
+  .cal-print{left:calc(50% - 76 * var(--u));top:calc(100% - 25 * var(--u));width:calc(118 * var(--u));transform:rotate(-4deg)}
+  .cal-line{margin-top:calc(190 * var(--u))}
+  .cal-dots{margin-top:12px}
 }
+@media (prefers-reduced-motion:reduce){.cal-ring{transition:none}}
+@media (min-width:900px){.cal-ring{width:300px;height:300px;top:calc(50% + 14px)}}
