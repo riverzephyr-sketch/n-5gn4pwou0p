@@ -526,6 +526,7 @@ function openPlace(i, from) { const st = $$("#story .st"); if (!st[i]) return;
 // the 2023 roll's own photos (r23-*) are shown only inside that roll: never on the map or anywhere else
 const ROLL_ONLY = /^photos\/(r23-|n1\.webp|chongqing-2nd\.webp|m0\.webp|dali-first-shadows\.webp|n3\.webp)/;   // + the older files of the same shots
 const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) => { if (!src || got.has(src) || /hangzhou-(ears|eyes)/.test(src) || ROLL_ONLY.test(src)) return; got.add(src); out.push({ src, date }); };
+  if (placeById[id].photos) { placeById[id].photos.forEach(src => add(src, "")); return out; }   // a city with its own set: exactly these, in this order
   S.forEach(s => { if (s.city !== id) return; (s.scans && s.scans.length ? s.scans : stopPhotos(s)).forEach((src, k) => add(src, (s.photoNotes && s.photoNotes[k]) || s.note || "")); });
   (C.mapPhotos || []).forEach(m => { if (m.city === id) add(m.photo, m.date); });   // the photos the 2023 roll used to bring here (same place, same order)
   C.chapters.forEach(c => c.items.forEach(m => { if (m.city === id) [m.photo, ...(m.scans || [])].forEach(src => add(src, isTodo(m.date) ? c.year : m.date)); }));
