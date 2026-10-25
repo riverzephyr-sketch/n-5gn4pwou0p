@@ -1422,7 +1422,7 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
   .cal-cell .mo{margin-top:calc(16 * var(--d));font-size:max(18px, calc(30 * var(--d)))}
   .cal-cell .since{margin-top:calc(22 * var(--d))}
   .cal-cell{padding-bottom:calc(26 * var(--d))}
-  .cal-ring{width:calc(330 * var(--d));height:calc(330 * var(--d));top:calc(50% + 4 * var(--d))}
+  .cal-ring{width:calc(284 * var(--d));height:calc(284 * var(--d));top:calc(50% - 2 * var(--d))}
   .cal-print{left:calc(50% - 76 * var(--d));top:calc(100% - 18 * var(--d));width:calc(136 * var(--d));padding:calc(8 * var(--d)) calc(8 * var(--d)) 40px;transform:rotate(-2deg)}
   .cal-print figcaption{left:10px;right:10px;bottom:8px;font-size:9.5px;flex-direction:column;justify-content:flex-start}
   .cal-line{margin-top:calc(160 * var(--d) + 56px);font-size:max(15px, calc(17 * var(--d)))}
