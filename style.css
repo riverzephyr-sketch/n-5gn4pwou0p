@@ -1307,3 +1307,28 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 }
 @media (prefers-reduced-motion:reduce){.cal-ring{transition:none}}
 @media (min-width:900px){.cal-ring{width:300px;height:300px;top:calc(50% + 14px)}}
+/* the date, second pass: 30 leads, the stamp is quieter, the print is the day's keepsake under its column */
+.cal-ring circle{stroke-width:1.3px;opacity:.8}
+.cal-cell .wd .wt{opacity:.75}
+.cal-cell .wd{letter-spacing:.16em}
+.cal-cell:not(.on) b,.cal-cell:not(.on) .mo{opacity:.86}
+.cal-cell.on{background:rgba(120,88,64,.02)}
+.cal-print{box-shadow:0 0 0 .5px rgba(45,25,15,.08),0 5px 12px rgba(45,25,15,.1)}
+.cal-print figcaption{align-items:flex-start;text-align:left;gap:2px;line-height:1.25}
+.cal-dots{gap:0}
+.cal-dots button{width:18px}
+.mini.fresh .mini-txt{padding:8px 13px;border-radius:7px;border:1px solid rgba(90,15,23,.16);background-color:#f1ebe1;box-shadow:0 2px 8px rgba(45,25,15,.07);gap:5px}
+.mini.fresh .mt-zh{color:var(--mute)}
+.mini-dot{width:34px;height:34px;opacity:.92}
+.mini.fresh .mini-dot::after{animation:none;opacity:0}
+@media (max-width:899px){
+  .cal-kick .kick{margin-bottom:10px}
+  .cal-beat{margin-top:40px}
+  .cal-cell b{font-size:calc(98 * var(--u))}
+  .cal-cell .mo{margin-top:calc(8 * var(--u))}
+  .cal-cell .since{margin-top:calc(9 * var(--u))}
+  .cal-print{left:calc(50% - 70 * var(--u));width:calc(125 * var(--u));padding:6px 6px 38px;transform:rotate(-2deg)}
+  .cal-print figcaption{font-size:10px}
+  .cal-line{margin-top:calc(188 * var(--u));font-size:16px;line-height:1.2}
+  .cal-dots{margin-top:10px}
+}
