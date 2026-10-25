@@ -535,13 +535,21 @@ const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) =>
 // collage rhythm: rows of one or two prints; [width %, left %, drop % (of the width), tilt°]
 const COL_ROWS = [[[60, 0, 0, -.8], [34, 5, 18, 1.3]], [[40, 7, 9, 1], [47, 5, 0, -.6]], [[72, 20, 0, .5]], [[33, 0, 14, -1.2], [57, 9, 0, .7]]];
 const COL_ONE = [[[84, 8, 0, -.5]]], COL_LAST = [[68, 15, 0, .6]];
-// a city with many photos: rows of three smaller prints that overlap a little at the edges, like prints spread on a table
-const COL_DENSE = [[[38, 0, 0, -2], [38, -7, 9, 1.6], [38, -7, 2, -1.1]], [[38, 2, 6, 1.3], [38, -8, 0, -1.7], [38, -8, 8, 2]], [[38, 1, 3, -1.4], [38, -7, 10, 1], [38, -8, 0, 1.8]]];
+// a city with many photos: a photo wall — rows of polaroids pegged to a sagging twine, three to a line
+const WALL_F = { 3: [.18, .5, .82], 2: [.32, .68], 1: [.5] }, WALL_TILT = [-3, 1.8, -1.2, 2.6, -2.2, 1, 3, -1.6, -.6, 2.2, -2.8, 1.4];
+function wallHTML(list, gid, name) {
+  let out = "", k = 0, r = 0;
+  while (k < list.length) { const n = Math.min(3, list.length - k), sag = 26 + (r % 3) * 5, y0 = r % 2 ? 6 : 3, y1 = r % 2 ? 3 : 6;
+    const yAt = t => (1 - t) * (1 - t) * y0 + 2 * t * (1 - t) * (y0 + sag) + t * t * y1;
+    out += `<div class="w-row"><svg class="w-str" viewBox="0 0 100 48" preserveAspectRatio="none" aria-hidden="true"><path d="M-2 ${y0} Q50 ${y0 + sag} 102 ${y1}"/></svg>` +
+      WALL_F[n].map((f, j) => { const ph = list[k + j], vi = k + j, tilt = WALL_TILT[vi % WALL_TILT.length];
+        return `<figure class="w-f" style="left:${f * 100}%;top:${yAt(f).toFixed(2)}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大"><span class="w-pin" aria-hidden="true"></span><span class="w-ph">${img(ph.src, name)}</span></figure>`; }).join("") + `</div>`;
+    k += n; r++; }
+  return `<div class="wall">${out}</div>`;
+}
 function collageHTML(list, gid, name) {
   const rows = []; let k = 0, r = 0;
-  if (list.length > 6) { while (k < list.length) { const tpl = COL_DENSE[r % COL_DENSE.length], n = Math.min(3, list.length - k), off = n === 3 ? 0 : (3 - n) * 16;
-      rows.push(tpl.slice(0, n).map((t, j) => [j ? t : [t[0], t[1] + off, t[2], t[3]], list[k + j], k + j])); k += n; r++; }
-    return `<div class="dense">` + rowsHTML(rows, gid, name) + `</div>`; }
+  if (list.length > 6) return wallHTML(list, gid, name);
   if (list.length === 1) rows.push(COL_ONE[0].map(t => [t, list[0], 0]));
   else while (k < list.length) { let tpl = COL_ROWS[r % COL_ROWS.length]; if (list.length - k === 1 && tpl.length > 1) tpl = COL_LAST;
     rows.push(tpl.map((t, j) => [t, list[k + j], k + j]).filter(x => x[1])); k += tpl.length; r++; }
