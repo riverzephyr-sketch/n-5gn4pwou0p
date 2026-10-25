@@ -554,7 +554,7 @@ function tapeHTML(list, gid, name) {
   const cols = [[], [], []], h = [0, 0, 0];
   list.forEach((ph, vi) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], c = h.indexOf(Math.min(...h)), sc = [1, .9, .96, .86, 1, .92][vi % 6];
     cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .12; });
-  const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = vi % 3 === 1;
+  const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = false;
     const tapes = []; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`);
     return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name)}</figure>`; };
   return `<div class="tapewall">${cols.map(c => `<div class="tw-col">${c.map(fig).join("")}</div>`).join("")}</div>`;
