@@ -551,15 +551,13 @@ function wallHTML(list, gid, name) {
 // or a taped wall: photos at their own proportions in three loose columns, a strip or two of tape holding each one
 const TAPE = [["t", -6], ["tl", -38, "tr", 36], ["t", 4], ["tr", 32], ["t", -3], ["tl", -34], ["t", 7], ["tl", -40, "tr", 40]];
 function tapeHTML(list, gid, name) {
-  // an editorial collage: three loose columns with staggered tops, gaps that tighten and open, tape on every third print, three slight tilts
-  const cols = [[], [], []], h = [0, 0, 0], GAP = [8, 30, 6, 26, 10, 34], LAP = { 5: -6, 11: -7 }, TILT = { 2: -1.6, 7: 1.4, 12: -1.8 };
+  const cols = [[], [], []], h = [0, 0, 0];
   list.forEach((ph, vi) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], c = h.indexOf(Math.min(...h)), sc = [1, .9, .96, .86, 1, .92][vi % 6];
-    cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .1; });
-  const fig = ([ph, vi, sc], j) => { const tapes = [];
-    if (vi % 3 === 0) { const t = TAPE[vi % TAPE.length]; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`); }
-    const mt = j ? (LAP[vi] ?? GAP[(vi + j) % GAP.length]) : 0;
-    return `<figure class="tw-f" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;margin-top:${mt}px;--r:${TILT[vi] || 0}deg${mt < 0 ? ";z-index:2" : ""}" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name)}</figure>`; };
-  return `<div class="tapewall">${cols.map((c, k) => `<div class="tw-col tw-c${k}">${c.map(fig).join("")}</div>`).join("")}</div>`;
+    cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .12; });
+  const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = false;
+    const tapes = []; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`);
+    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name)}</figure>`; };
+  return `<div class="tapewall">${cols.map(c => `<div class="tw-col">${c.map(fig).join("")}</div>`).join("")}</div>`;
 }
 function collageHTML(list, gid, name) {
   const rows = []; let k = 0, r = 0;
