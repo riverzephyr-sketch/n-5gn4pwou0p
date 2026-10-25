@@ -54,6 +54,7 @@ window.CONTENT = {
   // 背景音乐（我写给你的歌）
   music: {
     src: "audio/it-never-ended-in-autumn-b.mp3",
+    playlist: ["audio/it-never-ended-in-autumn-b.mp3", "audio/it-never-ended-in-autumn-c.mp3"],   // 两版轮流循环：2:43 → 3:04 → 2:43 …
     title: "It Never Ended in Autumn",
     prompt: "放一首我写给你的歌",
     volume: 0.7,              // 最大音量 0–1（会慢慢淡入）

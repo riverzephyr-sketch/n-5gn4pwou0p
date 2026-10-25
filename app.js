@@ -158,6 +158,10 @@ audio.setAttribute("webkit-playsinline", "true");
 audio.preload = "none";   // the song (3.8 MB) waits: the first screen loads first
 addEventListener("load", () => setTimeout(() => { if (audio.preload === "none") audio.preload = "auto"; }, 4000), { once: true });
 if (MU.src) audio.src = MU.src;
+// two versions take turns: when one ends the other starts on the same element (its gain and the tap that unlocked it carry over)
+const PL = (MU.playlist || []).filter(Boolean); let plI = 0;
+if (PL.length > 1) { audio.loop = false; audio.removeAttribute("loop"); const song = audio;
+  song.addEventListener("ended", () => { if (song.dataset.track === "finale") return; plI = (plI + 1) % PL.length; song.src = PL[plI]; if (playing && audio === song) song.play().catch(() => {}); }); }
 let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
