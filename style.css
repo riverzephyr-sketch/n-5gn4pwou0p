@@ -1367,3 +1367,83 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 .w-pin::after{left:-1px;right:-1px;top:7px;height:3px;border-radius:1px;background:linear-gradient(180deg,#e9e9e6,#9b9b98 55%,#6f6f6c);box-shadow:0 1px 1px rgba(0,0,0,.3)}
 .w-pin::before{content:"";position:absolute;left:1px;right:1px;bottom:0;height:9px;border-radius:0 0 1.5px 1.5px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(50,30,12,.18))}
 .city-copy{max-width:none;text-align:justify}
+
+/* =====================================================================
+   v88 · desktop fit: short and wide laptop windows (e.g. 1024×530, 1280×650, 1487×770).
+   --d is a desktop pixel that shrinks with the window height (1px from ~880px tall), so each
+   screen-sized composition (cover, 江湖, the date, the desk) keeps its proportions and fits the window.
+   Everything here sits inside min-width:900px — the phone layout is untouched.
+   ===================================================================== */
+@media (min-width:900px){
+  :root{--d:max(.56px, min(1px, calc(100vh / 880)))}
+
+  /* 1 · cover: tag + print scale with the window height and sit centred on tall windows */
+  .hero{--hy:max(0px, calc((100vh - 880 * var(--d)) / 2))}
+  .tag{left:calc(50% - 250 * var(--d));top:calc(-196 * var(--d) + var(--hy));width:calc(380 * var(--d))}
+  .hero-num{font-size:calc(150 * var(--d))}
+  .hero-dates .script{font-size:calc(44 * var(--d));margin-top:calc(12 * var(--d))}
+  .hero-dates .rule{width:calc(38 * var(--d));margin:calc(16 * var(--d)) 0 calc(14 * var(--d))}
+  .hero-dates span{font-size:max(9px, calc(12 * var(--d)))}
+  .tag-count{margin-top:calc(12 * var(--d));gap:calc(8 * var(--d))}
+  .tag-count .t-days{font-size:max(11px, calc(16 * var(--d)))}.tag-count .t-unit,.tag-count .t-time{font-size:max(9px, calc(12 * var(--d)))}
+  .tag-count .t-time{margin-left:calc(10 * var(--d))}
+  .hero-print{left:calc(50% - 10 * var(--d));top:calc(190 * var(--d) + var(--hy));width:calc(380 * var(--d));padding:calc(12 * var(--d)) calc(12 * var(--d)) calc(44 * var(--d))}
+  #heroPrint .ld-dev{left:calc(12 * var(--d));right:calc(12 * var(--d));top:calc(12 * var(--d))}
+  .hero-sub{font-size:max(16px, calc(22 * var(--d)))}
+
+  /* 2 · 江湖: the slip, its song titles and the margins all follow the height — nothing under the fold, no cramped top */
+  .jianghu{padding-bottom:0;grid-template-columns:1fr calc(450 * var(--d)) 1fr}
+  .prov{padding-top:max(28px, calc(56 * var(--d)))}
+  .slip-wrap,.jianghu .slip-wrap{width:calc(450 * var(--d));margin:calc(72 * var(--d)) 0 calc(132 * var(--d))}
+  .post{font-size:calc(22 * var(--d))}
+  .heart-sticker{width:calc(44 * var(--d))}
+  .at1{left:calc(-60 * var(--d));top:calc(-50 * var(--d))}.at2{right:calc(-70 * var(--d));top:calc(-24 * var(--d))}
+  .at3{left:calc(-90 * var(--d))}.at4{right:calc(-64 * var(--d))}
+  .at5{left:calc(-40 * var(--d));bottom:calc(-70 * var(--d))}.at6{bottom:calc(-110 * var(--d))}.at7{right:calc(-50 * var(--d));bottom:calc(-56 * var(--d))}
+  .lk-jianghu .c{font-size:max(22px, calc(30 * var(--d)))}.lk-jianghu .e{font-size:max(32px, calc(46 * var(--d)));margin-top:calc(10 * var(--d))}
+
+  /* 4 · rolls: a side margin, so 2023 / ROLL 01 never touch the window edge */
+  .chapters{padding-left:56px;padding-right:56px}
+
+  /* 5 · map: the sheet never taller than the window */
+  .map-sheet,.map-sec>.map-sheet{max-width:min(620px, calc(100vh - 110px))}
+
+  /* 5½ · the date: 30 leads its column, the print sits under the 30 (never under 29), everything fits the window.
+     the strip stays ≥ a third of the window per day, so its lines still run off both edges */
+  .cal{padding:calc(40 * var(--d)) 0 calc(44 * var(--d))}
+  .cal-kick .kick{margin-bottom:calc(14 * var(--d))}
+  .cal-kick .script{font-size:max(40px, calc(64 * var(--d)))}
+  .cal-beat{margin:calc(36 * var(--d)) 0 0}
+  .cal-strip{--F:min(calc(216 * var(--d)), 15vw);--cw:clamp(calc(330 * var(--d) + 140px), 34vw, 620px);--sw:calc(100vw - var(--cw) - .42 * var(--F));
+    width:calc(var(--cw) + 2 * var(--sw));margin-left:calc(-.5 * var(--cw) - var(--sw))}
+  .cal-cell{flex:0 0 var(--sw)}.cal-cell.on{flex:0 0 var(--cw)}
+  .cal-cell .wd{padding:calc(14 * var(--d)) 0 calc(12 * var(--d))}
+  .cal-cell b{margin-top:calc(28 * var(--d));font-size:var(--F)}
+  .cal-cell .mo{margin-top:calc(16 * var(--d));font-size:max(18px, calc(30 * var(--d)))}
+  .cal-cell .since{margin-top:calc(22 * var(--d))}
+  .cal-cell{padding-bottom:calc(26 * var(--d))}
+  .cal-ring{width:calc(330 * var(--d));height:calc(330 * var(--d));top:calc(50% + 4 * var(--d))}
+  .cal-print{left:calc(50% - 76 * var(--d));top:calc(100% - 18 * var(--d));width:calc(136 * var(--d));padding:calc(8 * var(--d)) calc(8 * var(--d)) 40px;transform:rotate(-2deg)}
+  .cal-print figcaption{left:10px;right:10px;bottom:8px;font-size:9.5px;flex-direction:column;justify-content:flex-start}
+  .cal-line{margin-top:calc(160 * var(--d) + 56px);font-size:max(15px, calc(17 * var(--d)))}
+  .cal-dots{margin-top:8px}
+
+  /* 6 · the desk (stamps · envelope · closing line) scales as one */
+  .desk{width:calc(1000 * var(--d));height:calc(720 * var(--d))}
+  .stamps{left:calc(120 * var(--d));top:calc(40 * var(--d));width:calc(330 * var(--d))}
+  .stamps .clip{top:calc(-78 * var(--d))}
+  .envelope{left:calc(330 * var(--d));top:calc(250 * var(--d));width:calc(440 * var(--d))}
+  .closing{right:calc(30 * var(--d));bottom:calc(40 * var(--d));width:max(230px, calc(330 * var(--d)))}
+  .closing span{font-size:max(15px, calc(19 * var(--d)))}.closing .script{font-size:max(32px, calc(46 * var(--d)))}
+}
+@media (min-width:1000px){
+  .jianghu .lk-jianghu{margin:0 0 calc(150 * var(--d)) clamp(96px, 8vw, 140px)}
+}
+/* v88 · map → the date: the open place's last line and "save the date" are one calm beat apart, not half a screen */
+@media (max-width:899px){
+  .map-sec{padding-bottom:44px}
+  .cal{padding-top:62px}
+}
+@media (min-width:900px){
+  .map-sec{padding-bottom:72px}
+}
