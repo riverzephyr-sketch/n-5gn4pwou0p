@@ -1,4 +1,4 @@
-window.PHOTO_SIZES = {
+window.PHOTO_SIZES = {"photos/bj-01.webp":[787,1400],"photos/bj-02.webp":[1050,1400],"photos/bj-03.webp":[1400,1054],"photos/bj-04.webp":[1400,933],"photos/bj-05.webp":[1054,1400],"photos/bj-06.webp":[1050,1400],"photos/bj-07.webp":[1050,1400],"photos/bj-08.webp":[1050,1400],"photos/bj-09.webp":[1050,1400],"photos/bj-10.webp":[1050,1400],"photos/bj-11.webp":[1050,1400],"photos/bj-12.webp":[1050,1400],"photos/cd-02.webp":[1050,1400],
 "photos/cq-01.webp": [1050, 1400],
 "photos/cq-02.webp": [1050, 1400],
 "photos/cq-03.webp": [1055, 1400],
