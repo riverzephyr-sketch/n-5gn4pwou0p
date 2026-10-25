@@ -535,11 +535,19 @@ const cityPhotos = id => { const out = [], got = new Set(), add = (src, date) =>
 // collage rhythm: rows of one or two prints; [width %, left %, drop % (of the width), tilt°]
 const COL_ROWS = [[[60, 0, 0, -.8], [34, 5, 18, 1.3]], [[40, 7, 9, 1], [47, 5, 0, -.6]], [[72, 20, 0, .5]], [[33, 0, 14, -1.2], [57, 9, 0, .7]]];
 const COL_ONE = [[[84, 8, 0, -.5]]], COL_LAST = [[68, 15, 0, .6]];
+// a city with many photos: rows of three smaller prints that overlap a little at the edges, like prints spread on a table
+const COL_DENSE = [[[38, 0, 0, -2], [38, -7, 9, 1.6], [38, -7, 2, -1.1]], [[38, 2, 6, 1.3], [38, -8, 0, -1.7], [38, -8, 8, 2]], [[38, 1, 3, -1.4], [38, -7, 10, 1], [38, -8, 0, 1.8]]];
 function collageHTML(list, gid, name) {
   const rows = []; let k = 0, r = 0;
+  if (list.length > 6) { while (k < list.length) { const tpl = COL_DENSE[r % COL_DENSE.length], n = Math.min(3, list.length - k), off = n === 3 ? 0 : (3 - n) * 16;
+      rows.push(tpl.slice(0, n).map((t, j) => [j ? t : [t[0], t[1] + off, t[2], t[3]], list[k + j], k + j])); k += n; r++; }
+    return `<div class="dense">` + rowsHTML(rows, gid, name) + `</div>`; }
   if (list.length === 1) rows.push(COL_ONE[0].map(t => [t, list[0], 0]));
   else while (k < list.length) { let tpl = COL_ROWS[r % COL_ROWS.length]; if (list.length - k === 1 && tpl.length > 1) tpl = COL_LAST;
     rows.push(tpl.map((t, j) => [t, list[k + j], k + j]).filter(x => x[1])); k += tpl.length; r++; }
+  return rowsHTML(rows, gid, name);
+}
+function rowsHTML(rows, gid, name) {
   return rows.map(row => `<div class="cl-row">${row.map(([[w, ml, mt, rot], ph, vi]) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], tall = ih / iw > 1.6;
     return `<figure class="cl-f" style="width:${tall ? w * .62 : w}%;margin-left:${ml}%;margin-top:${mt}%;--r:${rot}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${img(ph.src, name)}</figure>`; }).join("")}</div>`).join("");
 }

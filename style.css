@@ -1332,3 +1332,6 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
   .cal-line{margin-top:calc(188 * var(--u));font-size:16px;line-height:1.2}
   .cal-dots{margin-top:10px}
 }
+
+.collage .dense .cl-row+.cl-row{margin-top:-5%}
+.collage .dense .cl-f{padding:4px}
