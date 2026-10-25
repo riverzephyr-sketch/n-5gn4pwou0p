@@ -1447,3 +1447,6 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 @media (min-width:900px){
   .map-sec{padding-bottom:72px}
 }
+/* song-title tab: wide enough for the whole title, so the paper margin is the same on both sides */
+.mini:not(.fresh) .mini-txt{max-width:220px;padding:4px 10px}
+.mini.tuck:not(.open) .mini-txt{max-width:0;padding:0}
