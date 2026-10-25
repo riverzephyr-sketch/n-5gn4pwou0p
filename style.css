@@ -1296,7 +1296,7 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 .cal-cell .wd{font-size:10.5px;letter-spacing:.18em}
 @media (max-width:899px){
   .cal{min-height:0;padding-bottom:86px}
-  .cal-strip{--cw:calc(180 * var(--u));border-color:rgba(90,15,23,.32);clip-path:inset(-2px calc((var(--cw) * 3 - 100vw + 56px) / 2))}
+  .cal-strip{--cw:calc(180 * var(--u));border-color:rgba(90,15,23,.32)}
   .cal-cell+.cal-cell,.cal-cell .wd{border-color:rgba(90,15,23,.32)}
   .cal-cell b{font-size:calc(94 * var(--u))}
   .cal-ring{top:calc(50% + 6px);width:calc(140 * var(--u));height:calc(140 * var(--u))}
