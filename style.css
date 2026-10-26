@@ -1455,3 +1455,8 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
   .tag{left:calc(50% - 316 * var(--d))}
   .hero-print{left:calc(50% - 76 * var(--d))}
 }
+/* desk: the closing line hangs a clear gap below the envelope instead of touching it */
+@media (min-width:900px){
+  .desk{height:calc(780 * var(--d))}
+  .closing{top:calc(632 * var(--d));bottom:auto}
+}
