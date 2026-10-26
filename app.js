@@ -830,7 +830,7 @@ function check() {
 $("#letterTitle").textContent = F.letterTitle;
 const nobr3 = s => { s = String(s); const m = s.match(/(?:[^\s。，、！？」』）：；.,!?][。，、！？」』）：；.,!?]*){2}$/u); return m ? esc(s.slice(0, m.index)) + `<span class="nw">${esc(m[0])}</span>` : esc(s); };
 $("#letter").innerHTML = F.letter.map((p, i) => {
-  if (i === F.letter.length - 1 && p.trim() === F.closing.trim()) { const w = p.trim().split(/\s+/), k = Math.max(0, w.length - 2); return `<p class="close-line">${esc(w.slice(0, k).join(" "))} <span class="nw">${esc(w.slice(k).join(" "))}</span></p>`; }
+  if (i === F.letter.length - 1 && p.trim() === (F.closingLetter || F.closing).trim()) { const w = p.trim().split(/\s+/), k = Math.max(0, w.length - 2); return `<p class="close-line">${esc(w.slice(0, k).join(" "))} <span class="nw">${esc(w.slice(k).join(" "))}</span></p>` + (F.closingLetterZh ? `<p class="close-zh">${nobr3(F.closingLetterZh)}</p>` : ""); }
   const t = isTodo(p) ? txt(p) : nobr3(p); return t ? `<p class="${i === 0 && /[:：]$/.test(p) ? "salute" : ""}">${t}</p>` : "";
 }).join("");
 $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="script">${esc(F.signature)}</span>`;

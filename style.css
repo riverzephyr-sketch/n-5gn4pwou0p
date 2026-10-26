@@ -1484,3 +1484,5 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 /* ---------- contrast: auxiliary greys half a step darker on the paper (coordinates, small labels, unselected stops); body text unchanged ---------- */
 :root{--mute:rgba(27,23,20,.7)}
 .chips button[aria-pressed="false"]{opacity:.72}
+
+.letter p.close-zh{margin-top:.5em;text-align:left}

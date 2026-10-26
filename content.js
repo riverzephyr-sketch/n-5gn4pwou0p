@@ -214,8 +214,10 @@ window.CONTENT = {
       "今年你带我回到大理，把那句病中的约定变成了答案。Helios 和 Polaris，一个是我，一个是我想成为的那颗星。",
       "1461 天，你早就把扣掉的分数一点一点挣回来了，还多出很多很多。",
       "谢谢你在我最狼狈的时候，也一样笃定地选择我。下一章，我们一起写。",
-      "I would choose you in every version of my life.",
+      "I choose you in all my choices.",
     ],
+    closingLetter: "I choose you in all my choices.",
+    closingLetterZh: "在所有的选择里，我都选择你。",
     signature: "Helios",
     photo: "photos/dali-proposal.webp",   // 隐藏页上的拍立得
     photoCaption: "",   // 隐藏页上不放地点 / 日期（求婚照现在在 Polaris 唱片上）
