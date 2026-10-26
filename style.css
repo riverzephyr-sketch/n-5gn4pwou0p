@@ -1480,3 +1480,7 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 
 /* ---------- the stops list: a city the route returns to (大理 · 15) carries a small 重返 in the muted tone ---------- */
 .chips .back{font-style:normal;font-size:9.5px;letter-spacing:.2em;color:var(--mute);margin-left:-4px}
+
+/* ---------- contrast: auxiliary greys half a step darker on the paper (coordinates, small labels, unselected stops); body text unchanged ---------- */
+:root{--mute:rgba(27,23,20,.7)}
+.chips button[aria-pressed="false"]{opacity:.72}
