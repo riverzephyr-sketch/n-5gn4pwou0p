@@ -791,7 +791,7 @@ const CRACK_R = "polygon(52% 0, 100% 0, 100% 100%, 53% 100%, 48% 84%, 55% 68%, 4
 // baked seals: the numeral is pressed into the wax in the image itself; any other text falls back to img + span
 const SEAL_BAKED = { "4": "assets/seal-4.webp?v=2", "6.22": "assets/seal-622.webp?v=2" };
 function sealHTML(text) { const baked = SEAL_BAKED[String(text)];
-  const face = baked ? `<img src="${baked}" width="720" height="713" alt="" decoding="async">` : `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
+  const face = baked ? `<img src="${baked}" width="720" height="713" alt="" loading="lazy" decoding="async">` : `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
   return `<span class="half h1" style="clip-path:${CRACK_L};-webkit-clip-path:${CRACK_L}">${face}</span><span class="half h2" style="clip-path:${CRACK_R};-webkit-clip-path:${CRACK_R}">${face}</span>`; }
 $("#seal").innerHTML = sealHTML(F.seal || "4");
 if ($("#closing")) $("#closing").innerHTML = `<span>${esc(F.closing).replace(" in every", "<br>in every")}</span><b class="script">${esc(F.signature)}</b>`;
@@ -876,7 +876,12 @@ if (W8 && (W8.photo || W8.label)) { wp.append(W8.photo ? photoBox(W8.photo) : el
 else if (wp) wp.remove();
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
-function unlock() {
+// the private page's photos (the reel, the silhouette, the pair: ~1.5 MB) wait until he reaches the passcode, not the first screen
+const secretImgs = (() => { const ims = $$("#secret img[src]"); ims.forEach(im => { im.dataset.src = im.getAttribute("src"); im.removeAttribute("src"); }); let done = false;
+  const load = () => { if (done) return; done = true; ims.forEach(im => { im.src = im.dataset.src; }); };
+  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); load(); } }), { rootMargin: "900px 0px" }); io.observe($(".lock")); }
+  else load(); return load; })();
+function unlock() { secretImgs();
   const openPage = () => { const s = $("#secret"); s.classList.add("open"); s.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
     s.scrollTop = 0; s.focus({ preventScroll: true }); s.classList.add("dev");
     if (window.ScrollTrigger) requestAnimationFrame(() => { try { ScrollTrigger.refresh(); } catch (e) {} }); };
