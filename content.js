@@ -264,8 +264,8 @@ window.CONTENT = {
       [["(转自 twitter@Aimer&staff)"]],
     ],
     // 剪影的「封面」：上面的大标题、下面的一句话和小字（占位，可改）
-    cover: { title: ["1461 DAYS", "WITH YOU"], author: "Summer & Helios", quote: "I would choose you in every version of my life.", by: "— Helios", imprint: "2022.10.30 – 2026.10.30 · Vol. 04" },
-    closing: "I would choose you in every version of my life.",
+    cover: { title: ["1461 DAYS", "WITH YOU"], author: "Summer & Helios", quote: "I choose you in all my choices.", by: "— Helios", imprint: "2022.10.30 – 2026.10.30 · Vol. 04" },
+    closing: "I choose you in all my choices.",
     heartLine: "Four years down. A lifetime of little adventures to go.",
   },
 };
