@@ -446,7 +446,7 @@ S.forEach((s, i) => {
   g.addEventListener("click", () => focusCity(i));
   g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focusCity(i); } });
   pinEls.push({ g, hit, sh, ring, hd, hl, num });
-  if (!leadEls[s.city] && LBL_FAR[s.city]) { const ld = sv("path", { class: "lead", "aria-hidden": "true" }); svg.insertBefore(ld, svg.querySelector(".pin")); leadEls[s.city] = ld; }
+  if (!leadEls[s.city]) { const ld = sv("path", { class: "lead", "aria-hidden": "true" }); svg.insertBefore(ld, svg.querySelector(".pin")); leadEls[s.city] = ld; }
   if (!lblEls[s.city]) { const t = sv("text", { class: "plbl" }); t.textContent = placeById[s.city].name; svg.append(t); lblEls[s.city] = t; }
 });
 function layoutMap(z) {
@@ -468,15 +468,44 @@ function layoutMap(z) {
     e.hd.setAttribute("cx", x); e.hd.setAttribute("cy", y); e.hd.setAttribute("r", r);
     e.ring.setAttribute("cx", x); e.ring.setAttribute("cy", y); e.ring.setAttribute("r", r * 1.6);
     e.num.setAttribute("x", x); e.num.setAttribute("y", y + .4 * z); e.num.setAttribute("font-size", 7.4 * z); });
-  // in the full view the east-China cluster (杭州 · 嘉兴 · 上海, with 武宁西海 just west) is too tight for labels beside the pins:
-  // those four sit a little way off, each tied to its pin by a fine leader line. zoomed in, they go back beside their pins.
-  const far = farMode;
-  Object.entries(lblEls).forEach(([id, t]) => { const p = placeById[id], [x, y] = proj(p.lon, p.lat), [dx, dy, an] = (far && LBL_FAR[id]) || LBL[id] || [9, 3, "start"];
-    const lx = x + dx * z, ly = y + dy * z;
-    t.setAttribute("x", lx); t.setAttribute("y", ly); t.setAttribute("text-anchor", an); t.setAttribute("font-size", 11.5 * z); t.style.strokeWidth = 3.2 * z;
+  // promise label ("约定"): kept inside the frame (on a phone it used to fall off the left edge)
+  if (C.promise) { const v = curVB(), w = 2 * 11 * z * 1.25, x0 = +promiseLbl.getAttribute("x");
+    promiseLbl.setAttribute("x", Math.max(v[0] + w / 2 + 2 * z, Math.min(v[0] + v[2] - w / 2 - 2 * z, x0))); }
+  placeLabels(z, P);
+}
+// city labels: each one tries a few spots round its pin and takes the one that sits on the fewest route lines, pins and other
+// labels, inside the frame. the hand-set spots (LBL / LBL_FAR) are tried first; a label set a little way off gets a fine leader.
+const NEAR = [[9, 3.5, "start"], [-9, 3.5, "end"], [9, -2, "start"], [-9, -2, "end"], [9, 9, "start"], [-9, 9, "end"], [7, -7, "start"], [-7, -7, "end"], [7, 14, "start"], [-7, 14, "end"], [0, -11, "middle"], [0, 19, "middle"]];
+const OFF = [[18, -15, "start"], [-18, -15, "end"], [18, 21, "start"], [-18, 21, "end"], [0, -21, "middle"], [0, 28, "middle"], [23, 3.5, "start"], [-23, 3.5, "end"]];
+const curVB = () => (svg.getAttribute("viewBox") || fullVB.join(" ")).split(/\s+/).map(Number);
+const qSamples = (P, z) => { const out = []; if (svg.classList.contains("zoomed")) return out;
+  for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = Math.hypot(b.x - a.x, b.y - a.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2 + L * .12, n = Math.max(4, Math.ceil(L / (2 * z)));
+    for (let k = 0; k <= n; k++) { const t = k / n, u = 1 - t; out.push([u * u * a.x + 2 * u * t * cx + t * t * b.x, u * u * a.y + 2 * u * t * cy + t * t * b.y]); } }
+  if (C.promise) { const L = promisePath.getTotalLength ? promisePath.getTotalLength() : 0; for (let d = 0; d <= L; d += 2 * z) { const q = promisePath.getPointAtLength(d); out.push([q.x, q.y]); } }
+  return out; };
+function placeLabels(z, P) {
+  const v = curVB(), fs = 11.5 * z, pad = 1.2 * z, pts = qSamples(P, z), placed = [], pr = 6.6 * z;
+  const boxOf = (id, lx, ly, an) => { const w = [...placeById[id].name].length * fs * 1.12, x0 = an === "end" ? lx - w : an === "middle" ? lx - w / 2 : lx;
+    return [x0 - pad, ly - fs * .9 - pad, x0 + w + pad, ly + fs * .2 + pad]; };
+  if (C.promise && !svg.classList.contains("zoomed")) { const x = +promiseLbl.getAttribute("x"), y = +promiseLbl.getAttribute("y"), w = 2 * 11 * z * 1.25; placed.push([x - w / 2, y - 11 * z, x + w / 2, y + 2 * z]); }
+  const hitBox = (B, q) => q[0] > B[0] && q[0] < B[2] && q[1] > B[1] && q[1] < B[3];
+  const ov = (A, B) => Math.max(0, Math.min(A[2], B[2]) - Math.max(A[0], B[0])) * Math.max(0, Math.min(A[3], B[3]) - Math.max(A[1], B[1]));
+  const ids = Object.keys(lblEls).sort((a, b) => (LBL_FAR[b] ? 1 : 0) - (LBL_FAR[a] ? 1 : 0));
+  ids.forEach(id => { const t = lblEls[id], p = placeById[id], [x, y] = proj(p.lon, p.lat), pre = (farMode && LBL_FAR[id]) || LBL[id] || NEAR[0];
+    const cands = [[pre, 0, !!(farMode && LBL_FAR[id])], ...NEAR.map(c => [c, .4, false]), ...(farMode && LBL_FAR[id] ? OFF.map(c => [c, 1.5, true]) : [])];   // leaders only for the tight east-China cluster
+    let best = null;
+    for (const [[dx, dy, an], base, lead] of cands) { const lx = x + dx * z, ly = y + dy * z, B = boxOf(id, lx, ly, an); let sc = base;
+      if (B[0] < v[0] + z || B[2] > v[0] + v[2] - z || B[1] < v[1] + z || B[3] > v[1] + v[3] - z) sc += 60;
+      for (const q of pts) if (hitBox(B, q)) sc += 3;
+      for (const q of P) { const cx = Math.max(B[0], Math.min(q.x, B[2])), cy = Math.max(B[1], Math.min(q.y, B[3])); if (Math.hypot(cx - q.x, cy - q.y) < pr) sc += 20; }
+      for (const A of placed) sc += ov(A, B) / (fs * fs) * 40;
+      if (!best || sc < best.sc - .01) best = { sc, lx, ly, an, B, lead }; }
+    placed.push(best.B);
+    t.setAttribute("x", best.lx); t.setAttribute("y", best.ly); t.setAttribute("text-anchor", best.an); t.setAttribute("font-size", fs); t.style.strokeWidth = 3.2 * z;
     const ld = leadEls[id]; if (!ld) return;
-    if (far && LBL_FAR[id]) { const tx = lx + (an === "end" ? 1.5 : an === "start" ? -1.5 : 0) * z, ty = ly - (dy < 0 ? -1.5 : 9.5) * z, L = Math.hypot(tx - x, ty - y) || 1, r = 6.6 * z * 1.15;
-      ld.setAttribute("d", `M${x + (tx - x) / L * r} ${y + (ty - y) / L * r}L${tx} ${ty}`); ld.style.strokeWidth = .75 * z; ld.style.display = ""; }
+    if (best.lead) { const B = best.B, tx = Math.max(B[0] + pad, Math.min(x, B[2] - pad)), ty = Math.max(B[1] + pad, Math.min(y, B[3] - pad)), L = Math.hypot(tx - x, ty - y) || 1, r = 6.6 * z * 1.15;
+      const ex = tx - (tx - x) / L * 1.5 * z, ey = ty - (ty - y) / L * 1.5 * z;
+      ld.setAttribute("d", `M${x + (tx - x) / L * r} ${y + (ty - y) / L * r}L${ex} ${ey}`); ld.style.strokeWidth = .75 * z; ld.style.display = ""; }
     else ld.style.display = "none"; });
 }
 // on a phone the map gets a tighter, taller frame around the route (it runs near full width)
