@@ -747,7 +747,10 @@ $("#lcTitle").textContent = F.lockedTitle; $("#envTo").textContent = C.him; $("#
 // the real seal, lifted off the envelope photograph; two halves along a crack so it can break
 const CRACK_L = "polygon(0 0, 52% 0, 47% 18%, 54% 34%, 46% 52%, 55% 68%, 48% 84%, 53% 100%, 0 100%)";
 const CRACK_R = "polygon(52% 0, 100% 0, 100% 100%, 53% 100%, 48% 84%, 55% 68%, 46% 52%, 54% 34%, 47% 18%)";
-function sealHTML(text) { const face = `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
+// baked seals: the numeral is pressed into the wax in the image itself; any other text falls back to img + span
+const SEAL_BAKED = { "4": "assets/seal-4.webp?v=1", "6.22": "assets/seal-622.webp?v=1" };
+function sealHTML(text) { const baked = SEAL_BAKED[String(text)];
+  const face = baked ? `<img src="${baked}" width="720" height="713" alt="" decoding="async">` : `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
   return `<span class="half h1" style="clip-path:${CRACK_L};-webkit-clip-path:${CRACK_L}">${face}</span><span class="half h2" style="clip-path:${CRACK_R};-webkit-clip-path:${CRACK_R}">${face}</span>`; }
 $("#seal").innerHTML = sealHTML(F.seal || "4");
 if ($("#closing")) $("#closing").innerHTML = `<span>${esc(F.closing).replace(" in every", "<br>in every")}</span><b class="script">${esc(F.signature)}</b>`;
