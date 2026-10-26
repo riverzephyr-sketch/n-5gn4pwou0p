@@ -1,7 +1,7 @@
 (() => {
 "use strict";
 // the ending's passcode: after two wrong tries in a row this one line fades in above the dots (Helios writes it; one line to change)
-const HINT_TEXT = "提示待定";
+const HINT_TEXT = "这都不知道？？？";
 const C = window.CONTENT, M = window.MAP_DATA;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
