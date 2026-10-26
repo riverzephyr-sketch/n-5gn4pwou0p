@@ -1461,3 +1461,13 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
   .desk{height:calc(780 * var(--d))}
   .closing{top:calc(632 * var(--d));bottom:auto}
 }
+
+/* ---------- cover counter: hours / minutes / seconds read as a duration (时 分 秒 in the unit's own small type);
+   before 10.30 it counts down to the day ("还有 …"), from 10.30 on it counts the days together ---------- */
+.tag-count .t-time small{font-family:var(--zh);font-size:.74em;letter-spacing:0;margin:0 .32em 0 .12em;opacity:.78}
+.tag-count .t-time small:last-child{margin-right:0}
+.tag-count .t-pre{font-family:var(--zh);font-size:11px;letter-spacing:.1em}
+.tag-count .t-pre[hidden]{display:none}
+.tag-count.no-days .t-days,.tag-count.no-days .t-unit{display:none}
+.tag-count.no-days .t-time{margin-left:0}
+@media (min-width:900px){ .tag-count .t-pre{font-size:12px} }

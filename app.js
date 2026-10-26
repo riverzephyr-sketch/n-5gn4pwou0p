@@ -131,13 +131,18 @@ if (!location.hash) { try { if ("scrollRestoration" in history) history.scrollRe
   } catch (e) { end(); }
 })();
 const start = new Date(C.startDate).getTime(), TARGET = 1461;
+// before the day itself (2026.10.30, Beijing time) the small counter counts down to it ("还有 3 天 06时31分20秒");
+// from that midnight on it is the plain count since 2022.10.30 (1461 on the day)
+const ANNIV = new Date("2026-10-30T00:00:00+08:00").getTime();
+const counterNow = () => { const now = Date.now(), ahead = now < ANNIV; let ms = ahead ? ANNIV - now : Math.max(0, now - start);
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5; const h = Math.floor(ms / 36e5); ms -= h * 36e5; const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+  return { ahead, d, h, m, s: Math.floor(ms / 1e3) }; };
 function tick() {
-  let ms = Math.max(0, Date.now() - start);
-  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
-  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
-  const m = Math.floor(ms / 6e4); ms -= m * 6e4;
-  if (!MO.counting) $("#cDays").textContent = d.toLocaleString("en-US");
-  $("#cH").textContent = pad2(h); $("#cM").textContent = pad2(m); $("#cS").textContent = pad2(Math.floor(ms / 1e3));
+  const c = counterNow(), tc = $("#tCount");
+  tc.classList.toggle("ahead", c.ahead); $("#cPre").hidden = !c.ahead;
+  tc.classList.toggle("no-days", c.ahead && c.d === 0);   // the last day: only the hours are left
+  if (!MO.counting) $("#cDays").textContent = c.d.toLocaleString("en-US");
+  $("#cH").textContent = pad2(c.h); $("#cM").textContent = pad2(c.m); $("#cS").textContent = pad2(c.s);
 }
 tick(); setInterval(tick, 1000);
 /* ---------- SCROLL CUE (hero): comes in once the intro has settled, leaves for good after a little scroll ---------- */
@@ -958,7 +963,7 @@ function initMotion() { if (!(window.gsap && window.ScrollTrigger && window.Draw
   mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduce: "(prefers-reduced-motion: reduce)" }, ctx => {
     const { reduce } = ctx.conditions;
     /* 1 · hero: 1461 rises through its mask, then the dates, then the small live counter counts up, then the red line leaves the player */
-    const days = Math.floor(Math.max(0, Date.now() - start) / 864e5), first = !!window.LOADER || performance.now() < 2600;
+    const days = counterNow().d, first = !!window.LOADER || performance.now() < 2600;
     const html = document.documentElement, digits = $$(".hero-num .d"), dates = $$(".hero-dates > *");
     if (!reduce && first) { MO.heroPending = true;
       const tagEl = $("#tag"), printEl = window.LOADER ? null : $("#heroPrint"); // [loader] the print arrives with the loader
