@@ -1471,3 +1471,9 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 .tag-count.no-days .t-days,.tag-count.no-days .t-unit{display:none}
 .tag-count.no-days .t-time{margin-left:0}
 @media (min-width:900px){ .tag-count .t-pre{font-size:12px} }
+
+/* ---------- the passcode hint: one faint line above the dots, only after two wrong tries in a row (opacity only) ---------- */
+.lock{position:relative}
+.pass-hint{position:absolute;left:0;right:0;bottom:calc(100% + 16px);margin:0;text-align:center;font-family:var(--lat),var(--zh);font-size:12px;line-height:1.5;letter-spacing:.16em;color:var(--chalk2);opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.pass-hint.on{opacity:.62}
+@media (prefers-reduced-motion:reduce){.pass-hint{transition:none}}

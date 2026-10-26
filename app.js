@@ -1,5 +1,7 @@
 (() => {
 "use strict";
+// the ending's passcode: after two wrong tries in a row this one line fades in above the dots (Helios writes it; one line to change)
+const HINT_TEXT = "提示待定";
 const C = window.CONTENT, M = window.MAP_DATA;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -773,8 +775,10 @@ const dots = [...dotsEl.children];
   };
   $("#pad").append(b);
 });
+let wrongTries = 0; const hintEl = $("#passHint"); if (hintEl) hintEl.textContent = HINT_TEXT;
 function check() {
-  if (code === String(F.code)) { checking = false; unlock(); return; }
+  if (code === String(F.code)) { checking = false; wrongTries = 0; unlock(); return; }
+  if (++wrongTries >= 2 && hintEl && HINT_TEXT) hintEl.classList.add("on");
   dotsEl.classList.add("bad"); if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
   setTimeout(() => { dotsEl.classList.remove("bad"); code = ""; checking = false; dots.forEach(x => x.classList.remove("f")); }, 650);
 }
