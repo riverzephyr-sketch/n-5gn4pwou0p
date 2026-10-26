@@ -483,7 +483,11 @@ function layoutMap(z) {
 const fullVB = innerWidth < 900 ? [4, 30, 416, 430] : [5, 0, M.w - 10, M.h];
 svg.style.aspectRatio = `${fullVB[2]} / ${fullVB[3]}`;
 function box(l0, a1, l1, a0) { const [x0, y0] = proj(l0, a1), [x1, y1] = proj(l1, a0); const w = x1 - x0, h = y1 - y0, s = Math.max(w, h); return [x0 + (w - s) / 2, y0 + (h - s) / 2, s, s]; }
-const regions = { all: fullVB, yrd: box(117.6, 32.6, 123.6, 28.4), prd: box(111.6, 24.8, 116.4, 21), ne: box(124, 41, 142, 30) };
+// 全图 / 国内 / 日韩 / 东南亚: every stop sits in one of the three groups (a square frame, kept on the map sheet)
+const onSheet = b => [b[0], Math.max(0, Math.min(M.h - b[3], b[1])), b[2], b[3]];
+const regions = { all: fullVB, cn: box(98.4, 41.6, 123.6, 21.2), ne: box(124, 41, 142, 30), sea: onSheet(box(96.8, 13, 117.6, 2)) };
+const FOCUS_SIDE = box(117.6, 32.6, 123.6, 28.4)[2];   // the one fixed zoom a tapped city glides to
+const REGION_OF = { "中国": "cn", "日本": "ne", "韩国": "ne", "泰国": "sea", "马来西亚": "sea" };
 let vb = fullVB.slice();
 const applyVB = v => { svg.setAttribute("viewBox", v.join(" ")); layoutMap(v[2] / M.w); };
 let vbRun = 0;
@@ -496,16 +500,15 @@ function animVB(to, far) { const run = ++vbRun, from = vb.slice(), t0 = performa
 applyVB(vb);
 function setRegion(key) { if (!regions[key]) return; MO.finishString && MO.finishString(); curRegion = key; focusBox = null;
   $$("#zoom button").forEach(b => b.classList.toggle("on", b.dataset.z === key)); svg.classList.toggle("zoomed", key !== "all");
-  animVB(regions[key], key === "all"); }
+  animVB(regions[key], key === "all" || key === "cn"); }
 // the region a city sits in (its tab), or the full map
-const regionOf = id => { const p = placeById[id], [x, y] = proj(p.lon, p.lat);
-  return ["yrd", "prd", "ne"].find(k => { const R = regions[k]; return x >= R[0] && x <= R[0] + R[2] && y >= R[1] && y <= R[1] + R[3]; }) || "all"; };
+const regionOf = id => REGION_OF[placeById[id].country] || "all";
 $("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setRegion(b.dataset.z); });
 S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => focusCity(i); $("#chips").append(b); });
 // a pin and a list row do exactly the same: the card shows, the row is selected, the map glides to centre that city
 // at one fixed zoom (even when it is already in view), and its pin pulses once
 function focusCity(i) { const s = S[i]; if (!s) return; openPlace(i); MO.finishString && MO.finishString();
-  const p = placeById[s.city], [cx, cy] = proj(p.lon, p.lat), side = regions.yrd[2];
+  const p = placeById[s.city], [cx, cy] = proj(p.lon, p.lat), side = FOCUS_SIDE;
   const x = Math.max(0, Math.min(M.w - side, cx - side / 2)), y = Math.max(0, Math.min(M.h - side, cy - side / 2));
   curRegion = regionOf(s.city); focusBox = [x, y, side, side];
   $$("#zoom button").forEach(b => b.classList.toggle("on", curRegion !== "all" && b.dataset.z === curRegion));
