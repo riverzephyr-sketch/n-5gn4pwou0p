@@ -174,10 +174,19 @@ const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
 let fresh = true;
 let playing = false, ctx = null, gain = null, fadeT = null;
+// the record turns while the song plays; on pause it does not freeze mid-turn but coasts to a stop (transform only),
+// and the next play picks the turn up from where it rests
+let spinOn = false;
+function spinTo(on) { const d = mini.querySelector(".mini-dot"); if (!d || on === spinOn) return; spinOn = on; if (reduced) return;
+  const cs = getComputedStyle(d), m = cs.transform.match(/matrix\(([^)]+)\)/), v = m ? m[1].split(",").map(Number) : [1, 0];
+  const a = (Math.atan2(v[1], v[0]) * 180 / Math.PI + 360) % 360, per = parseFloat(cs.animationDuration) || 3.2;
+  if (!on) { d.style.animation = "none"; d.style.transition = "none"; d.style.transform = `rotate(${a}deg)`; void d.offsetWidth;
+    d.style.transition = "transform 1.3s cubic-bezier(.15,.6,.3,1)"; d.style.transform = `rotate(${a + 360 / per * .33}deg)`; }
+  else { d.style.transition = ""; d.style.transform = ""; d.style.animation = ""; d.style.animationDelay = `-${(a / 360 * per).toFixed(3)}s`; } }
 function setMini() { const t = $("#miniTxt");
   if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`;
   else if (!playing && audio.dataset.blocked) t.innerHTML = `<span class="mt-en">Tap to play ▸</span><span class="mt-zh">${esc(songName)}</span>`;   // the browser refused to start it: wait quietly for a tap
-  else t.textContent = songName; mini.classList.toggle("on", playing);
+  else t.textContent = songName; spinTo(playing); mini.classList.toggle("on", playing);
   // the ending covers the page (and the chip): if its song was refused, the chip comes up over it so one tap starts it
   mini.classList.toggle("up", !playing && audio.dataset.track === "finale" && !!audio.dataset.blocked); }
 // a fade on one element (iOS ignores element.volume, so over http the level goes through a Web Audio gain)
