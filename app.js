@@ -439,7 +439,7 @@ const stringLocal = sv("path", { class: "string-local", "aria-hidden": "true" })
 svg.append(stringPath, stringLocal, promisePath, promiseLbl);
 const pinEls = [], lblEls = {};
 S.forEach((s, i) => {
-  const g = sv("g", { class: "pin" + (s.highlight ? " hi" : ""), tabindex: 0, role: "button", "aria-label": `${pad2(i + 1)} ${placeById[s.city].name}` });
+  const g = sv("g", { class: "pin" + (s.highlight ? " hi" : ""), tabindex: 0, role: "button", "aria-label": `${pad2(i + 1)} ${placeById[s.city].name}${S.slice(0, i).some(o => o.city === s.city) ? " · 重返" : ""}` });
   const hit = sv("circle", { class: "hit" }), sh = sv("ellipse", { class: "sh" }), ring = sv("circle", { class: "ring" }), hd = sv("circle", { class: "hd", fill: "url(#pinG)" }), hl = sv("circle", { class: "hl" });
   const num = sv("text", { class: "num" }); num.textContent = pad2(i + 1);
   g.append(hit, sh, ring, hd, hl, num); svg.append(g);
@@ -533,7 +533,9 @@ function setRegion(key) { if (!regions[key]) return; MO.finishString && MO.finis
 // the region a city sits in (its tab), or the full map
 const regionOf = id => REGION_OF[placeById[id].country] || "all";
 $("#zoom").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setRegion(b.dataset.z); });
-S.forEach((s, i) => { const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => focusCity(i); $("#chips").append(b); });
+// a city the route comes back to (大理: 05, then 15) says so, quietly, on its second row
+S.forEach((s, i) => { const back = S.slice(0, i).some(o => o.city === s.city);
+  const b = el("button", s.highlight ? "hi" : "", `<small>${pad2(i + 1)}</small>${esc(placeById[s.city].name)}${back ? '<em class="back">重返</em>' : ""}`); b.type = "button"; b.setAttribute("aria-controls", "st" + i); b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => focusCity(i); $("#chips").append(b); });
 // a pin and a list row do exactly the same: the card shows, the row is selected, the map glides to centre that city
 // at one fixed zoom (even when it is already in view), and its pin pulses once
 function focusCity(i) { const s = S[i]; if (!s) return; openPlace(i); MO.finishString && MO.finishString();

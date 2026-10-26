@@ -1477,3 +1477,6 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 .pass-hint{position:absolute;left:0;right:0;bottom:calc(100% + 16px);margin:0;text-align:center;font-family:var(--lat),var(--zh);font-size:12px;line-height:1.5;letter-spacing:.16em;color:var(--chalk2);opacity:0;pointer-events:none;transition:opacity 1.2s ease}
 .pass-hint.on{opacity:.62}
 @media (prefers-reduced-motion:reduce){.pass-hint{transition:none}}
+
+/* ---------- the stops list: a city the route returns to (大理 · 15) carries a small 重返 in the muted tone ---------- */
+.chips .back{font-style:normal;font-size:9.5px;letter-spacing:.2em;color:var(--mute);margin-left:-4px}
