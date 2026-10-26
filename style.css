@@ -1450,3 +1450,8 @@ html.reveal .hero.wine{min-height:calc(max(100svh, var(--vh, 0px)) + var(--lap) 
 /* song-title tab: wide enough for the whole title, so the paper margin is the same on both sides */
 .mini:not(.fresh) .mini-txt{max-width:220px;padding:4px 10px}
 .mini.tuck:not(.open) .mini-txt{max-width:0;padding:0}
+/* cover: the tag + print pair, measured together, centres on the window (it sat ~66 units right) */
+@media (min-width:900px){
+  .tag{left:calc(50% - 316 * var(--d))}
+  .hero-print{left:calc(50% - 76 * var(--d))}
+}
