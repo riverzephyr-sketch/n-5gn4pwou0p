@@ -803,7 +803,7 @@ function sealHTML(text) { const baked = SEAL_BAKED[String(text)];
   const face = baked ? `<img src="${baked}" width="720" height="713" alt="" loading="lazy" decoding="async">` : `<img src="assets/seal.webp" width="200" height="198" alt=""><span class="seal-t">${esc(text)}</span>`;
   return `<span class="half h1" style="clip-path:${CRACK_L};-webkit-clip-path:${CRACK_L}">${face}</span><span class="half h2" style="clip-path:${CRACK_R};-webkit-clip-path:${CRACK_R}">${face}</span>`; }
 $("#seal").innerHTML = sealHTML(F.seal || "4");
-if ($("#closing")) $("#closing").innerHTML = `<span>${esc(F.closing).replace(" in all", "<br>in all")}</span><b class="script">${esc(F.signature)}</b>`;
+if ($("#closing")) $("#closing").innerHTML = `<span>${esc(F.closing).replace(" in every", "<br>in every")}</span><b class="script">${esc(F.signature)}</b>`;
 const dotsEl = $("#dots");
 const LEN = String(F.code).length; // number of digits = length of finale.code
 for (let i = 0; i < LEN; i++) dotsEl.append(el("span"));
