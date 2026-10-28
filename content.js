@@ -157,7 +157,7 @@ window.CONTENT = {
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       // 2024 这一卷只放 Helios 新发的照片（只出现在这卷里）；只有日期，点开显示日期和文案（dateOnly）
       { title: "", date: "2024.01.01", text: "2024的第一页，从和你一起看海开始", photo: "photos/r24-0101.webp", dateOnly: true },
-      { title: "", date: "2024.04.11", text: "", photo: "photos/r24-0411.webp", dateOnly: true },
+      { title: "", date: "2024.04.11", text: "生日在刚开业的 Need 排长队，但其实 All I need is you。", photo: "photos/r24-0411.webp", dateOnly: true },
     ]},
     { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp", city: "hangzhou" },   // 贴脸自拍
