@@ -155,15 +155,9 @@ window.CONTENT = {
       { title: "", date: "2023.12.25", text: "不用等圣诞老人送礼物了，镜子里贴着我的这个就是。", photo: "photos/r23-1225.webp", dateOnly: true },
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/n0-hardware.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
-      { title: "新年 · 重庆", date: "2024.01.01", text: "", photo: "photos/m3.webp", city: "chongqing" },   // 水母灯
-      { title: "重庆", date: "2024.03", text: "女子五金背后的男人", photo: "photos/n0-hardware.webp", highlight: true, feature: true, city: "chongqing" },
-      { title: "生日 · 重庆", date: "2024.04.11", text: "", photo: "photos/m4.webp", city: "chongqing" },
-      { title: "重庆同居", date: "2024", text: "", photo: "photos/n4.webp", city: "chongqing" },
-      { title: "重庆", date: "2024.07", text: "我马上就要去杭州上班了", photo: "photos/m5.webp", city: "chongqing" },   // 2024.07.14
-      { title: "杭州", date: "2024.08", text: "", photo: "photos/m6.webp", city: "hangzhou" },   // 镜子自拍
-      { title: "杭州", date: "2024.09", text: "", photo: "photos/m7.webp", city: "hangzhou" },   // 车后座自拍
-      { title: "十一", date: "2024.10", text: "我把我们的合影当成了云音乐的播放器", photo: "photos/m8.webp", crop: { ratio: "3/5", fit: "contain" } },   // 国庆 · 云音乐截图（状态栏已裁掉）
-      { title: "西湖音乐节 · 杭州", date: "2024.11", text: "", photo: "photos/m9.webp", city: "hangzhou" },   // 夜里自拍
+      // 2024 这一卷只放 Helios 新发的照片（只出现在这卷里）；只有日期，点开显示日期和文案（dateOnly）
+      { title: "", date: "2024.01.01", text: "2024的第一页，从和你一起看海开始", photo: "photos/r24-0101.webp", dateOnly: true },
+      { title: "", date: "2024.04.11", text: "", photo: "photos/r24-0411.webp", dateOnly: true },
     ]},
     { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp", city: "hangzhou" },   // 贴脸自拍
