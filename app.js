@@ -29,20 +29,25 @@ const redraw = e => { e.classList.remove("in"); void e.getBoundingClientRect(); 
 const screenLen = p => { try { const m = p.getScreenCTM(), L = p.getTotalLength(), n = 24; if (!m || !L) return 0; let s = 0, prev = null;
   for (let i = 0; i <= n; i++) { const q = p.getPointAtLength(L * i / n).matrixTransform(m); if (prev) s += Math.hypot(q.x - prev.x, q.y - prev.y); prev = q; } return Math.ceil(s * 1.08) + 2; } catch (e) { return 0; } };
 
-const SIZES = window.PHOTO_SIZES || {};
-// wall tiles use a 720px copy; the full photo loads only when it is opened
-const THUMBS = window.PHOTO_THUMBS || new Set(), TH = src => THUMBS.has(src.replace("photos/", "")) ? src.replace("photos/", "photos/t/") : src;
-// <img> with intrinsic size (no layout shift), lazy unless told otherwise, alt from context
-const img = (src, alt = "", eager = false) => { const [w, h] = SIZES[src.replace("photos/t/", "photos/")] || [1200, 1600];
-  return `<img src="${src}" width="${w}" height="${h}" alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`; };
+const SIZES = window.PHOTO_SIZES || {}, LQ = window.PHOTO_LQ || {};
+// every photo has a 400px-wide copy in photos/s/ (listed in photos/lq.js with a quiet tone of its colours).
+// where a photo is drawn small (walls, rolls, stamps), o.sizes says how wide, and the browser takes the small copy
+// unless the screen needs more; the full photo loads when it is opened. the tone sits behind it until it arrives.
+const SM = 400, smallOf = src => LQ[src] && SIZES[src] ? src.replace("photos/", "photos/s/") : "";
+const img = (src, alt = "", eager = false, o = {}) => { const [w, h] = SIZES[src] || [1200, 1600], s = o.sizes && w > SM ? smallOf(src) : "";
+  const st = [LQ[src] ? `background-color:${LQ[src]}` : "", o.style || ""].filter(Boolean).join(";");
+  return `<img src="${s || src}"${s ? ` srcset="${s} ${SM}w, ${src} ${w}w" sizes="${o.sizes}"` : ""} width="${w}" height="${h}" alt="${esc(alt)}"${st ? ` style="${st}"` : ""} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`; };
+// how wide each small place draws its photos (CSS px on a phone ≈ vw; the desktop column in px)
+const SZ = { wall: "(min-width: 1024px) 140px, 31vw", roll: "(min-width: 1024px) 270px, 31vw", fr: "(min-width: 1024px) 180px, 20vw",
+  cal: "(min-width: 1024px) 130px, 31vw", disc: "(min-width: 1024px) 90px, 20vw", pair: "(min-width: 1024px) 220px, 44vw", stamp: "(min-width: 1024px) 160px, 30vw" };
 // a sheet of perforated postage stamps held by a binder clip (the envelope screen's stamp sheet, reused in two more places).
 // cells: [{ src, pos, zoom } | { note: [lines] }]; cols: stamps per row
 const stampSheet = (cells, cols, cls = "") => `<figure class="stampsheet ${cls}" style="--cols:${cols}"><div class="ss-grid">${cells.map(c => c.src
-    ? `<div class="pstamp"><div class="pstamp-in">${img(c.src, c.alt || "")}</div></div>`.replace("<img ", `<img style="object-position:${c.pos || "50% 50%"};${c.zoom ? `transform:scale(${c.zoom})` : ""}" `)
+    ? `<div class="pstamp"><div class="pstamp-in">${img(c.src, c.alt || "", false, { sizes: SZ.stamp, style: `object-position:${c.pos || "50% 50%"};${c.zoom ? `transform:scale(${c.zoom})` : ""}` })}</div></div>`
     : `<div class="pstamp note"><div class="pstamp-in">${c.note.map(t => `<span>${esc(t)}</span>`).join("")}</div></div>`).join("")}</div><img class="ss-clip" src="assets/clip.webp" width="120" height="225" alt="" loading="lazy"></figure>`;
-const photoBox = (src, hint, dark, alt = "", eager = false) => {
+const photoBox = (src, hint, dark, alt = "", eager = false, o = {}) => {
   const d = el("div", "ph" + (src ? "" : " empty") + (dark ? " dark" : ""));
-  d.innerHTML = src ? img(src, alt, eager) : (SHOW && hint ? `<code>${hint}</code>` : "");
+  d.innerHTML = src ? img(src, alt, eager, o) : (SHOW && hint ? `<code>${hint}</code>` : "");
   return d;
 };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -165,7 +170,6 @@ const WX = /MicroMessenger/i.test(navigator.userAgent || "");
 audio.setAttribute("playsinline", "");
 audio.setAttribute("webkit-playsinline", "true");
 audio.preload = "none";   // the song (3.8 MB) waits: the first screen loads first
-addEventListener("load", () => setTimeout(() => { if (audio.preload === "none") audio.preload = "auto"; }, 4000), { once: true });
 if (MU.src) audio.src = MU.src;
 // two versions take turns: when one ends the other starts on the same element (its gain and the tap that unlocked it carry over)
 const PL = (MU.playlist || []).filter(Boolean); let plI = 0;
@@ -304,7 +308,9 @@ requestAnimationFrame(() => mini.classList.add("show"));
     const WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const dots = el("p", "cal-dots"); dots.setAttribute("aria-label", "Anniversaries"); line.after(dots);
     P.forEach((pg, k) => { const b = el("button", "", "<i></i>"); b.type = "button"; b.setAttribute("aria-label", pg.date.slice(0, 4)); b.onclick = e => { e.stopPropagation(); stop(); go(k); }; dots.append(b); });
-    P.forEach(pg => { if (pg.print) { const im = new Image(); im.src = pg.print; } });   // the photo is ready before its page turns
+    // the photos are ready before their pages turn: fetched (the same copy the page will show) once the calendar comes near, not with the first screen
+    const warmCal = () => P.forEach(pg => { if (pg.print) document.createElement("div").innerHTML = img(pg.print, "", true, { sizes: SZ.cal }); });
+    if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); warmCal(); } }, { rootMargin: "1200px 0px" }); io.observe(sec); } else warmCal();
     let cur = -1, timer = 0, swapT = 0;
     const paint = k => { const pg = P[k], [y, m, d] = pg.date.split("-").map(Number), base = new Date(Date.UTC(y, m - 1, d));
       wds.forEach((w, j) => { (w.querySelector(".wt") || w).textContent = WD[(base.getUTCDay() + j - 1 + 7) % 7]; });   // only the word; the rule under it stays put
@@ -312,7 +318,7 @@ requestAnimationFrame(() => mini.classList.add("show"));
       line.textContent = `${WD[base.getUTCDay()]}, October ${d}, ${y}`;
       strip.setAttribute("aria-label", `${y}.${pad2(m)}.${pad2(d)}`);
       pr.classList.toggle("undev", !pg.print);
-      pr.innerHTML = (pg.print ? img(pg.print, "", true) : '<div class="haze" aria-hidden="true"></div>') + cap(pg.caption);
+      pr.innerHTML = (pg.print ? img(pg.print, "", true, { sizes: SZ.cal }) : '<div class="haze" aria-hidden="true"></div>') + cap(pg.caption);
       [...dots.children].forEach((b, j) => b.setAttribute("aria-pressed", j === k ? "true" : "false")); };
     const go = k => { k = (k + P.length) % P.length; if (k === cur) return; const first = cur < 0; cur = k;
       if (first || reduced) { paint(k); return; }
@@ -600,7 +606,7 @@ function wallHTML(list, gid, name) {
     const yAt = t => (1 - t) * (1 - t) * y0 + 2 * t * (1 - t) * (y0 + sag) + t * t * y1;
     out += `<div class="w-row"><svg class="w-str" viewBox="0 0 100 48" preserveAspectRatio="none" aria-hidden="true"><path d="M-2 ${y0} Q50 ${y0 + sag} 102 ${y1}"/></svg>` +
       WALL_F[n].map((f, j) => { const ph = list[k + j], vi = k + j, tilt = WALL_TILT[vi % WALL_TILT.length];
-        return `<figure class="w-f" style="left:${f * 100}%;top:${yAt(f).toFixed(2)}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大"><span class="w-pin" aria-hidden="true"></span><span class="w-ph">${img(TH(ph.src), name)}</span></figure>`; }).join("") + `</div>`;
+        return `<figure class="w-f" style="left:${f * 100}%;top:${yAt(f).toFixed(2)}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大"><span class="w-pin" aria-hidden="true"></span><span class="w-ph">${img(ph.src, name, false, { sizes: SZ.wall })}</span></figure>`; }).join("") + `</div>`;
     k += n; r++; }
   return `<div class="wall">${out}</div>`;
 }
@@ -612,7 +618,7 @@ function tapeHTML(list, gid, name) {
     cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .12; });
   const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = false;
     const tapes = []; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`);
-    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(TH(ph.src), name)}</figure>`; };
+    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name, false, { sizes: SZ.wall })}</figure>`; };
   return `<div class="tapewall">${cols.map(c => `<div class="tw-col">${c.map(fig).join("")}</div>`).join("")}</div>`;
 }
 function collageHTML(list, gid, name) {
@@ -625,7 +631,7 @@ function collageHTML(list, gid, name) {
 }
 function rowsHTML(rows, gid, name) {
   return rows.map(row => `<div class="cl-row">${row.map(([[w, ml, mt, rot], ph, vi]) => { const [iw, ih] = SIZES[ph.src] || [1200, 1600], tall = ih / iw > 1.6;
-    return `<figure class="cl-f" style="width:${tall ? w * .62 : w}%;margin-left:${ml}%;margin-top:${mt}%;--r:${rot}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${img(ph.src, name)}</figure>`; }).join("")}</div>`).join("");
+    return `<figure class="cl-f" style="width:${tall ? w * .62 : w}%;margin-left:${ml}%;margin-top:${mt}%;--r:${rot}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${img(ph.src, name, false, { sizes: `(min-width: 1024px) ${Math.round((tall ? w * .62 : w) * 4.6)}px, ${Math.ceil(tall ? w * .62 : w)}vw` })}</figure>`; }).join("")}</div>`).join("");
 }
 (() => { const st = $("#story"); if (!st) return;
   S.forEach((s, i) => { const p = placeById[s.city], list = cityPhotos(s.city), gid = "city-" + s.city;
@@ -685,7 +691,7 @@ if ("IntersectionObserver" in window && !(window.matchMedia && matchMedia("(pref
 
 C.chapters.forEach((c, ci) => {
   const ph = c.items.find(m => m.photo);
-  const f = el("button", "fr", `<i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
+  const f = el("button", "fr", `<i class="fr-ph">${c.thumb || ph ? img(c.thumb || ph.photo, "", false, { sizes: SZ.fr }) : ""}</i><span>${esc(c.year)}</span>`); f.setAttribute("aria-label", c.year);
   f.type = "button"; f.setAttribute("aria-controls", "yr" + ci); f.setAttribute("aria-pressed", ci === 0 ? "true" : "false");
   f.onclick = () => selectRoll(ci, true); strip.append(f);
 });
@@ -751,8 +757,8 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
   c.items.forEach(m => {
     const fr = el("div", "vfr");
     if (m.milestone) { fr.classList.add("ms"); fr.append(el("div", "ph milestone", `<span class="ms-k">Milestone</span><b>${nobr(m.title)}</b><span class="ms-d">${esc(m.date)}</span>`)); }
-    else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title)); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
-    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title); tapPhoto(ph, m.photo, m);
+    else if (m.scans && m.scans.length) { const ph = el("div", "ph scans2"); m.scans.forEach(src => { const s1 = el("div", "sc", img(src, m.title, false, { sizes: SZ.roll })); tapPhoto(s1, src, m); ph.append(s1); }); fr.append(ph); }
+    else { const ph = photoBox(m.photo, null, true, isTodo(m.title) ? c.year : m.title, false, { sizes: SZ.roll }); tapPhoto(ph, m.photo, m);
       // every frame is cut to its photo's own proportions (portrait stays portrait, a wide shot stays wide): nothing is cropped
       const [pw, phh] = SIZES[m.photo] || [4, 5]; ph.style.aspectRatio = `${pw} / ${phh}`; if (pw > phh) fr.classList.add("land");
       const im = ph.querySelector("img"); if (im && m.crop && m.crop.pos) im.style.objectPosition = m.crop.pos;
@@ -773,7 +779,8 @@ const ROLLS = [...list.querySelectorAll(".yr")], FRS = [...strip.querySelectorAl
 let curRoll = 0; list.classList.add("tabs");
 // photos in the rolls load before they are needed: the open roll as the section nears, the other years right after
 (() => { const warm = y => y && y.querySelectorAll('img[loading="lazy"]').forEach(im => { im.loading = "eager"; });
-  const go = () => { warm(ROLLS[curRoll]); let k = 0; const next = () => { if (k >= ROLLS.length) return; warm(ROLLS[k++]); setTimeout(next, 700); }; setTimeout(next, 900); };
+  const go = () => warm(ROLLS[curRoll]);   // the other years wait until their frame on the strip is touched (below), so they never compete with what is on screen
+  FRS.forEach((f, k) => ["pointerenter", "pointerdown", "focus"].forEach(t => f.addEventListener(t, () => warm(ROLLS[k]), { passive: true, once: true })));
   if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); go(); } }), { rootMargin: "1600px 0px" }); io.observe(list); }
   else go(); })();
 function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) return; curRoll = i;
@@ -853,7 +860,7 @@ $("#sig").innerHTML = isTodo(F.signature) ? txt(F.signature) : `<span class="scr
       <text class="vm-sm" y="10.6">SUMMER &amp; HELIOS</text>
       <text class="vm-sm" y="13.3">2022.10.30 – 2026.10.30</text></svg>`;
   host.innerHTML = `<div class="vm-disc" role="img" aria-label="ポラリス" lang="ja">${print}
-    ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "")}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
+    ${list.map((src, k) => `<span class="vm-slot" style="--a:${k * 360 / N}deg"><span class="vm-f">${img(src, "", false, { sizes: SZ.disc })}</span></span><i class="vm-notch" style="--a:${(k + .5) * 360 / N}deg"></i>`).join("")}
     <i class="vm-hole"></i></div>`;
   const disc = host.firstElementChild; let seen = false, hold = 0;
   const resetDisc = () => {
@@ -880,7 +887,7 @@ const STAR = '<svg viewBox="0 0 40 40"><path d="M20 2 L22.2 17.8 L38 20 L22.2 22
 const SUN = '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 4V9M20 31V36M4 20H9M31 20H36M8.7 8.7L12.2 12.2M27.8 27.8L31.3 31.3M31.3 8.7L27.8 12.2M12.2 27.8L8.7 31.3"/></svg>';
 if (F.rings && $("#rings")) $("#rings").innerHTML = F.rings.map((r, i) => `<div class="r"><b>${esc(r.name)}</b><span>${esc(r.is)}</span><small>${esc(r.item)}</small></div>`).join('<span class="x2">×</span>');
 if (F.lyrics) $("#lyrics").innerHTML = `<h4>${esc(F.lyricTitle)}</h4>` + F.lyrics.map(([jp, cn]) => `<div class="ln"><span class="jp" lang="ja">${esc(jp)}</span><span class="cn">${esc(cn)}</span></div>`).join("") ;
-if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "")}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
+if (F.pair && F.pair.scans) $("#pair").innerHTML = F.pair.scans.map(src => `<figure class="scan"><i class="tape top"></i>${img(src, F.pair.caption || "", false, { sizes: SZ.pair })}</figure>`).join("") + (F.pair.caption ? `<p class="pair-cap">${esc(F.pair.caption)}</p>` : "");
 const W8 = F.wedding, wp = $("#weddingPola");
 if (W8 && (W8.photo || W8.label)) { wp.append(W8.photo ? photoBox(W8.photo) : el("div", "ph"));
   wp.append(el("figcaption", "", [esc(W8.label), esc(W8.date), W8.status ? `<em>${esc(W8.status)}</em>` : ""].filter(Boolean).join(" · "))); }
@@ -888,10 +895,12 @@ else if (wp) wp.remove();
 // Freezer-Door style silhouette (traced from the 大理 shadows, filled with our photos)
 if (F.silhouette) $("#silhouette").innerHTML = img(F.silhouette, `${C.him} & 我`) + (F.silhouetteCaption ? `<figcaption>${esc(F.silhouetteCaption)}</figcaption>` : "");
 // the private page's photos (the reel, the silhouette, the pair: ~1.5 MB) wait until he reaches the passcode, not the first screen
-const secretImgs = (() => { const ims = $$("#secret img[src]"); ims.forEach(im => { im.dataset.src = im.getAttribute("src"); im.removeAttribute("src"); }); let done = false;
-  const load = () => { if (done) return; done = true; ims.forEach(im => { im.src = im.dataset.src; }); };
-  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); load(); } }), { rootMargin: "900px 0px" }); io.observe($(".lock")); }
-  else load(); return load; })();
+// they start on the first tap of the passcode (the seal takes a few seconds to break, time enough), or at the unlock itself
+const secretImgs = (() => { const ims = $$("#secret img[src]"); ims.forEach(im => { im.dataset.src = im.getAttribute("src"); im.removeAttribute("src");
+    if (im.hasAttribute("srcset")) { im.dataset.srcset = im.getAttribute("srcset"); im.removeAttribute("srcset"); } }); let done = false;
+  const load = () => { if (done) return; done = true; ims.forEach(im => { if (im.dataset.srcset) im.srcset = im.dataset.srcset; im.src = im.dataset.src; }); };
+  ["pointerdown", "keydown", "focusin"].forEach(t => $("#pad").addEventListener(t, load, { once: true, passive: true }));
+  return load; })();
 function unlock() { secretImgs();
   const openPage = () => { const s = $("#secret"); s.classList.add("open"); s.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
     s.scrollTop = 0; s.focus({ preventScroll: true }); s.classList.add("dev");
@@ -951,8 +960,16 @@ function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], box = V
   const fw = w * k, fh = h * k; return { left: (vw - fw) / 2, top: (vh - fh) / 2 - vh * .02, width: fw, height: fh, cover: Math.max(vw / fw, vh / fh) }; }
 function flipFrom(o, f) { const s = Math.max(o.width / f.width, o.height / f.height);
   return `translate(${o.left + o.width / 2 - (f.left + f.width / 2)}px, ${o.top + o.height / 2 - (f.top + f.height / 2)}px) scale(${s})`; }
+// the viewer shows the small copy already on the page at once, then the full photo the moment it has arrived (and fetches the next one)
+const hasSmall = s => s && [...document.images].some(x => x.complete && x.naturalWidth && (x.currentSrc || "").endsWith(s));
+function showFull(im, item) { const sm = smallOf(item.src); im.dataset.want = item.src;
+  if (!hasSmall(sm)) { im.src = item.src; nextFull(); return; }
+  im.src = sm; const hi = new Image(); hi.decoding = "async"; hi.src = item.src;
+  const swap = () => { if (im.dataset.want === item.src && V.el && V.el.classList.contains("open")) im.src = item.src; nextFull(); };
+  (hi.decode ? hi.decode() : new Promise((r, j) => { hi.onload = r; hi.onerror = j; })).then(swap, swap); }
+function nextFull() { if (!V.g || V.g.length < 2) return; const n = V.g[(V.i + 1) % V.g.length]; if (n && n.src) new Image().src = n.src; }
 function fillViewer(item, f) { const v = V.el, im = v.querySelector(".v-img");
-  im.src = item.src; Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px", transformOrigin: "50% 50%" });
+  showFull(im, item); Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px", transformOrigin: "50% 50%" });
   v.querySelector(".v-place").textContent = item.place || ""; v.querySelector(".v-date").textContent = item.date || "";
   v.querySelector(".v-count").textContent = V.g.length > 1 ? `${V.i + 1} / ${V.g.length}` : "";
   v.querySelector(".v-cap").textContent = item.caption || "";
@@ -982,7 +999,7 @@ function closeViewer() { const v = V.el; if (!v || !v.classList.contains("open")
   v.classList.remove("in", "full-in");
   im.style.transition = "transform .45s cubic-bezier(.4,0,.2,1), opacity .45s";
   im.style.transform = onScreen && !reduced ? flipFrom(o, f) : "scale(.96)"; im.style.opacity = onScreen ? ".6" : "0";
-  setTimeout(() => { v.classList.remove("open"); im.removeAttribute("src"); document.body.style.overflow = ""; V.busy = false;
+  setTimeout(() => { v.classList.remove("open"); im.removeAttribute("src"); delete im.dataset.want; document.body.style.overflow = ""; V.busy = false;
     if (V.lastFocus && V.lastFocus.focus) V.lastFocus.focus({ preventScroll: true }); }, reduced ? 0 : 460); }
 document.addEventListener("click", e => { const b = e.target.closest("[data-vg]"); if (!b || (V.el && V.el.contains(b))) return; e.stopPropagation(); openViewer(b.dataset.vg, b.dataset.vi, b); }, true);
 document.addEventListener("keydown", e => { if (V.el && V.el.classList.contains("open")) { if (e.key === "Escape") { e.stopImmediatePropagation(); closeViewer(); } else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); return; }

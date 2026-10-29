@@ -841,7 +841,7 @@ img{display:block;max-width:100%}
 }
 
 /* letterboxed frame: the whole picture shows inside the film frame, film-black bars at the sides */
-.vfr .ph.fit{background:#0e0b0b}.vfr .ph.fit img{object-fit:contain !important;transform:none !important}
+.vfr .ph.fit{background:#0e0b0b}.vfr .ph.fit img{object-fit:contain !important;transform:none !important;background-color:transparent !important}
 
 /* caption titles break only at the spaces around " · ", never inside a place name (西湖音乐节 · 杭州) */
 .cp .t .nw,.yr .nw{white-space:nowrap}
