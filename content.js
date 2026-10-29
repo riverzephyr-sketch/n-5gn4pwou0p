@@ -164,7 +164,7 @@ window.CONTENT = {
       { title: "", date: "2024.09.30", text: "十一，满觉陇。满山的桂花香，和看秋天的我们。", photo: "photos/r24-0930.webp", dateOnly: true },
       { title: "", date: "2024.11.02", text: "西湖音乐节打卡！眼神里写满了清澈的愚蠢。", photo: "photos/r24-1102.webp", dateOnly: true },
     ]},
-    { year: "2025", layout: "feature", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
+    { year: "2025", layout: "feature", title: "待填写", thumb: "photos/r25-1003.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "", date: "2025.01.01", text: "又甜一年！继续贴贴。", photo: "photos/r25-0101.webp", dateOnly: true },
       { title: "", date: "2025.02.14", text: "生日遇上情人节，烛光、鲜花和酒，今天有双份的理由好好爱你。", photo: "photos/r25-0214.webp", dateOnly: true },
       { title: "", date: "2025.03.01", text: "好不容易从重庆飞来见我，结果约会秒变网吧加班", photo: "photos/r25-0301.webp", dateOnly: true },
