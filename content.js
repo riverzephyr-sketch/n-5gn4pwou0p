@@ -190,8 +190,8 @@ window.CONTENT = {
     // 纪念日翻页：每年 10.30 一页，按顺序自动翻（约 2.8 秒一页），最后停在 2026。没有照片的一页显示「还没显影」的拍立得
     pages: [
       { date: "2023-10-30", print: "photos/n2.webp", caption: ["2023.10.30", "一周年 · 重庆"] },
-      { date: "2024-10-30", print: null, caption: ["2024.10.30", "两周年"] },   // TODO: 2024.10.30 的照片（发来后填 photos/xxx.webp）
-      { date: "2025-10-30", print: null, caption: ["2025.10.30", "三周年"] },   // TODO: 2025.10.30 的照片
+      { date: "2024-10-30", print: "photos/ann-2024.webp", caption: ["2024.10.30", "两周年"] },
+      { date: "2025-10-30", print: "photos/ann-2025.webp", caption: ["2025.10.30", "三周年"] },
       { date: "2026-10-30", print: null, caption: ["2026.10.30", "四周年"] },   // 这一天还没拍：一直是未显影的拍立得
     ],
   },
