@@ -166,6 +166,11 @@ window.CONTENT = {
     ]},
     { year: "2025", layout: "feature", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "", date: "2025.01.01", text: "又甜一年！继续贴贴。", photo: "photos/r25-0101.webp", dateOnly: true },
+      { title: "", date: "2025.02.14", text: "生日遇上情人节，烛光、鲜花和酒，今天有双份的理由好好爱你。", photo: "photos/r25-0214.webp", dateOnly: true },
+      { title: "", date: "2025.03.01", text: "好不容易从重庆飞来见我，结果约会秒变网吧加班", photo: "photos/r25-0301.webp", dateOnly: true },
+      { title: "", date: "2025.04.06", text: "在夫妇岩前合个影，悄悄许愿我们也长长久久。", photo: "photos/r25-0406.webp", dateOnly: true },
+      { title: "", date: "2025.10.03", text: "飞到甲米开启躺平模式，在酒店和你虚度光阴。", photo: "photos/r25-1003.webp", dateOnly: true },
+      { title: "", date: "2025.10.06", text: "甲米宏岛出海记：身后是翡翠色的海水，后背是让人安心的你。", photo: "photos/r25-1006.webp", dateOnly: true },
     ]},
     { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
       { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" }, city: "tokyo" },
