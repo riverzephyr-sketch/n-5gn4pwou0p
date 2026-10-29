@@ -161,6 +161,7 @@ window.CONTENT = {
       { title: "", date: "2024.05.12", text: "江津喝茶打卡！店名叫“闲居晚秋”，结果店主竟然也叫“夏天”😲", photo: "photos/r24-garden.webp", dateOnly: true },
       { title: "", date: "2024.07.14", text: "去杭州工作前的倒计时，把在重庆最后的时光，安静地泡进茶和书里", photo: "photos/r24-0714.webp", dateOnly: true },
       { title: "", date: "2024.08.10", text: "哪怕在音乐节被大雨浇头，只要身边是你，狼狈也变成了好笑的回忆。", photo: "photos/r24-0810.webp", dateOnly: true },
+      { title: "", date: "2024.09.30", text: "十一，满觉陇。满山的桂花香，和看秋天的我们。", photo: "photos/r24-0930.webp", dateOnly: true },
     ]},
     { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp", city: "hangzhou" },   // 贴脸自拍
