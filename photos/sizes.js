@@ -19,6 +19,7 @@ window.PHOTO_SIZES = {"photos/dl-01.webp":[933,1400],"photos/dl-02.webp":[933,14
 "photos/cq-31.webp": [1050, 1400],
 "photos/cq-32.webp": [1049, 1400],
 "photos/cq-33.webp": [1049, 1400],
+"photos/r25-0101.webp": [1201, 1600],
 "photos/hz-01.webp": [1050, 1400],
 "photos/hz-02.webp": [1050, 1400],
 "photos/hz-03.webp": [1050, 1400],

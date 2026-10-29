@@ -94,7 +94,7 @@ window.CONTENT = {
     { id: "dali",      name: "大理", en: "Dali",      country: "中国", lat: 25.606, lon: 100.267, copy: "第一次来大理，我因新冠头疼腿疼到崩溃，是你不眠不休地守在床边照顾我。带着没看成风景的遗憾，我随口对你说：“等你求婚的时候，我们再来一次吧。”当时只是一句无心的约定，没想到我们真的走了这么远，你也真的带我回了这里。从狼狈的病床到浪漫的求婚，大理见证了你极致的耐心，也见证了我们最好的结局", wall: "tape", extra: ["photos/m2.webp"], photos: ["photos/dl-01.webp", "photos/dl-02.webp", "photos/dl-03.webp", "photos/dl-04.webp", "photos/dl-05.webp", "photos/dl-06.webp", "photos/dl-07.webp", "photos/dl-08.webp", "photos/dl-09.webp", "photos/dl-10.webp", "photos/dl-11.webp", "photos/dl-12.webp", "photos/dl-13.webp", "photos/dl-14.webp"] },
     { id: "hangzhou",  name: "杭州", en: "Hangzhou",  country: "中国", lat: 30.274, lon: 120.155, home: "我们的家", copy: "", wall: "tape", photos: ["photos/hz-01.webp", "photos/hz-02.webp", "photos/hz-03.webp", "photos/hz-04.webp", "photos/hz-05.webp", "photos/hz-06.webp", "photos/hz-07.webp", "photos/hz-08.webp", "photos/hz-09.webp", "photos/hz-10.webp", "photos/hz-11.webp"] },
     { id: "shanghai",  name: "上海", en: "Shanghai",  country: "中国", lat: 31.230, lon: 121.474, copy: "" },
-    { id: "fukuoka",   name: "福冈", en: "Fukuoka",   country: "日本", lat: 33.590, lon: 130.402, copy: "" },
+    { id: "fukuoka",   name: "福冈", en: "Fukuoka",   country: "日本", lat: 33.590, lon: 130.402, copy: "", extra: ["photos/fukuoka-ship.webp"] },
     { id: "wuning",    name: "武宁西海", en: "Wuning · Xihai", country: "中国", lat: 29.18, lon: 115.30, copy: "" },
     { id: "krabi",     name: "甲米", en: "Krabi",     country: "泰国", lat: 8.086, lon: 98.906, copy: "" },
     { id: "jiaxing",   name: "嘉兴", en: "Jiaxing",   country: "中国", lat: 30.746, lon: 120.755, copy: "" },
@@ -164,13 +164,8 @@ window.CONTENT = {
       { title: "", date: "2024.09.30", text: "十一，满觉陇。满山的桂花香，和看秋天的我们。", photo: "photos/r24-0930.webp", dateOnly: true },
       { title: "", date: "2024.11.02", text: "西湖音乐节打卡！眼神里写满了清澈的愚蠢。", photo: "photos/r24-1102.webp", dateOnly: true },
     ]},
-    { year: "2025", layout: "peak", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
-      { title: "新年 · 杭州", date: "2025.01.01", text: "", photo: "photos/m10.webp", city: "hangzhou" },   // 贴脸自拍
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/m11.webp", city: "hangzhou" },   // 西湖边长椅，红叶下（同一天新年，共用上一条）
-      { title: "情人节 · 杭州", date: "2025.02.14", text: "情人节赶上了他的生日", photo: "photos/m12.webp", crop: { pos: "50% 10%" }, city: "hangzhou" },   // 烛光、粉玫瑰，镜子自拍
-      { title: "网吧 · 杭州", date: "2025.03", text: "方大同去世那天他陪我在网吧加班", photo: "photos/m14.webp", city: "hangzhou" },   // 网吧，他戴着耳机
-      { title: "清明 · 福冈", date: "2025.04", text: "", photo: "photos/fukuoka-ship.webp", city: "fukuoka" },   // 2025.04.05 船上合照，海面
-      { title: "甲米", date: "2025.10 · 十一", text: "待填写", photo: "photos/krabi.webp", crop: { pos: "50% 24%", zoom: 1, ratio: "3/2" }, city: "krabi" },
+    { year: "2025", layout: "feature", title: "待填写", thumb: "photos/krabi.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
+      { title: "", date: "2025.01.01", text: "又甜一年！继续贴贴。", photo: "photos/r25-0101.webp", dateOnly: true },
     ]},
     { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
       { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" }, city: "tokyo" },
