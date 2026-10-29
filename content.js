@@ -169,6 +169,7 @@ window.CONTENT = {
       { title: "", date: "2025.02.14", text: "生日遇上情人节，烛光、鲜花和酒，今天有双份的理由好好爱你。", photo: "photos/r25-0214.webp", dateOnly: true },
       { title: "", date: "2025.03.01", text: "好不容易从重庆飞来见我，结果约会秒变网吧加班", photo: "photos/r25-0301.webp", dateOnly: true },
       { title: "", date: "2025.04.06", text: "在夫妇岩前合个影，悄悄许愿我们也长长久久。", photo: "photos/r25-0406.webp", dateOnly: true },
+      { title: "", date: "2025.05.18", text: "拍撕拉片前的花絮——旧电视机里的我们。", photo: "photos/r25-0518.webp", dateOnly: true },
       { title: "", date: "2025.10.03", text: "飞到甲米开启躺平模式，在酒店和你虚度光阴。", photo: "photos/r25-1003.webp", dateOnly: true },
       { title: "", date: "2025.10.06", text: "甲米宏岛出海记：身后是翡翠色的海水，后背是让人安心的你。", photo: "photos/r25-1006.webp", dateOnly: true },
     ]},
