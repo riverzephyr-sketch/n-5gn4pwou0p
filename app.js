@@ -30,8 +30,10 @@ const screenLen = p => { try { const m = p.getScreenCTM(), L = p.getTotalLength(
   for (let i = 0; i <= n; i++) { const q = p.getPointAtLength(L * i / n).matrixTransform(m); if (prev) s += Math.hypot(q.x - prev.x, q.y - prev.y); prev = q; } return Math.ceil(s * 1.08) + 2; } catch (e) { return 0; } };
 
 const SIZES = window.PHOTO_SIZES || {};
+// wall tiles use a 720px copy; the full photo loads only when it is opened
+const THUMBS = window.PHOTO_THUMBS || new Set(), TH = src => THUMBS.has(src.replace("photos/", "")) ? src.replace("photos/", "photos/t/") : src;
 // <img> with intrinsic size (no layout shift), lazy unless told otherwise, alt from context
-const img = (src, alt = "", eager = false) => { const [w, h] = SIZES[src] || [1200, 1600];
+const img = (src, alt = "", eager = false) => { const [w, h] = SIZES[src.replace("photos/t/", "photos/")] || [1200, 1600];
   return `<img src="${src}" width="${w}" height="${h}" alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`; };
 // a sheet of perforated postage stamps held by a binder clip (the envelope screen's stamp sheet, reused in two more places).
 // cells: [{ src, pos, zoom } | { note: [lines] }]; cols: stamps per row
@@ -598,7 +600,7 @@ function wallHTML(list, gid, name) {
     const yAt = t => (1 - t) * (1 - t) * y0 + 2 * t * (1 - t) * (y0 + sag) + t * t * y1;
     out += `<div class="w-row"><svg class="w-str" viewBox="0 0 100 48" preserveAspectRatio="none" aria-hidden="true"><path d="M-2 ${y0} Q50 ${y0 + sag} 102 ${y1}"/></svg>` +
       WALL_F[n].map((f, j) => { const ph = list[k + j], vi = k + j, tilt = WALL_TILT[vi % WALL_TILT.length];
-        return `<figure class="w-f" style="left:${f * 100}%;top:${yAt(f).toFixed(2)}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大"><span class="w-pin" aria-hidden="true"></span><span class="w-ph">${img(ph.src, name)}</span></figure>`; }).join("") + `</div>`;
+        return `<figure class="w-f" style="left:${f * 100}%;top:${yAt(f).toFixed(2)}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大"><span class="w-pin" aria-hidden="true"></span><span class="w-ph">${img(TH(ph.src), name)}</span></figure>`; }).join("") + `</div>`;
     k += n; r++; }
   return `<div class="wall">${out}</div>`;
 }
@@ -610,7 +612,7 @@ function tapeHTML(list, gid, name) {
     cols[c].push([ph, vi, sc]); h[c] += ih / iw * sc + .12; });
   const fig = ([ph, vi, sc]) => { const t = TAPE[vi % TAPE.length], tilt = [-1.2, .8, -.5, 1.4, -.9, .4, 1, -1.5][vi % 8], white = false;
     const tapes = []; for (let i = 0; i < t.length; i += 2) tapes.push(`<span class="tp tp-${t[i]}" style="--a:${t[i + 1]}deg" aria-hidden="true"></span>`);
-    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(ph.src, name)}</figure>`; };
+    return `<figure class="tw-f${white ? " white" : ""}" style="width:${sc * 100}%;margin-left:${vi % 2 ? 100 - sc * 100 : 0}%;--r:${tilt}deg" data-vg="${gid}" data-vi="${vi}" role="button" tabindex="0" aria-label="${esc(name)} · 放大">${tapes.join("")}${img(TH(ph.src), name)}</figure>`; };
   return `<div class="tapewall">${cols.map(c => `<div class="tw-col">${c.map(fig).join("")}</div>`).join("")}</div>`;
 }
 function collageHTML(list, gid, name) {
