@@ -777,16 +777,22 @@ C.chapters.forEach((c0, ci) => { const c = { ...c0, items: c0.items.filter(realI
 // the switch is a short fade (opacity + a few px); reduced motion swaps at once. the page never scrolls by itself.
 const ROLLS = [...list.querySelectorAll(".yr")], FRS = [...strip.querySelectorAll(".fr")];
 let curRoll = 0; list.classList.add("tabs");
-// photos in the rolls load before they are needed: the open roll as the section nears, the other years right after
-(() => { const warm = y => y && y.querySelectorAll('img[loading="lazy"]').forEach(im => { im.loading = "eager"; });
-  const go = () => warm(ROLLS[curRoll]);   // the other years wait until their frame on the strip is touched (below), so they never compete with what is on screen
-  FRS.forEach((f, k) => ["pointerenter", "pointerdown", "focus"].forEach(t => f.addEventListener(t, () => warm(ROLLS[k]), { passive: true, once: true })));
-  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); go(); } }), { rootMargin: "1600px 0px" }); io.observe(list); }
-  else go(); })();
+// photos in the rolls load before they are needed (v154): the open roll soon after the page has loaded, then the other three years
+// one after another in the background (~400 KB of 400px copies in all), so a tap on 2024 / 2025 / 2026 finds them already there.
+// a roll that is opened or touched jumps the queue with high priority.
+const warmRoll = (y, hi) => y && y.querySelectorAll("img").forEach(im => { if (im.loading === "lazy") im.loading = "eager"; if (hi && !im.complete) im.fetchPriority = "high"; });
+(() => { const settled = y => Promise.all([...y.querySelectorAll("img")].map(im => im.complete ? 0 : new Promise(r => { im.addEventListener("load", r, { once: true }); im.addEventListener("error", r, { once: true }); setTimeout(r, 12000); })));
+  let started = false;
+  const go = () => { if (started) return; started = true; warmRoll(ROLLS[curRoll], true);
+    let p = settled(ROLLS[curRoll]); ROLLS.forEach((y, k) => { if (k !== curRoll) p = p.then(() => { warmRoll(y); return settled(y); }); }); };
+  FRS.forEach((f, k) => ["pointerenter", "pointerdown", "touchstart", "focus"].forEach(t => f.addEventListener(t, () => warmRoll(ROLLS[k], true), { passive: true, once: true })));
+  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); go(); } }), { rootMargin: "2400px 0px" }); io.observe(list); }
+  const idle = () => (window.requestIdleCallback || setTimeout)(go, { timeout: 2500 });
+  if (document.readyState === "complete") setTimeout(idle, 1200); else addEventListener("load", () => setTimeout(idle, 1200), { once: true }); })();
 function selectRoll(i, byHand) { if (!ROLLS[i] || (byHand && i === curRoll)) return; curRoll = i;
   FRS.forEach((f, k) => f.setAttribute("aria-pressed", k === i ? "true" : "false"));
   ROLLS.forEach((y, k) => { y.hidden = k !== i; y.classList.remove("rt-in"); });
-  const y = ROLLS[i]; alignCaps();
+  const y = ROLLS[i]; warmRoll(y, true); alignCaps();
   // a hidden roll never plays its entrance again: it is simply there
   if (window.gsap) y.querySelectorAll(".yr-num, .yr-t, .vfr .ph, .cp").forEach(e => gsap.set(e, { clearProps: "transform,opacity,visibility" }));
 }
@@ -908,6 +914,8 @@ function unlock() { secretImgs();
   $("#envelope").classList.add("open");
   if (MO.sealTL) (() => { try { MO.sealTL(openPage); } catch (e) { motionOff(); openPage(); } })(); else setTimeout(openPage, 300);
 }
+// the envelope's light (a CSS mask of envelope.webp, 80 KB) is fetched only when the ending comes near, not on the first screen
+{ const env = $("#envelope"); if (env) { if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { env.classList.add("near"); io.disconnect(); } }), { rootMargin: "1800px 0px" }); io.observe(env); } else env.classList.add("near"); } }
 { const env = $("#envelope"), sealEl = $("#seal");
   env.setAttribute("role", "button"); env.tabIndex = 0; env.setAttribute("aria-label", "信封 · 输入密码");
   const lift = () => { if (env.classList.contains("open")) return;
