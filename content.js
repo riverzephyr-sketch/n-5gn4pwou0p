@@ -156,7 +156,7 @@ window.CONTENT = {
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/r24-1102.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       // 2024 这一卷只放 Helios 新发的照片（只出现在这卷里）；只有日期，点开显示日期和文案（dateOnly）
-      { title: "", date: "2024.01.01", text: "和你在海洋馆看海。", photo: "photos/r24-0101.webp", dateOnly: true },
+      { title: "", date: "2024.01.01", text: "2024的第一页，从和你在海洋馆看海开始。", photo: "photos/r24-0101.webp", dateOnly: true },
       { title: "", date: "2024.04.11", text: "生日在刚开业的 Need 排长队，但其实 All I need is you。", photo: "photos/r24-0411b.webp", dateOnly: true },
       { title: "", date: "2024.05.12", text: "江津喝茶打卡！店名叫“闲居晚秋”，结果店主竟然也叫“夏天”😲", photo: "photos/r24-garden.webp", dateOnly: true },
       { title: "", date: "2024.07.14", text: "去杭州工作前的倒计时，把在重庆最后的时光，安静地泡进茶和书里。", photo: "photos/r24-0714.webp", dateOnly: true },
