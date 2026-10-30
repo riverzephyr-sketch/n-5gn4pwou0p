@@ -953,7 +953,7 @@ addEventListener("resize", () => { const v = V.el; if (!v || !v.classList.contai
 function fitRect(item) { const [w, h] = SIZES[item.src] || [1200, 1600], box = V.el || document.documentElement;
   const vw = box.clientWidth || innerWidth, vh = box.clientHeight || innerHeight;   // the viewer's real box (not 100vw)
   // a wide (landscape) roll photo opens whole: full width, centred on the dark backdrop, kept clear of the words at the foot
-  if (item.full && w > h) { const fw = Math.min(vw, vh * .62 * w / h), fh = fw * h / w, top = Math.max(0, Math.min((vh - fh) / 2, vh - 190 - fh));
+  if (item.full && w >= h) { const fw = Math.min(vw, vh * .62 * w / h), fh = fw * h / w, top = Math.max(0, Math.min((vh - fh) / 2, vh - 190 - fh));
     return { left: (vw - fw) / 2, top, width: fw, height: fh, cover: 1 }; }
   if (item.full) return { left: 0, top: 0, width: vw, height: vh, cover: 1 };   // full-bleed: exactly the screen, cropped by object-fit
   const k = Math.min(vw * .9 / w, vh * .7 / h);
