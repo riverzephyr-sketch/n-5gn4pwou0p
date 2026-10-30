@@ -53,7 +53,7 @@ window.CONTENT = {
 
   // 背景音乐（我写给你的歌）
   music: {
-    src: "audio/it-never-ended-in-autumn-b.mp3",
+    src: "audio/it-never-ended-in-autumn-b-112.mp3",   // 112 kbps copy (2.3 MB, was 3.6 MB): starts sooner from China
     title: "It Never Ended in Autumn",
     prompt: "放一首我写给你的歌",
     volume: 0.7,              // 最大音量 0–1（会慢慢淡入）
@@ -203,7 +203,7 @@ window.CONTENT = {
 
   finale: {
     // 结尾的歌：密码一对上就换成这首（不管之前在放什么）。把音频放进 audio/ 并在 src 填文件名即可；src 为空则不换歌
-    music: { src: "audio/polaris.mp3", title: "ポラリス", artist: "Aimer", volume: 0.7 },
+    music: { src: "audio/polaris-80.mp3", title: "ポラリス", artist: "Aimer", volume: 0.7 },
     lockedTitle: "NEXT CHAPTER",
     code: "411223",            // 隐藏页密码（几位数字都可以，圆点个数会自动跟着变）
     seal: "4",                 // 火漆印上的字（1–2 个字符最好看）

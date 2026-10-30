@@ -175,11 +175,16 @@ if (MU.src) audio.src = MU.src;
 const PL = (MU.playlist || []).filter(Boolean); let plI = 0;
 if (PL.length > 1) { audio.loop = false; audio.removeAttribute("loop"); const song = audio;
   song.addEventListener("ended", () => { if (song.dataset.track === "finale") return; plI = (plI + 1) % PL.length; song.src = PL[plI]; if (playing && audio === song) song.play().catch(() => {}); }); }
+{ const warmSong = () => setTimeout(() => { const a = $("#song"); if (a && !a.dataset.started && a.preload === "none") a.preload = "auto"; }, 600);
+  if (document.readyState === "complete") warmSong(); else addEventListener("load", warmSong, { once: true }); }
 let songName = isTodo(MU.title) ? "Side A" : MU.title;
 const promptZh = (MU.prompt || "").replace(/^▶\s*/, "");
 // until the first tap the label beside the record says what it does (and her line, small, under it); after that it is the song title
 let fresh = true;
 let playing = false, ctx = null, gain = null, fadeT = null;
+// v158: a tap shows at once that something is happening: while the song is still buffering (slow from China) the record turns
+// and the label says Loading…; it only falls back to "Tap to play" if the browser actually refuses to play
+let waiting = false;
 // the record turns while the song plays; on pause it does not freeze mid-turn but coasts to a stop (transform only),
 // and the next play picks the turn up from where it rests
 let spinOn = false;
@@ -192,9 +197,12 @@ function spinTo(on) { const d = mini.querySelector(".mini-dot"); if (!d || on ==
 function setMini() { const t = $("#miniTxt");
   if (fresh) t.innerHTML = `<span class="mt-en">Tap to play ▸</span>${promptZh ? `<span class="mt-zh">${esc(promptZh)}</span>` : ""}`;
   else if (!playing && audio.dataset.blocked) t.innerHTML = `<span class="mt-en">Tap to play ▸</span><span class="mt-zh">${esc(songName)}</span>`;   // the browser refused to start it: wait quietly for a tap
-  else t.textContent = songName; spinTo(playing); mini.classList.toggle("on", playing);
+  else if (playing && waiting) t.innerHTML = `<span class="mt-en">Loading…</span><span class="mt-zh">${esc(songName)}</span>`;
+  else t.textContent = songName; spinTo(playing); mini.classList.toggle("on", playing); mini.classList.toggle("wait", playing && waiting);
   // the ending covers the page (and the chip): if its song was refused, the chip comes up over it so one tap starts it
-  mini.classList.toggle("up", !playing && audio.dataset.track === "finale" && !!audio.dataset.blocked); }
+  // v158: once ポラリス is the track the chip always stays above the ending (before, a tap on a refused chip started it,
+  // the chip dropped under the page and seemed to vanish)
+  mini.classList.toggle("up", audio.dataset.track === "finale"); }
 // a fade on one element (iOS ignores element.volume, so over http the level goes through a Web Audio gain)
 function fadeEl(a, g, v, dur, done, own) {
   if (g) { const t = ctx.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(v, t + dur / 1000); if (done) setTimeout(done, dur); return; }
@@ -218,29 +226,40 @@ function play() {
   if (ctx && ctx.state === "suspended") ctx.resume();
   const target = audio === $("#song") ? (MU.volume ?? .7) : (FM.volume ?? .7);
   if (!gain) audio.volume = WX ? target : 0;   // a volume of 0 latches mute inside WeChat
-  const p = audio.play();
-  playing = true; audio.dataset.started = 1; document.body.classList.add("playing"); setMini();
-  if (!WX) fadeTo(target, 2600);
+  const p = audio.play();   // called synchronously inside the tap (iOS / in-app browsers need the gesture)
+  playing = true; audio.dataset.started = 1; document.body.classList.add("playing");
   delete audio.dataset.blocked; const me = audio;
-  const fail = () => { if (audio !== me) return; playing = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); try { me.pause(); } catch (e) {} setMini(); };
-  if (p && p.catch) p.catch(fail);
+  // still buffering: show Loading… and start the fade-in only once sound actually begins
+  waiting = me.readyState < 3; setMini();
+  const began = () => { if (audio !== me) return; if (waiting) { waiting = false; setMini(); } if (!WX && playing) fadeTo(target, 2600); };
+  if (waiting) { me.addEventListener("playing", began, { once: true }); if (gain) { clearInterval(fadeT); gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setValueAtTime(0, ctx.currentTime); } }
+  else if (!WX) fadeTo(target, 2600);
+  const fail = () => { if (audio !== me) return; playing = false; waiting = false; me.dataset.blocked = 1; document.body.classList.remove("playing"); try { me.pause(); } catch (e) {} setMini(); };
+  if (p && p.catch) p.catch(e => { if (e && e.name === "AbortError" && !me.paused) return; fail(); });
   const again = () => { if (audio !== me) return; me.play().then(() => { delete me.dataset.blocked; playing = true; document.body.classList.add("playing"); setMini(); }).catch(fail); };
   if (WX && window.WeixinJSBridge && WeixinJSBridge.invoke) { try { WeixinJSBridge.invoke("getNetworkType", {}, again); } catch (e) {} }
   else if (WX) document.addEventListener("WeixinJSBridgeReady", () => { try { WeixinJSBridge.invoke("getNetworkType", {}, again); } catch (e) {} }, { once: true });
+  // a refused play() leaves the element paused. one that is merely still downloading is not refused: it must not be cut off
+  // (before v158 a song that took over 2.2 s to buffer was paused here, so a tap seemed to do nothing)
   const t0 = me.currentTime || 0;
-  setTimeout(() => { if (audio !== me || !playing) return; if (!me.paused && (me.currentTime > t0 + 0.02 || me.readyState >= 2)) return; fail(); }, 2200);
+  setTimeout(() => { if (audio !== me || !playing) return; if (!me.paused && (!WX || me.currentTime > t0 + 0.02 || me.readyState >= 2 || me.networkState === 2)) return; fail(); }, 2200);
 }
-function pause() { playing = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
+function pause() { playing = false; waiting = false; document.body.classList.remove("playing"); setMini(); fadeTo(0, 600, () => { if (!playing) audio.pause(); }); }
 // the ending's song: when the passcode is accepted the music always becomes Aimer「ポラリス」, whatever was on before (or nothing).
 // called synchronously inside the tap that completes the code (a user gesture, so iOS / WeChat let play() through).
 const FM = (C.finale && C.finale.music) || {};
+// ポラリス starts buffering as soon as the keypad comes near (v158), so the last-digit tap finds part of it already there
+let FA = null;
+const finaleEl = () => { if (FA) return FA; const a = new Audio(); a.loop = true; a.preload = "auto"; a.setAttribute("playsinline", ""); a.setAttribute("webkit-playsinline", "true"); a.dataset.track = "finale"; a.src = FM.src; return (FA = a); };
+if (FM.src && "IntersectionObserver" in window) { const lk = document.querySelector(".lock");
+  if (lk) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); if (audio.dataset.track !== "finale") finaleEl(); } }), { rootMargin: "900px 0px" }); io.observe(lk); } }
 function toFinaleSong() {
   if (!FM.src) return false;                    // no Polaris file in audio/ yet: the music is left as it is
   if (audio.dataset.track === "finale") { if (!playing) play(); return true; }
   const old = audio, oldGain = gain, wasOn = playing && !old.paused;
   // the current track fades out and stops (a second element, so the new one can start inside this same tap)
   if (wasOn) { clearInterval(fadeT); fadeEl(old, oldGain, 0, 900, () => { old.pause(); }); } else old.pause();
-  const a = new Audio(); a.loop = true; a.preload = "auto"; a.setAttribute("playsinline", ""); a.dataset.track = "finale"; a.src = FM.src;
+  const a = finaleEl(); FA = null;
   audio = a; songName = [FM.title, FM.artist].filter(Boolean).join(" · ") || "Polaris"; fresh = false; mini.classList.remove("fresh");
   play();
   // if WebKit still refuses, WeChat's bridge usually lets media start once it is ready; otherwise the chip quietly waits for a tap
@@ -269,7 +288,9 @@ requestAnimationFrame(() => mini.classList.add("show"));
     const hit = q => q.width && q.left < R && q.right > L && q.top < B && q.bottom > T;
     // anything tappable under it (map stops, keypad, key cards, the cover…): checked by its box, not by sample points
     let u = 0;
-    for (const e of document.querySelectorAll(CTRL)) { const q = e.getBoundingClientRect(); if (!hit(q) || e.closest(".secret,.viewer,.sheet")) continue;
+    // v158: with the ending open, the keypad and buttons of the page beneath are covered: they never push the record away
+    const so = document.getElementById("secret") && document.getElementById("secret").classList.contains("open");
+    if (!so) for (const e of document.querySelectorAll(CTRL)) { const q = e.getBoundingClientRect(); if (!hit(q) || e.closest(".secret,.viewer,.sheet")) continue;
       const cs = getComputedStyle(e); if (cs.visibility === "hidden") continue;
       // right under the record itself: the record steps aside for a moment so the control stays tappable
       if (q.left < R && q.right > R - 52 && q.top < B && q.bottom > B - 50) return 2;
@@ -288,6 +309,7 @@ requestAnimationFrame(() => mini.classList.add("show"));
   let raf = 0; const check = () => { raf = 0; const u = under(); mini.classList.toggle("tuck", !!u); mini.classList.toggle("yield", u === 2); };
   const queue = () => { if (!raf) raf = requestAnimationFrame(check); };
   addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
+  if ($("#secret")) new MutationObserver(queue).observe($("#secret"), { attributes: true, attributeFilter: ["class"] });
   // things also slide in after the scroll stops (GSAP reveals), so look again every so often while it is visible
   setInterval(() => { if (mini.classList.contains("show") && !document.hidden) queue(); }, 600);
   new MutationObserver(queue).observe(mini, { attributes: true, attributeFilter: ["class"] }); }
