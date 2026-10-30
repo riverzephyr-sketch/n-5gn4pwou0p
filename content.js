@@ -175,7 +175,7 @@ window.CONTENT = {
     ]},
     { year: "2026", layout: "feature", title: "待填写", thumb: "photos/r26-0622.webp", items: [
       { title: "", date: "2026.01.10", text: "富阳泡温泉散心局，闺蜜镜头里的我们。", photo: "photos/r26-0110.webp", dateOnly: true },
-      { title: "", date: "2026.02.19", text: "过年回北京，两个戴着口罩陪妈妈看《镖人》的乖宝宝。", photo: "photos/r26-0219.webp", dateOnly: true },
+      { title: "", date: "2026.02.19", text: "两个戴着口罩的乖宝宝陪妈妈看《镖人》。", photo: "photos/r26-0219.webp", dateOnly: true },
       { title: "", date: "2026.04.18", text: "杭州的午后，坐在小店门口一起吃抹茶甜品的日常。感谢谢姐拍照！", photo: "photos/r26-0418.webp", dateOnly: true },
       { title: "", date: "2026.05.02", text: "专程飞去东京取钻戒，顺道探望远嫁日本的然姐。", photo: "photos/r26-0502.webp", dateOnly: true },
       { title: "", date: "2026.06.22", text: "婚戒是Helios，钻戒是Polaris，而你是我在无数不确定里最笃定的答案。", photo: "photos/r26-0622.webp", dateOnly: true },
