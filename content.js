@@ -89,9 +89,9 @@ window.CONTENT = {
   places: [
     { id: "chongqing", name: "重庆", en: "Chongqing", country: "中国", lat: 29.563, lon: 106.551, copy: "重庆是我们回忆最密的地方，藏着从初见到同居的所有第一次。在这里，我终于看清了游戏里那个让我心动的人真实的样子，也第一次尝到了和一个人把日子过成柴米油盐是什么滋味。就是从这座城市开始，我彻底坚定了要和你一直在一起的信念。", wall: "tape", photos: ["photos/cq-01.webp", "photos/cq-02.webp", "photos/cq-03.webp", "photos/cq-04.webp", "photos/cq-05.webp", "photos/cq-06.webp", "photos/cq-07.webp", "photos/cq-08.webp", "photos/cq-09.webp", "photos/cq-10.webp", "photos/cq-11.webp", "photos/cq-12.webp", "photos/cq-13.webp", "photos/cq-14.webp", "photos/cq-15.webp", "photos/cq-16.webp", "photos/cq-17.webp", "photos/cq-18.webp", "photos/cq-20.webp", "photos/cq-21.webp", "photos/cq-23.webp", "photos/cq-24.webp", "photos/cq-28.webp", "photos/cq-30.webp", "photos/cq-31.webp", "photos/cq-32.webp", "photos/cq-33.webp", "photos/cq-34.webp", "photos/cq-35.webp", "photos/cq-36.webp", "photos/cq-37.webp", "photos/cq-38.webp", "photos/cq-39.webp", "photos/cq-40.webp", "photos/cq-41.webp"] },
     { id: "beijing",   name: "北京", en: "Beijing",   country: "中国", lat: 39.904, lon: 116.407, copy: "这是我长大的家，也可能是我们以后要定居的地方。每次你陪我回家，学着京腔儿逗我笑，我都觉得你大概真是“天选北京人”；可一想到连我都嫌弃的北京，以后也要你跟着受罪，就忍不住心疼。其实定居在哪儿根本不重要，只要身边是你，去哪儿我都愿意。", wall: "tape", photos: ["photos/bj-02.webp", "photos/bj-03.webp", "photos/bj-04.webp", "photos/bj-05.webp", "photos/bj-06.webp", "photos/bj-07.webp", "photos/bj-08.webp", "photos/bj-09.webp", "photos/bj-10.webp", "photos/bj-11.webp", "photos/bj-12.webp"] },
-    { id: "chengdu",   name: "成都", en: "Chengdu",   country: "中国", lat: 30.573, lon: 104.066, copy: "成都的记忆轻松又热闹，你陪我出差盯现场，还在我的活动上乖乖接受采访当托。也是在这里，我第一次把你介绍给朋友们。看着大家从一开始的不理解变成现在的全员支持，原因我比谁都明白，谢谢你无条件支持我的工作，更谢谢你用行动让所有人看到了我被爱着的证据", photos: ["photos/cd-01.webp", "photos/cd-02.webp"] },
-    { id: "dongguan",  name: "东莞", en: "Dongguan",  country: "中国", lat: 23.021, lon: 113.752, copy: "得知我要一个人去东莞出差，正在广西出差的你二话不说请假赶了过来。偏僻的厂区确实让人心里没底，可有你在身边陪了短短几天，我就有了最大的安全感。现在回想起来，异地恋时的我们真的好用力：哪怕都在各自忙碌，也要在有限的时间里争分夺秒，找尽一切机会见上一面", photos: ["photos/dg-01.webp", "photos/dg-02.webp"] },
-    { id: "dali",      name: "大理", en: "Dali",      country: "中国", lat: 25.606, lon: 100.267, copy: "第一次来大理，我因为新冠头疼腿疼到崩溃，是你不眠不休地守在床边照顾我。带着没看成风景的遗憾，我随口对你说：“等你求婚的时候，我们再来一次吧。”当时只是一句无心的约定，没想到我们真的走了这么远，你也真的带我回了这里。从狼狈的病床到浪漫的求婚，大理见证了你极致的耐心，也见证了我们最好的结局", wall: "tape", extra: ["photos/m2.webp"], photos: ["photos/dl-01.webp", "photos/dl-02.webp", "photos/dl-03.webp", "photos/dl-04.webp", "photos/dl-05.webp", "photos/dl-06.webp", "photos/dl-07.webp", "photos/dl-08.webp", "photos/dl-09.webp", "photos/dl-10.webp", "photos/dl-11.webp", "photos/dl-14.webp", "photos/dl-15.webp"] },
+    { id: "chengdu",   name: "成都", en: "Chengdu",   country: "中国", lat: 30.573, lon: 104.066, copy: "成都的记忆轻松又热闹，你陪我出差盯现场，还在我的活动上乖乖接受采访当托。也是在这里，我第一次把你介绍给朋友们。看着大家从一开始的不理解变成现在的全员支持，原因我比谁都明白，谢谢你无条件支持我的工作，更谢谢你用行动让所有人看到了我被爱着的证据。", photos: ["photos/cd-01.webp", "photos/cd-02.webp"] },
+    { id: "dongguan",  name: "东莞", en: "Dongguan",  country: "中国", lat: 23.021, lon: 113.752, copy: "得知我要一个人去东莞出差，正在广西出差的你二话不说请假赶了过来。偏僻的厂区确实让人心里没底，可有你在身边陪了短短几天，我就有了最大的安全感。现在回想起来，异地恋时的我们真的好用力：哪怕都在各自忙碌，也要在有限的时间里争分夺秒，找尽一切机会见上一面。", photos: ["photos/dg-01.webp", "photos/dg-02.webp"] },
+    { id: "dali",      name: "大理", en: "Dali",      country: "中国", lat: 25.606, lon: 100.267, copy: "第一次来大理，我因为新冠头疼腿疼到崩溃，是你不眠不休地守在床边照顾我。带着没看成风景的遗憾，我随口对你说：“等你求婚的时候，我们再来一次吧。”当时只是一句无心的约定，没想到我们真的走了这么远，你也真的带我回了这里。从狼狈的病床到浪漫的求婚，大理见证了你极致的耐心，也见证了我们最好的结局。", wall: "tape", extra: ["photos/m2.webp"], photos: ["photos/dl-01.webp", "photos/dl-02.webp", "photos/dl-03.webp", "photos/dl-04.webp", "photos/dl-05.webp", "photos/dl-06.webp", "photos/dl-07.webp", "photos/dl-08.webp", "photos/dl-09.webp", "photos/dl-10.webp", "photos/dl-11.webp", "photos/dl-14.webp", "photos/dl-15.webp"] },
     { id: "hangzhou",  name: "杭州", en: "Hangzhou",  country: "中国", lat: 30.274, lon: 120.155, home: "我们的家", copy: "谢谢你为了我来杭州工作，永远坚定地践行着“我去哪儿你就去哪儿”。在这里我们同居了更久，也在日复一日的柴米油盐里，把彼此了解得更深、更透彻。", wall: "tape", photos: ["photos/hz-01.webp", "photos/hz-02.webp", "photos/hz-04.webp", "photos/hz-05.webp", "photos/hz-06.webp", "photos/hz-07.webp", "photos/hz-09.webp", "photos/hz-10.webp", "photos/hz-11.webp", "photos/hz-12.webp", "photos/hz-14.webp", "photos/hz-15.webp", "photos/hz-16.webp", "photos/hz-18.webp", "photos/hz-19.webp", "photos/hz-20.webp", "photos/hz-21.webp", "photos/hz-22.webp", "photos/hz-23.webp", "photos/hz-24.webp", "photos/hz-25.webp", "photos/hz-26.webp", "photos/hz-27.webp", "photos/hz-28.webp", "photos/hz-29.webp", "photos/hz-31.webp"] },
     { id: "shanghai",  name: "上海", en: "Shanghai",  country: "中国", lat: 31.230, lon: 121.474, copy: "坐标上海：剪发、脱毛、赶演出、顺道转机。虽然是北上深杭里我唯一没生活过的城市，但来来往往多次后，我们两人对它的默契评价只有两个字：平平。", wall: "tape", photos: ["photos/sh-01.webp", "photos/sh-02.webp", "photos/sh-03.webp", "photos/sh-04.webp", "photos/sh-05.webp", "photos/sh-06.webp", "photos/sh-07.webp", "photos/sh-08.webp"] },
     { id: "fukuoka",   name: "福冈", en: "Fukuoka",   country: "日本", lat: 33.590, lon: 130.402, copy: "清明坐着皇家加勒比游轮靠岸福冈，把仅有的一天留给了系岛的白色鸟居与夫妻岩。换上校服扮高中生，你活脱脱像个被不良学姐诱拐的纯情学弟。哼，谁让我就是喜欢正太呢！", wall: "tape", photos: ["photos/fq-01.webp", "photos/fq-02.webp", "photos/fq-03.webp", "photos/fq-04.webp", "photos/fq-05.webp", "photos/fq-06.webp", "photos/fq-07.webp", "photos/fq-08.webp", "photos/fq-09.webp", "photos/fq-10.webp", "photos/fq-11.webp", "photos/fq-12.webp", "photos/fq-13.webp"] },
@@ -111,7 +111,7 @@ window.CONTENT = {
   // 竖长的大头贴：加 tall: true
   // 一站想放多张照片：把 photo 换成 photos: ["photos/a.webp", "photos/b.webp"]（点照片切换）
   stops: [
-    { city: "chongqing", photos: ["photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023.08"], memory: "接我的时候打错了车，把“万豪”去成了“JW 万豪”。两家隔着十万八千里，一路堵车，我差点饿晕。看着旁边这个又矮又呆、晕头转向的人，差评负分！再也不来重庆了哼", note: "初见" },
+    { city: "chongqing", photos: ["photos/chongqing-fridge-flowers.webp"], photoNotes: ["2023.08"], memory: "接我的时候打错了车，把“万豪”去成了“JW 万豪”。两家隔着十万八千里，一路堵车，我差点饿晕。看着旁边这个又矮又呆、晕头转向的人，差评负分！再也不来重庆了哼。", note: "初见" },
     { city: "beijing",   photo: "photos/beijing.webp", tall: true, memory: "过年邀请你来我家。一起滑冰、逛胡同，去了很多很多地方。", note: "过年" },
     { city: "chengdu",   photo: null, memory: "待填写" },
     { city: "dongguan",  photo: "photos/dongguan.webp", memory: "陪我出差。" },
@@ -156,10 +156,10 @@ window.CONTENT = {
     ]},
     { year: "2024", layout: "feature", title: "待填写", thumb: "photos/r24-1102.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved 2024 thumbnail
       // 2024 这一卷只放 Helios 新发的照片（只出现在这卷里）；只有日期，点开显示日期和文案（dateOnly）
-      { title: "", date: "2024.01.01", text: "2024的第一页，从和你一起看海开始", photo: "photos/r24-0101.webp", dateOnly: true },
+      { title: "", date: "2024.01.01", text: "2024的第一页，从和你一起看海开始。", photo: "photos/r24-0101.webp", dateOnly: true },
       { title: "", date: "2024.04.11", text: "生日在刚开业的 Need 排长队，但其实 All I need is you。", photo: "photos/r24-0411b.webp", dateOnly: true },
       { title: "", date: "2024.05.12", text: "江津喝茶打卡！店名叫“闲居晚秋”，结果店主竟然也叫“夏天”😲", photo: "photos/r24-garden.webp", dateOnly: true },
-      { title: "", date: "2024.07.14", text: "去杭州工作前的倒计时，把在重庆最后的时光，安静地泡进茶和书里", photo: "photos/r24-0714.webp", dateOnly: true },
+      { title: "", date: "2024.07.14", text: "去杭州工作前的倒计时，把在重庆最后的时光，安静地泡进茶和书里。", photo: "photos/r24-0714.webp", dateOnly: true },
       { title: "", date: "2024.08.10", text: "哪怕在音乐节被大雨浇头，只要身边是你，狼狈也变成了好笑的回忆。", photo: "photos/r24-0810.webp", dateOnly: true },
       { title: "", date: "2024.09.30", text: "十一，满觉陇。满山的桂花香，和看秋天的我们。", photo: "photos/r24-0930.webp", dateOnly: true },
       { title: "", date: "2024.11.02", text: "西湖音乐节打卡！眼神里写满了清澈的愚蠢。", photo: "photos/r24-1102.webp", dateOnly: true },
@@ -167,7 +167,7 @@ window.CONTENT = {
     { year: "2025", layout: "feature", title: "待填写", thumb: "photos/r25-1003.webp", items: [   // thumb: the FOUR ROLLS intro keeps its approved krabi thumbnail
       { title: "", date: "2025.01.01", text: "又甜一年！继续贴贴。", photo: "photos/r25-0101.webp", dateOnly: true },
       { title: "", date: "2025.02.14", text: "生日遇上情人节，烛光、鲜花和酒，今天有双份的理由好好爱你。", photo: "photos/r25-0214.webp", dateOnly: true },
-      { title: "", date: "2025.03.01", text: "好不容易从重庆飞来见我，结果约会秒变网吧加班", photo: "photos/r25-0301.webp", dateOnly: true },
+      { title: "", date: "2025.03.01", text: "好不容易从重庆飞来见我，结果约会秒变网吧加班。", photo: "photos/r25-0301.webp", dateOnly: true },
       { title: "", date: "2025.04.06", text: "在夫妇岩前合个影，悄悄许愿我们也长长久久。", photo: "photos/r25-0406.webp", dateOnly: true },
       { title: "", date: "2025.05.18", text: "拍撕拉片前的花絮——旧电视机里的我们。", photo: "photos/r25-0518.webp", dateOnly: true },
       { title: "", date: "2025.10.03", text: "飞到甲米开启躺平模式，在酒店和你虚度光阴。", photo: "photos/r25-1003.webp", dateOnly: true },
@@ -177,7 +177,7 @@ window.CONTENT = {
       { title: "", date: "2026.01.10", text: "富阳泡温泉散心局，闺蜜镜头里的我们。", photo: "photos/r26-0110.webp", dateOnly: true },
       { title: "", date: "2026.02.19", text: "过年回北京，两个戴着口罩陪妈妈看《镖人》的乖宝宝。", photo: "photos/r26-0219.webp", dateOnly: true },
       { title: "", date: "2026.04.18", text: "杭州的午后，坐在小店门口一起吃抹茶甜品的日常。感谢谢姐拍照！", photo: "photos/r26-0418.webp", dateOnly: true },
-      { title: "", date: "2026.05.02", text: "专程飞去东京取钻戒，顺道探望远嫁日本的然姐", photo: "photos/r26-0502.webp", dateOnly: true },
+      { title: "", date: "2026.05.02", text: "专程飞去东京取钻戒，顺道探望远嫁日本的然姐。", photo: "photos/r26-0502.webp", dateOnly: true },
     ]},
   ],
 
