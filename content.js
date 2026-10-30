@@ -174,10 +174,6 @@ window.CONTENT = {
       { title: "", date: "2025.10.06", text: "甲米宏岛出海记：身后是翡翠色的海水，后背是让人安心的你。", photo: "photos/r25-1006.webp", dateOnly: true },
     ]},
     { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
-      { title: "东京", date: "2026.05 · 五一", text: "来东京，是为了带回 Helios 和 Polaris。", photo: "photos/tokyo.webp", crop: { pos: "50% 30%", zoom: 1, ratio: "4/5" }, city: "tokyo" },
-      { title: "大理 · 求婚", date: "2026.06.22", text: "第二次来大理，你向我求婚了。", photo: "photos/dali-proposal.webp", highlight: true, crop: { pos: "50% 50%", zoom: 1, ratio: "4/5" }, city: "dali" },
-      { title: "亚庇", date: "2026.10 · 十一", text: "待填写", photo: "photos/kota-kinabalu.webp", crop: { pos: "50% 62%", zoom: 1, ratio: "3/2" }, city: "kk" },
-      { title: "待填写", date: "待填写", text: "待填写", photo: "photos/sunset-kiss.webp", crop: { pos: "50% 64%", zoom: 1, ratio: "4/5" }, city: "kk" },
     ]},
   ],
 
