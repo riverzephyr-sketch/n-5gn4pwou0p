@@ -936,7 +936,7 @@ function viewerDOM() {
   if (V.el) return V.el;
   const v = el("div", "viewer"); v.setAttribute("role", "dialog"); v.setAttribute("aria-modal", "true"); v.setAttribute("aria-label", "照片"); v.tabIndex = -1;
   v.innerHTML = `<div class="v-bg"></div><img class="v-img" alt=""><div class="v-shade"></div>
-    <span class="v-place"></span><span class="v-date"></span><span class="v-count"></span><p class="v-cap"></p><div class="v-lines"><p class="v-l1"></p><p class="v-l2"></p></div>
+    <span class="v-place"></span><span class="v-date"></span><span class="v-count"></span><span class="v-prog"><i></i></span><p class="v-cap"></p><div class="v-lines"><p class="v-l1"></p><p class="v-l2"></p></div>
     <button class="x v-x" aria-label="关闭"><i></i></button>`;
   document.body.append(v); V.el = v;
   let sx = 0, sy = 0, st = 0, moved = false;
@@ -971,7 +971,9 @@ function nextFull() { if (!V.g || V.g.length < 2) return; const n = V.g[(V.i + 1
 function fillViewer(item, f) { const v = V.el, im = v.querySelector(".v-img");
   showFull(im, item); Object.assign(im.style, { left: f.left + "px", top: f.top + "px", width: f.width + "px", height: f.height + "px", transformOrigin: "50% 50%" });
   v.querySelector(".v-place").textContent = item.place || ""; v.querySelector(".v-date").textContent = item.date || "";
-  v.querySelector(".v-count").textContent = V.g.length > 1 ? `${V.i + 1} / ${V.g.length}` : "";
+  const prog = V.g.length > 1 && !item.full; v.classList.toggle("has-prog", prog);
+  v.querySelector(".v-count").textContent = V.g.length > 1 && !prog ? `${V.i + 1} / ${V.g.length}` : "";
+  v.querySelector(".v-prog i").style.width = prog ? ((V.i + 1) / V.g.length * 100) + "%" : "0";
   v.querySelector(".v-cap").textContent = item.caption || "";
   // a roll photo's words are said once, at the foot (date · place, then its one line)
   const full = !!item.full; v.classList.toggle("full", full); v.classList.toggle("cap-ph", full && !!item.capPH);

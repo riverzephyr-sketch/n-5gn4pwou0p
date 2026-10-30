@@ -443,6 +443,9 @@ img{display:block;max-width:100%}
 .v-date{left:24px;top:calc(44px + env(safe-area-inset-top))}
 .v-count{right:24px;bottom:calc(26px + env(safe-area-inset-bottom))}
 .viewer.in .v-place,.viewer.in .v-date,.viewer.in .v-count{opacity:1}
+.v-prog{position:absolute;left:24px;right:24px;bottom:calc(30px + env(safe-area-inset-bottom));height:1px;background:rgba(233,226,214,.16);opacity:0;transition:opacity .4s .2s}
+.v-prog i{display:block;height:100%;width:0;background:var(--chalk2);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.viewer.in.has-prog .v-prog{opacity:1}
 .v-cap{position:absolute;left:24px;right:24px;bottom:calc(56px + env(safe-area-inset-bottom));font-size:12.5px;line-height:1.85;color:var(--chalk2);opacity:0;transition:opacity .5s .3s;max-width:30em}
 .viewer.in .v-cap{opacity:1}
 .v-lines{position:absolute;left:28px;right:28px;bottom:calc(64px + env(safe-area-inset-bottom));color:var(--chalk)}
