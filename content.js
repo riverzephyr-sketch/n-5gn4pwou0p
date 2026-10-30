@@ -180,6 +180,7 @@ window.CONTENT = {
       { title: "", date: "2026.05.02", text: "专程飞去东京取钻戒，顺道探望远嫁日本的然姐。", photo: "photos/r26-0502.webp", dateOnly: true },
       { title: "", date: "2026.06.22", text: "婚戒是Helios，钻戒是Polaris，而你是我在无数不确定里最笃定的答案。", photo: "photos/r26-0622.webp", dateOnly: true },
       { title: "", date: "2026.09.29", text: "阳光、沙滩，和一个顶着炸毛发型傻fufu的呆瓜。", photo: "photos/r26-0929.webp", dateOnly: true },
+      { title: "", date: "2026.09.29", text: "在亚庇看海看日落，把最浪漫的一个吻留在了丹绒亚路的桨板上。", photo: "photos/r26-0929b.webp", dateOnly: true },
     ]},
   ],
 
