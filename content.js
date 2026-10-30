@@ -173,7 +173,7 @@ window.CONTENT = {
       { title: "", date: "2025.10.03", text: "飞到甲米开启躺平模式，在酒店和你虚度光阴。", photo: "photos/r25-1003.webp", dateOnly: true },
       { title: "", date: "2025.10.06", text: "甲米宏岛出海记：身后是翡翠色的海水，后背是让人安心的你。", photo: "photos/r25-1006.webp", dateOnly: true },
     ]},
-    { year: "2026", layout: "peak", title: "待填写", thumb: "photos/tokyo.webp", items: [
+    { year: "2026", layout: "feature", title: "待填写", thumb: "photos/tokyo.webp", items: [
       { title: "", date: "2026.02.19", text: "过年回北京，两个戴着口罩陪妈妈看《镖人》的乖宝宝。", photo: "photos/r26-0219.webp", dateOnly: true },
     ]},
   ],
