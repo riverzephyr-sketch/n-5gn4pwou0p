@@ -195,7 +195,7 @@ window.CONTENT = {
       { date: "2023-10-30", print: "photos/n2.webp", caption: ["2023.10.30", "一周年 · 重庆"] },
       { date: "2024-10-30", print: "photos/ann-2024.webp", caption: ["2024.10.30", "两周年"] },
       { date: "2025-10-30", print: "photos/ann-2025.webp", caption: ["2025.10.30", "三周年"] },
-      { date: "2026-10-30", print: null, caption: ["2026.10.30", "四周年"] },   // 这一天还没拍：一直是未显影的拍立得
+      { date: "2026-10-30", print: "photos/ann-2026.webp", caption: ["2026.10.30", "四周年"] },
     ],
   },
 
@@ -245,8 +245,8 @@ window.CONTENT = {
       ["ポラリスになりたい", "我愿成为只属于你的 北极星"],
     ],
     // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.webp）里抠出来的轮廓，里面填满我们的照片
-    // （photos/silhouette.webp，加了新照片后运行 python3 tools/make_silhouette.py 重新生成）
-    silhouette: "photos/silhouette-film.webp",   // 胶片条版本（/workspace/anniversary/tools/make_silhouette_film.py 生成）
+    // 胶片条版本：用网站现有的 65 张照片重新生成（/workspace/anniversary/tools/make_silhouette_film.py；照片清单见 /workspace/anniversary/tools/silhouette-1461.txt）
+    silhouette: "photos/silhouette-1461.webp",
     silhouetteCaption: "",   // 剪影下不放文字
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
     wedding: null,   // 婚礼拍立得已撤：不想在信前面放一张「待解锁」
