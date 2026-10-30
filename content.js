@@ -245,8 +245,8 @@ window.CONTENT = {
       ["ポラリスになりたい", "我愿成为只属于你的 北极星"],
     ],
     // 隐藏页的剪影：从亚庇日落那张背影照（photos/sunset-sit.webp）里抠出来的轮廓，里面填满我们的照片
-    // 胶片条版本：用网站现有的 65 张照片重新生成（/workspace/anniversary/tools/make_silhouette_film.py；照片清单见 /workspace/anniversary/tools/silhouette-1461.txt）
-    silhouette: "photos/silhouette-1461.webp",
+    // 胶片条版本：沿用旧版的版式（SIL_K=47.1：6 条胶片、31 格，与 silhouette-film.webp 同一网格），换成网站现有的 31 张照片（SIL_K=47.1 python3 /workspace/anniversary/tools/make_silhouette_film.py；清单见 /workspace/anniversary/tools/silhouette-1461-v165.txt）
+    silhouette: "photos/silhouette-1461f.webp",
     silhouetteCaption: "",   // 剪影下不放文字
     // 隐藏页最后一张「未显影」的拍立得：婚礼（日期定了再填，例如 "2027.05.20"）
     wedding: null,   // 婚礼拍立得已撤：不想在信前面放一张「待解锁」
